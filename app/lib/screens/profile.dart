@@ -21,7 +21,7 @@ class ProfileTab extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Text('로그인하면 이런 걸 쓸 수 있어요', style: TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 6),
-            const Text('· 내 몸에 맞춘 AI 식단·루틴 (월 5회 무료)\n· 식단 사진 올리고 AI 답변 받기\n· 연속 기록, 배지, 운동 달력\n· 매일 알림, PT 운동일지'),
+            const Text('· 내 몸에 맞춘 AI 식단·운동 루틴 (월 5회 무료)\n· 식단 사진 올리고 AI 답변 받기\n· 연속 기록, 배지, 운동 달력\n· 매일 알림, PT 운동일지'),
             AppButton('3초 만에 로그인하기', onPressed: () => Navigator.pushNamed(context, Routes.login)),
           ]),
         ),
@@ -171,7 +171,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
       const H1('AI를 마음껏 쓰세요'),
       const AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('식단·루틴 생성 횟수 확대'),
+          Text('식단·운동 루틴 생성 횟수 확대'),
           Text('AI 식단 답변 횟수 확대'),
           Text('스트릭 프리즈 추가'),
         ]),

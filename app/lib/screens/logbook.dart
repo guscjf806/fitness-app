@@ -86,7 +86,7 @@ class LogDetailScreen extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(child: Text(item.name)),
           ]),
-          right: Muted('${item.weight}, ${item.reps}x${item.sets}세트', bottom: 0),
+          right: Muted('${item.weight}, ${item.reps} × ${item.sets}세트', bottom: 0),
         ),
       if (log.videos.isNotEmpty) ...[
         const H2('운동 영상'),

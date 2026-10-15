@@ -26,6 +26,9 @@ class DemoState extends ChangeNotifier {
   bool bodyFatUnknown = false;
   String goal = '감량';
 
+  /// 칼로리 결과(S04)를 한 번이라도 봤는지
+  bool calorieCalculated = false;
+
   // S03 강도·조건
   String currentIntensity = '중';
   String desiredIntensity = '중';

@@ -55,7 +55,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
               const SizedBox(width: 10),
               Expanded(child: Text(day.items[i].name)),
             ]),
-            right: Muted('${day.items[i].amount}x${day.items[i].sets}세트', bottom: 0),
+            right: Muted('${day.items[i].amount} × ${day.items[i].sets}세트', bottom: 0),
           ),
       AppButton('+ 운동 추가',
           kind: ButtonKind.soft,

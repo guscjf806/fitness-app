@@ -15,7 +15,8 @@ void toast(BuildContext context, String message) {
 }
 
 /// 게스트가 로그인이 필요한 기능을 누르면 이유를 알려 주고 로그인으로 안내한다.
-void requireLogin(BuildContext context, String reason) {
+/// [thenGenerate]가 true면 로그인 후 바로 기간 선택(S06)으로 이어진다.
+void requireLogin(BuildContext context, String reason, {bool thenGenerate = false}) {
   showModalBottomSheet<void>(
     context: context,
     backgroundColor: AppColors.background,
@@ -28,6 +29,7 @@ void requireLogin(BuildContext context, String reason) {
         const Muted('게스트로 입력한 몸 정보는 로그인 후에도 그대로 이어져요.'),
         AppButton('3초 만에 로그인하기', onPressed: () {
           Navigator.pop(sheetContext);
+          demo.continueToGenerate = thenGenerate;
           Navigator.pushNamed(context, Routes.login);
         }),
         AppButton('계속 둘러보기', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheetContext)),
@@ -397,7 +399,7 @@ class ExerciseThumb extends StatelessWidget {
 }
 
 class Disclaimer extends StatelessWidget {
-  const Disclaimer({super.key, this.text = 'AI가 만든 식단과 루틴은 의료 조언이 아닙니다.'});
+  const Disclaimer({super.key, this.text = 'AI가 만든 식단과 운동 루틴은 의료 조언이 아닙니다.'});
   final String text;
 
   @override

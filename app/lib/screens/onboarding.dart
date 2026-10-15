@@ -20,7 +20,7 @@ class StartScreen extends StatelessWidget {
       const SizedBox(height: 10),
       const AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('식단과 루틴을 한 번에 생성'),
+          Text('식단과 운동 루틴을 한 번에 생성'),
           Text('올린 식단에 AI가 답변'),
           Text('PT 회원님은 운동일지까지'),
         ]),
@@ -41,7 +41,7 @@ class StartScreen extends StatelessWidget {
           child: const Text('게스트로 시작하기'),
         ),
       ),
-      const Muted('로그인 없이 예시 식단·루틴과 칼로리 계산을 써 볼 수 있어요.', align: TextAlign.center),
+      const Muted('로그인 없이 예시 식단·운동 루틴과 칼로리 계산을 써 볼 수 있어요.', align: TextAlign.center),
     ]);
   }
 }
@@ -159,6 +159,7 @@ class ResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final r = demo.tdee;
+    demo.calorieCalculated = true;
     final hasMuscle = !demo.muscleUnknown && (double.tryParse(demo.muscle) ?? 0) > 0;
     return AppPage(title: '내 칼로리', children: [
       AppCard(
@@ -168,7 +169,7 @@ class ResultScreen extends StatelessWidget {
           Muted(
             '기초대사량 ${formatNumber(r.bmr)} + 활동량(${demo.currentIntensity}) 반영\n'
             '${r.usedKatchMcArdle ? '체지방량을 반영한 공식(Katch-McArdle)으로 계산했어요' : '표준 공식(Mifflin-St Jeor)으로 계산했어요'}'
-            '${hasMuscle ? '\n근육량은 AI가 식단·루틴을 짤 때 참고해요' : ''}',
+            '${hasMuscle ? '\n근육량은 AI가 식단·운동 루틴을 짤 때 참고해요' : ''}',
             bottom: 0,
           ),
         ]),
@@ -183,20 +184,23 @@ class ResultScreen extends StatelessWidget {
         ]),
       ),
       const Muted('의료 조언이 아닙니다. 건강 상태에 따라 전문가와 상의하세요.'),
-      AppButton('식단·루틴 만들기', onPressed: () {
-        if (demo.loggedIn) {
-          Navigator.pushNamed(context, Routes.generate);
-        } else {
-          demo.continueToGenerate = true;
-          Navigator.pushNamed(context, Routes.login);
-        }
-      }),
+      AppButton('식단·운동 루틴 만들기', onPressed: () => openPlanMaker(context)),
       if (!demo.loggedIn)
         const Padding(
           padding: EdgeInsets.only(top: 8),
-          child: Muted('만들려면 로그인이 필요해요', align: TextAlign.center),
+          child: Muted('만들려면 로그인이 필요해요.', align: TextAlign.center),
         ),
     ]);
+  }
+}
+
+/// '식단·운동 루틴 만들기': 로그인했으면 기간 선택(S06)으로, 아니면 로그인 안내 후 S06으로 이어진다.
+void openPlanMaker(BuildContext context) {
+  if (demo.loggedIn) {
+    Navigator.pushNamed(context, Routes.generate);
+  } else {
+    requireLogin(context, 'AI가 내 몸에 맞춘 식단·운동 루틴을 만들려면 로그인이 필요해요. 로그인하면 바로 이어서 만들 수 있어요.',
+        thenGenerate: true);
   }
 }
 
@@ -231,7 +235,7 @@ class LoginScreen extends StatelessWidget {
         );
     return AppPage(title: '로그인', children: [
       const H1('3초 만에 시작해요'),
-      const Muted('로그인하면 식단·루틴 생성, 식단 올리기를 쓸 수 있어요.'),
+      const Muted('로그인하면 식단·운동 루틴 생성, 식단 올리기를 쓸 수 있어요.'),
       social('카카오로 시작하기', AppColors.kakao, AppColors.kakaoText),
       social('구글로 시작하기', Colors.white, const Color(0xFF222222), outlined: true),
       social('Apple로 시작하기', Colors.black, Colors.white),
@@ -258,7 +262,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
     await Future<void>.delayed(const Duration(milliseconds: 1600));
     demo.update(() => demo.tab = 0);
     navigator.pushNamedAndRemoveUntil(Routes.main, (_) => false);
-    messenger.showSnackBar(SnackBar(content: Text('${demo.period}치 식단과 루틴을 만들었어요')));
+    messenger.showSnackBar(SnackBar(content: Text('${demo.period}치 식단과 운동 루틴을 만들었어요')));
   }
 
   @override
@@ -269,7 +273,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             CircularProgressIndicator(color: AppColors.primary),
             SizedBox(height: 16),
-            Text('AI가 식단과 루틴을 만들고 있어요', style: TextStyle(fontWeight: FontWeight.w700)),
+            Text('AI가 식단과 운동 루틴을 만들고 있어요', style: TextStyle(fontWeight: FontWeight.w700)),
             Muted('잠시만 기다려 주세요'),
           ]),
         ),
@@ -286,7 +290,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
               '원하는 강도 ${demo.desiredIntensity} · ${demo.conditionText}'),
         ]),
       ),
-      AppButton('식단·루틴 생성하기', onPressed: _generate),
+      AppButton('식단·운동 루틴 생성하기', onPressed: _generate),
     ]);
   }
 }

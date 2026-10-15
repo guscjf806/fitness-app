@@ -4,6 +4,7 @@ import '../data/mock_data.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
 import '../widgets/common.dart';
+import 'onboarding.dart';
 
 /// S07 홈
 class HomeTab extends StatelessWidget {
@@ -84,13 +85,23 @@ class HomeTab extends StatelessWidget {
   Widget _guestHome(BuildContext context, int target, WorkoutDay today) {
     return TabBody(children: [
       H1('안녕하세요, ${demo.displayName}'),
-      const GuestBanner('로그인하면 내 몸에 맞춘 식단·루틴을 AI가 만들고, 연속 기록도 쌓을 수 있어요.'),
+      const GuestBanner('로그인하면 내 몸에 맞춘 식단·운동 루틴을 AI가 만들고, 연속 기록도 쌓을 수 있어요.'),
       AppCard(
-        onTap: () => Navigator.pushNamed(context, Routes.body),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Muted('${demo.goal} 목표 칼로리', bottom: 2),
-          BigNumber('${formatNumber(target)} kcal'),
-          const Muted('몸 정보를 바꾸면 다시 계산해요 · 계산하기 ›', bottom: 0),
+          const Text('내 칼로리', style: TextStyle(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          if (demo.calorieCalculated) ...[
+            const Muted('하루 소비 칼로리 (TDEE)', bottom: 2),
+            BigNumber('${formatNumber(demo.tdee.tdee)} kcal'),
+            const SizedBox(height: 8),
+            Muted('${demo.goal} 목표 칼로리', bottom: 2),
+            BigNumber('${formatNumber(target)} kcal'),
+          ] else
+            const Muted('몸 정보를 입력하면 하루 소비 칼로리와 목표 칼로리를 계산해 드려요.', bottom: 0),
+          AppButton(demo.calorieCalculated ? '다시 계산하기' : '내 칼로리 계산하기',
+              kind: demo.calorieCalculated ? ButtonKind.soft : ButtonKind.primary,
+              onPressed: () => Navigator.pushNamed(context, Routes.body)),
+          if (demo.calorieCalculated) AppButton('식단·운동 루틴 만들기', onPressed: () => openPlanMaker(context)),
         ]),
       ),
       const H2('예시 식단'),
@@ -112,7 +123,7 @@ class HomeTab extends StatelessWidget {
           Wrap(spacing: 6, children: [for (final e in today.items) ExerciseThumb(e.name)]),
         ]),
       ),
-      const Disclaimer(text: '예시 식단과 루틴은 의료 조언이 아닙니다.'),
+      const Disclaimer(text: '예시 식단과 운동 루틴은 의료 조언이 아닙니다.'),
     ]);
   }
 }

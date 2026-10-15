@@ -6,7 +6,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// 역할마다 모든 탭과 하위 화면(S01~S20)이 오류 없이 열리는지 확인한다.
 void main() {
-  setUp(() => demo.switchRole('guest'));
+  setUp(() {
+    demo.switchRole('guest');
+    demo.calorieCalculated = false;
+  });
 
   Future<void> open(WidgetTester tester, String route, {Object? args}) async {
     demoNavigatorKey.currentState!.pushNamed(route, arguments: args);
@@ -68,5 +71,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('로그인이 필요해요'), findsOneWidget);
     expect(demo.workoutDone, isFalse);
+  });
+
+  testWidgets('게스트: 칼로리 계산 후 식단·운동 루틴 만들기는 로그인 뒤 기간 선택으로 이어진다', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(const FitnessApp());
+    await tester.tap(find.text('게스트로 시작하기'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('내 칼로리 계산하기'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('다음'));
+    await tester.pumpAndSettle();
+    await tester.dragUntilVisible(find.text('결과 보기'), find.byType(ListView).last, const Offset(0, -300));
+    await tester.tap(find.text('결과 보기'));
+    await tester.pumpAndSettle();
+    expect(find.text('하루 소비 칼로리 (TDEE)'), findsOneWidget);
+    expect(find.text('감량 목표 칼로리'), findsOneWidget);
+
+    await tester.tap(find.text('식단·운동 루틴 만들기'));
+    await tester.pumpAndSettle();
+    expect(find.text('로그인이 필요해요'), findsOneWidget);
+    await tester.tap(find.text('3초 만에 로그인하기'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('카카오로 시작하기'));
+    await tester.pumpAndSettle();
+    expect(find.text('기간 선택'), findsOneWidget);
+    expect(demo.loggedIn, isTrue);
   });
 }
