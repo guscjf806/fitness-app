@@ -17,6 +17,10 @@ class _WorkoutTabState extends State<WorkoutTab> {
   int weekday = 0; // 0 = 오늘(월)
 
   void _finish() {
+    if (demo.isGuest) {
+      requireLogin(context, '운동 완료와 연속 기록은 계정에 저장돼요. 로그인하면 오늘부터 기록이 쌓여요.');
+      return;
+    }
     if (demo.checked.isEmpty) {
       toast(context, '체크한 종목이 없어요. 종목을 체크해 주세요');
       return;
@@ -30,7 +34,9 @@ class _WorkoutTabState extends State<WorkoutTab> {
     final day = demo.week[weekday];
     final isToday = weekday == 0;
     return TabBody(children: [
-      const H1('운동'),
+      H1(demo.isGuest ? '예시 운동' : '운동'),
+      if (demo.isGuest)
+        const GuestBanner('로그인하면 내 운동 장소·장비·시간에 맞춘 루틴을 AI가 만들어요. 체크는 해 볼 수 있지만 저장되지 않아요.'),
       Muted('원하는 강도: ${demo.desiredIntensity} · ${demo.conditionText}'),
       DayChips(labels: weekdayLabels, selected: weekday, onSelect: (i) => setState(() => weekday = i)),
       H2(day.title, top: 0),

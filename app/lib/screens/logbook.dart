@@ -33,7 +33,10 @@ class LogIntroTab extends StatelessWidget {
       ),
       AppButton('PT 문의하기', onPressed: () => toast(context, '선생님께 PT 문의가 전달돼요 (데모)')),
       AppButton('PT 코드가 있어요',
-          kind: ButtonKind.soft, onPressed: () => Navigator.pushNamed(context, Routes.ptCode)),
+          kind: ButtonKind.soft,
+          onPressed: () => demo.isGuest
+              ? requireLogin(context, '운동일지는 본인만 볼 수 있어야 해서, PT 코드는 로그인한 계정에 연결해요.')
+              : Navigator.pushNamed(context, Routes.ptCode)),
     ]);
   }
 }

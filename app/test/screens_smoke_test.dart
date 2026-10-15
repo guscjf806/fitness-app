@@ -46,4 +46,27 @@ void main() {
       await open(tester, Routes.records);
     });
   }
+
+  testWidgets('게스트로 시작하면 탭을 둘러보고, 저장 기능은 로그인 안내가 뜬다', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(const FitnessApp());
+    await tester.tap(find.text('게스트로 시작하기'));
+    await tester.pumpAndSettle();
+    expect(demo.isGuest, isTrue);
+    expect(find.text('게스트로 둘러보는 중'), findsOneWidget);
+    for (var i = 0; i < 5; i++) {
+      demo.update(() => demo.tab = i);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'guest tab $i');
+    }
+    demo.update(() => demo.tab = 2);
+    await tester.pumpAndSettle();
+    await tester.dragUntilVisible(find.text('오늘 운동 완료'), find.byType(ListView), const Offset(0, -300));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('오늘 운동 완료'));
+    await tester.pumpAndSettle();
+    expect(find.text('로그인이 필요해요'), findsOneWidget);
+    expect(demo.workoutDone, isFalse);
+  });
 }

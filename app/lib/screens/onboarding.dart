@@ -30,6 +30,18 @@ class StartScreen extends StatelessWidget {
       AppButton('로그인',
           kind: ButtonKind.soft,
           onPressed: () => Navigator.pushNamed(context, Routes.login)),
+      Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: TextButton(
+          onPressed: () {
+            demo.update(() => demo.tab = 0);
+            Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
+          },
+          style: TextButton.styleFrom(foregroundColor: AppColors.textSub, minimumSize: const Size.fromHeight(44)),
+          child: const Text('게스트로 시작하기'),
+        ),
+      ),
+      const Muted('로그인 없이 예시 식단·루틴과 칼로리 계산을 써 볼 수 있어요.', align: TextAlign.center),
     ]);
   }
 }

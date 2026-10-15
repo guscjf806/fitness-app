@@ -21,6 +21,17 @@ class _MealTabState extends State<MealTab> {
   Widget build(BuildContext context) {
     final meals = mealDays[day % 2];
     final total = meals.fold<int>(0, (sum, m) => sum + m.kcal);
+    if (demo.isGuest) {
+      return TabBody(children: [
+        const H1('예시 식단'),
+        const GuestBanner('로그인하면 내 목표 칼로리에 맞춘 식단을 만들고, 먹은 식단을 올려 AI 답변을 받을 수 있어요.'),
+        DayChips(labels: dayLabels, selected: day, onSelect: (i) => setState(() => day = i)),
+        for (final m in meals) _MealCard(m),
+        AppButton('오늘 식단 올리기',
+            onPressed: () => requireLogin(context, '식단 사진은 내 계정에만 안전하게 보관하고, AI 답변은 횟수 관리가 필요해서 로그인 후에 쓸 수 있어요.')),
+        const Disclaimer(text: '예시 식단은 의료 조언이 아닙니다.'),
+      ]);
+    }
     return TabBody(children: [
       const H1('식단'),
       DayChips(labels: dayLabels, selected: day, onSelect: (i) => setState(() => day = i)),

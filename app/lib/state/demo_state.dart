@@ -59,8 +59,13 @@ class DemoState extends ChangeNotifier {
   }
 
   bool get loggedIn => role != 'guest';
+  bool get isGuest => role == 'guest';
 
-  String get displayName => role == 'trainer' ? '선생님' : '지아님';
+  String get displayName => switch (role) {
+        'trainer' => '선생님',
+        'guest' => '게스트님',
+        _ => '지아님',
+      };
 
   TdeeResult get tdee => calcTdee(
         sex: sex,

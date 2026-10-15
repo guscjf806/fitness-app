@@ -13,6 +13,30 @@ class ProfileTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final role = demo.role;
     Widget arrow([String text = '›']) => Muted(text, bottom: 0);
+    if (demo.isGuest) {
+      return TabBody(children: [
+        const H1('내 정보'),
+        const Muted('게스트'),
+        AppCard(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('로그인하면 이런 걸 쓸 수 있어요', style: TextStyle(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 6),
+            const Text('· 내 몸에 맞춘 AI 식단·루틴 (월 5회 무료)\n· 식단 사진 올리고 AI 답변 받기\n· 연속 기록, 배지, 운동 달력\n· 매일 알림, PT 운동일지'),
+            AppButton('3초 만에 로그인하기', onPressed: () => Navigator.pushNamed(context, Routes.login)),
+          ]),
+        ),
+        LineRow(left: const Text('몸 정보 수정'), right: arrow(), onTap: () => Navigator.pushNamed(context, Routes.body)),
+        LineRow(
+          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('운동 장소·장비 수정'),
+            Muted(demo.conditionText, bottom: 0),
+          ]),
+          right: arrow(),
+          onTap: () => Navigator.pushNamed(context, Routes.condition),
+        ),
+        const Muted('게스트로 입력한 정보는 이 기기에만 저장돼요.', bottom: 0),
+      ]);
+    }
     return TabBody(children: [
       const H1('내 정보'),
       Muted(role == 'trainer'

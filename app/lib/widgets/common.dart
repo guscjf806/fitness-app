@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../routes.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 
@@ -11,6 +12,47 @@ void toast(BuildContext context, String message) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(message)));
+}
+
+/// 게스트가 로그인이 필요한 기능을 누르면 이유를 알려 주고 로그인으로 안내한다.
+void requireLogin(BuildContext context, String reason) {
+  showModalBottomSheet<void>(
+    context: context,
+    backgroundColor: AppColors.background,
+    builder: (sheetContext) => Padding(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
+      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('로그인이 필요해요', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        Muted(reason),
+        const Muted('게스트로 입력한 몸 정보는 로그인 후에도 그대로 이어져요.'),
+        AppButton('3초 만에 로그인하기', onPressed: () {
+          Navigator.pop(sheetContext);
+          Navigator.pushNamed(context, Routes.login);
+        }),
+        AppButton('계속 둘러보기', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheetContext)),
+      ]),
+    ),
+  );
+}
+
+/// 게스트 모드 안내 (탭 화면 위쪽)
+class GuestBanner extends StatelessWidget {
+  const GuestBanner(this.text, {super.key});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      accent: true,
+      onTap: () => Navigator.pushNamed(context, Routes.login),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('게스트로 둘러보는 중', style: TextStyle(fontWeight: FontWeight.w700)),
+        Muted(text, bottom: 4),
+        const Text('로그인하기 ›', style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
+      ]),
+    );
+  }
 }
 
 /// 탭 밖의 화면 (뒤로가기 있는 화면)

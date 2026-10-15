@@ -21,6 +21,7 @@ class HomeTab extends StatelessWidget {
         toast(context, '이번 주 몸무게를 기록했어요 (${demo.weight}kg)');
       }),
     ];
+    if (demo.isGuest) return _guestHome(context, target, today);
     return TabBody(children: [
       H1('안녕하세요, ${demo.displayName}'),
       AppCard(
@@ -76,6 +77,42 @@ class HomeTab extends StatelessWidget {
         ]),
       ),
       const Disclaimer(),
+    ]);
+  }
+
+  /// 게스트 홈: 기록·목표 대신 내 칼로리와 예시 식단·운동만 보여 준다.
+  Widget _guestHome(BuildContext context, int target, WorkoutDay today) {
+    return TabBody(children: [
+      H1('안녕하세요, ${demo.displayName}'),
+      const GuestBanner('로그인하면 내 몸에 맞춘 식단·루틴을 AI가 만들고, 연속 기록도 쌓을 수 있어요.'),
+      AppCard(
+        onTap: () => Navigator.pushNamed(context, Routes.body),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Muted('${demo.goal} 목표 칼로리', bottom: 2),
+          BigNumber('${formatNumber(target)} kcal'),
+          const Muted('몸 정보를 바꾸면 다시 계산해요 · 계산하기 ›', bottom: 0),
+        ]),
+      ),
+      const H2('예시 식단'),
+      const Muted('로그인하면 내 목표 칼로리에 맞춰 새로 만들어요.'),
+      for (final m in mealDays[0])
+        LineRow(
+          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(m.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Muted(m.foods.map((f) => '${f.name} ${f.grams}g').join(' · '), bottom: 0),
+          ]),
+          right: Muted('${m.kcal} kcal', bottom: 0),
+        ),
+      const H2('예시 운동'),
+      AppCard(
+        onTap: () => demo.update(() => demo.tab = 2),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(today.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+          Muted('${today.items.length}종목 · ${today.items.take(2).map((e) => e.name).join(', ')} 외', bottom: 8),
+          Wrap(spacing: 6, children: [for (final e in today.items) ExerciseThumb(e.name)]),
+        ]),
+      ),
+      const Disclaimer(text: '예시 식단과 루틴은 의료 조언이 아닙니다.'),
     ]);
   }
 }
