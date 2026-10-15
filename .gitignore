@@ -1,18 +1,35 @@
 # macOS
 .DS_Store
 
-# 비밀 값 (API 키 등)
+# ── GitHub에 올리면 안 되는 파일 ──────────────────────────
+# 비밀 값은 전부 private/ 폴더에 보관한다 (이 폴더는 통째로 올라가지 않음)
+private/
+
+# 환경 변수 (API 키, Supabase 키 등). 예시 파일(.env.example)만 올린다
 .env
 .env.*
 !.env.example
 
-# Flutter / Dart
+# 앱 서명 키, 인증서
+*.jks
+*.keystore
+key.properties
+*.p8
+*.p12
+*.pem
+*.mobileprovision
+
+# Firebase(FCM) 설정 파일
+google-services.json
+GoogleService-Info.plist
+
+# ── 자동 생성 파일 ─────────────────────────────────────
+# Flutter / Dart (자세한 목록은 app/.gitignore)
 .dart_tool/
 build/
-.flutter-plugins
-.flutter-plugins-dependencies
 *.iml
 .idea/
+.vscode/
 
 # Supabase 로컬
 supabase/.temp/

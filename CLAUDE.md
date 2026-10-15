@@ -19,3 +19,10 @@
 - 색과 글꼴은 테마 파일 한 곳에서만 정의한다
 - 무료 사용 횟수 같은 값은 설정 파일 상수로 관리한다
 - 몸 정보와 식단 사진은 로그에 남기지 않는다
+
+## 실행·확인
+
+- 앱 코드는 `app/` (Flutter). 실행: `cd app && flutter run -d chrome`, 테스트: `flutter test`, 점검: `flutter analyze`
+- Flutter SDK 위치: `~/flutter` (PATH는 ~/.zshrc에 등록)
+- 지금은 목업 단계: 데이터는 `app/lib/data/mock_data.dart`, 역할 전환은 `app/lib/state/demo_state.dart`
+- 비밀 값(키, 서명 파일)은 `private/`에만 둔다. 이 폴더는 .gitignore 처리됨
