@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# 비밀 값 (API 키 등)
+.env
+.env.*
+!.env.example
+
+# Flutter / Dart
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+
+# Supabase 로컬
+supabase/.temp/
+supabase/.branches/
