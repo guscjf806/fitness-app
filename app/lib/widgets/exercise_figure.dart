@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../data/exercise_lookup.dart';
 import '../data/exercise_models.dart';
 import '../data/exercises.dart';
 import '../theme/app_theme.dart';
 
-final _byId = {for (final e in exercises) e.id: e};
-final _byName = {for (final e in exercises) e.name: e};
-
-ExerciseInfo? exerciseById(String id) => _byId[id];
-
-/// 루틴·일지에 적힌 이름(별칭 포함)으로 종목을 찾는다. 선생님이 직접 입력한 종목이면 null.
-ExerciseInfo? exerciseByName(String name) =>
-    _byName[name] ?? (exerciseAliases[name] == null ? null : _byId[exerciseAliases[name]]);
+export '../data/exercise_lookup.dart';
 
 /// 움직이는 동작 그림. '동작 줄이기' 설정이 켜져 있으면 멈춘 그림을 보여 준다.
 class ExerciseFigureView extends StatefulWidget {
@@ -45,7 +39,7 @@ class _ExerciseFigureViewState extends State<ExerciseFigureView> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    final fig = exerciseFigures[widget.id];
+    final fig = exerciseFigures[exerciseById(widget.id)?.figureId ?? widget.id];
     return Container(
       width: widget.size,
       height: widget.size,

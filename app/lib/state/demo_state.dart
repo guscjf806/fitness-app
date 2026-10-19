@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/mock_data.dart';
+import '../logic/routine.dart';
 import '../logic/tdee.dart';
 import '../routes.dart';
 
@@ -108,7 +109,9 @@ class DemoState extends ChangeNotifier {
         goal: goal,
       );
 
-  List<WorkoutDay> get week => place == '집' ? homeWeek : gymWeek;
+  /// 조건(장소·장비·소음·시간·통증)을 반영한 이번 주 루틴
+  List<WorkoutDay> get week => demoWeek(
+      place: place, equipment: equipment, noise: noise, minutes: minutes, painAreas: painAreas);
 
   String get conditionText {
     final where = switch (place) {

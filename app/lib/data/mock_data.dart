@@ -68,8 +68,11 @@ const mealDays = <List<Meal>>[
 ];
 
 class Exercise {
-  const Exercise(this.name, this.amount, this.sets);
+  const Exercise(this.name, this.amount, this.sets, {this.loudAlt});
   final String name;
+
+  /// 층간소음 걱정이 없을 때 바꿔 쓰는 점프 동작 (프로토타입 규칙)
+  final String? loudAlt;
 
   /// '8개' 또는 '40초'
   final String amount;
@@ -77,9 +80,15 @@ class Exercise {
 }
 
 class WorkoutDay {
-  const WorkoutDay(this.title, this.items);
+  const WorkoutDay(this.title, this.items, {this.atHome = false, this.removed = 0});
   final String title;
   final List<Exercise> items;
+
+  /// 집에서 하는 날인지 (장소 '둘 다'면 헬스장 날과 집 날이 섞인다)
+  final bool atHome;
+
+  /// 조건(장소·장비·소음·통증)에 맞지 않아 뺀 종목 수
+  final int removed;
   bool get isRest => items.isEmpty;
 }
 
@@ -114,31 +123,61 @@ const gymWeek = [
   ]),
 ];
 
-const homeWeek = [
+/// 집 · 맨몸 (loudAlt는 층간소음 걱정이 '아니오'일 때 쓰는 점프 동작)
+const homeBodyweightWeek = [
   WorkoutDay('하체 · 코어', [
-    Exercise('슬로우 스쿼트', '12개', 3),
-    Exercise('제자리 런지', '10개', 3),
+    Exercise('맨몸 스쿼트', '12개', 3, loudAlt: '점프 스쿼트'),
+    Exercise('제자리 런지', '10개', 3, loudAlt: '점프 런지'),
     Exercise('힙 브릿지', '15개', 3),
     Exercise('데드버그', '10개', 3),
   ]),
   WorkoutDay('상체 · 코어', [
-    Exercise('무릎 푸시업', '10개', 3),
+    Exercise('무릎 푸시업', '10개', 3, loudAlt: '푸시업'),
     Exercise('슈퍼맨', '10개', 3),
     Exercise('사이드 플랭크', '20초', 3),
     Exercise('버드독', '10개', 3),
   ]),
   WorkoutDay('휴식', []),
   WorkoutDay('전신 서킷', [
-    Exercise('슬로우 스쿼트', '12개', 3),
-    Exercise('무릎 푸시업', '8개', 3),
-    Exercise('버드독', '10개', 3),
+    Exercise('맨몸 스쿼트', '12개', 3, loudAlt: '버피'),
+    Exercise('무릎 푸시업', '8개', 3, loudAlt: '푸시업'),
+    Exercise('버드독', '10개', 3, loudAlt: '마운틴 클라이머'),
     Exercise('플랭크', '30초', 3),
   ]),
   WorkoutDay('하체 · 상체', [
     Exercise('글루트 브릿지', '15개', 3),
-    Exercise('제자리 런지', '10개', 3),
-    Exercise('벽 푸시업', '12개', 3),
+    Exercise('제자리 런지', '10개', 3, loudAlt: '점프 런지'),
+    Exercise('벽 푸시업', '12개', 3, loudAlt: '푸시업'),
     Exercise('데드버그', '10개', 3),
+  ]),
+];
+
+/// 집 · 밴드·덤벨
+const homeDumbbellWeek = [
+  WorkoutDay('상체 (밴드·덤벨)', [
+    Exercise('바닥 덤벨 프레스', '10개', 4),
+    Exercise('밴드 로우', '12개', 4),
+    Exercise('덤벨 숄더 프레스', '10개', 3),
+    Exercise('덤벨 컬', '12개', 3),
+  ]),
+  WorkoutDay('하체 (덤벨)', [
+    Exercise('고블릿 스쿼트', '10개', 4),
+    Exercise('덤벨 루마니안 데드리프트', '10개', 3),
+    Exercise('한 다리 스플릿 스쿼트', '8개', 3),
+    Exercise('힙 쓰러스트', '12개', 3),
+  ]),
+  WorkoutDay('휴식', []),
+  WorkoutDay('상체 (밴드·덤벨)', [
+    Exercise('덤벨 로우', '10개', 4),
+    Exercise('밴드 페이스 풀', '15개', 3),
+    Exercise('바닥 덤벨 프레스', '10개', 3),
+    Exercise('트라이셉스 킥백', '12개', 3),
+  ]),
+  WorkoutDay('하체 · 코어', [
+    Exercise('고블릿 스쿼트', '10개', 4),
+    Exercise('힙 쓰러스트', '12개', 3),
+    Exercise('카프 레이즈', '15개', 3),
+    Exercise('플랭크', '40초', 3),
   ]),
 ];
 

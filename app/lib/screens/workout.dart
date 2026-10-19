@@ -41,7 +41,9 @@ class _WorkoutTabState extends State<WorkoutTab> {
         const GuestBanner('로그인하면 내 운동 장소·장비·시간에 맞춘 루틴을 AI가 만들어요. 체크는 해 볼 수 있지만 저장되지 않아요.'),
       Muted('원하는 강도: ${demo.desiredIntensity} · ${demo.conditionText}'),
       DayChips(labels: weekdayLabels, selected: weekday, onSelect: (i) => setState(() => weekday = i)),
-      H2(day.title, top: 0),
+      H2(demo.place == '둘 다' && !day.isRest ? '${day.title} (${day.atHome ? '집' : '헬스장'})' : day.title, top: 0),
+      if (day.removed > 0)
+        Muted('내 조건(${demo.place == '헬스장' ? '아픈 부위' : '장소·장비·소음·아픈 부위'})에 맞지 않는 운동 ${day.removed}개를 뺐어요.'),
       if (day.isRest)
         const AppCard(child: Text('쉬는 날이에요. 쉬는 날도 기록으로 인정돼요. 가벼운 걷기 30분을 추천해요.'))
       else

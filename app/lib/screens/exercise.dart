@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../config.dart';
 import '../data/exercise_models.dart';
 import '../data/exercises.dart';
+import '../logic/routine.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
@@ -14,14 +15,9 @@ const _equipments = ['전체', '바벨', '덤벨', '밴드', '머신', '케이�
 const _placeLabel = {'gym': '헬스장', 'home': '집', 'both': '헬스장·집'};
 
 /// 내 조건(장소·장비·층간소음·아픈 부위)에 맞는 종목인지 (기획서 6번 '홈트 조건 필터', 16번 안전 규칙)
-bool fitsMyCondition(ExerciseInfo e) {
-  if (e.avoidFor.any(demo.painAreas.contains)) return false;
-  if (demo.place == '헬스장') return true;
-  if (demo.noise == '예' && (e.impact == 'high' || e.noise == 'loud')) return false;
-  if (demo.place == '집' && e.place == 'gym') return false;
-  final allowed = demo.equipment == '맨몸' ? ['맨몸'] : ['맨몸', '덤벨', '밴드'];
-  return demo.place == '둘 다' || allowed.contains(e.equipment);
-}
+/// 장소가 '둘 다'면 헬스장 종목도 고를 수 있다
+bool fitsMyCondition(ExerciseInfo e) => exerciseAllowed(e,
+    atHome: demo.place == '집', equipment: demo.equipment, quiet: demo.noise == '예', painAreas: demo.painAreas);
 
 /// S21 운동 추가하기. 고른 종목 이름 목록을 돌려준다.
 /// arguments: 한 번에 고를 수 있는 개수 (선생님 일지는 1개)

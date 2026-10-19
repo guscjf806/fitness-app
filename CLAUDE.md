@@ -26,3 +26,4 @@
 - Flutter SDK 위치: `~/flutter` (PATH는 ~/.zshrc에 등록)
 - 지금은 목업 단계: 데이터는 `app/lib/data/mock_data.dart`, 역할 전환은 `app/lib/state/demo_state.dart`
 - 비밀 값(키, 서명 파일)은 `private/`에만 둔다. 이 폴더는 .gitignore 처리됨
+- 운동 종목 데이터 `app/lib/data/exercises.dart`와 `docs/운동설명_검수.md`는 `tools/gen_exercises.py`로 만든다. 트레이너 검수가 시작된 뒤에는 다시 실행하지 말고(검수 체크가 지워짐) 두 파일을 직접 고친다

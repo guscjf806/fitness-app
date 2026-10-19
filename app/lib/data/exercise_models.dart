@@ -15,6 +15,7 @@ class ExerciseInfo {
     required this.avoidFor,
     required this.howTo,
     required this.caution,
+    required this.figureId,
   });
 
   final String id;
@@ -43,6 +44,9 @@ class ExerciseInfo {
   /// 하는 방법 3단계 (트레이너 검수 대상)
   final List<String> howTo;
   final String caution;
+
+  /// 동작 그림 id (비슷한 동작의 그림을 빌려 쓰기도 한다)
+  final String figureId;
 }
 
 /// 움직이는 동작 그림 (100×100 좌표, 프로토타입에서 옮김). 자세 A ↔ 자세 B를 오간다.
