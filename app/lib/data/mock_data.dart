@@ -92,10 +92,10 @@ class WorkoutDay {
   bool get isRest => items.isEmpty;
 }
 
-const weekdayLabels = ['월', '화', '수', '목', '금'];
 const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
 
-const gymWeek = [
+/// 헬스장 운동 세션. 운동하는 날 수만큼 이 순서대로 돌아가며 쓴다 (이어지는 날에 같은 부위가 겹치지 않는 순서)
+const gymSessions = [
   WorkoutDay('가슴 · 삼두', [
     Exercise('벤치프레스', '8개', 4),
     Exercise('인클라인 덤벨 프레스', '10개', 3),
@@ -108,7 +108,6 @@ const gymWeek = [
     Exercise('시티드 로우', '12개', 3),
     Exercise('덤벨 컬', '12개', 3),
   ]),
-  WorkoutDay('휴식', []),
   WorkoutDay('하체', [
     Exercise('바벨 스쿼트', '8개', 4),
     Exercise('루마니안 데드리프트', '10개', 3),
@@ -121,10 +120,16 @@ const gymWeek = [
     Exercise('페이스 풀', '15개', 3),
     Exercise('플랭크', '40초', 3),
   ]),
+  WorkoutDay('전신', [
+    Exercise('데드리프트', '6개', 4),
+    Exercise('인클라인 덤벨 프레스', '10개', 3),
+    Exercise('시티드 로우', '12개', 3),
+    Exercise('레그 프레스', '12개', 3),
+  ]),
 ];
 
-/// 집 · 맨몸 (loudAlt는 층간소음 걱정이 '아니오'일 때 쓰는 점프 동작)
-const homeBodyweightWeek = [
+/// 집 · 맨몸 세션 (loudAlt는 층간소음 걱정이 '아니오'일 때 쓰는 점프 동작)
+const homeBodyweightSessions = [
   WorkoutDay('하체 · 코어', [
     Exercise('맨몸 스쿼트', '12개', 3, loudAlt: '점프 스쿼트'),
     Exercise('제자리 런지', '10개', 3, loudAlt: '점프 런지'),
@@ -137,7 +142,6 @@ const homeBodyweightWeek = [
     Exercise('사이드 플랭크', '20초', 3),
     Exercise('버드독', '10개', 3),
   ]),
-  WorkoutDay('휴식', []),
   WorkoutDay('전신 서킷', [
     Exercise('맨몸 스쿼트', '12개', 3, loudAlt: '버피'),
     Exercise('무릎 푸시업', '8개', 3, loudAlt: '푸시업'),
@@ -152,8 +156,8 @@ const homeBodyweightWeek = [
   ]),
 ];
 
-/// 집 · 밴드·덤벨
-const homeDumbbellWeek = [
+/// 집 · 밴드·덤벨 세션
+const homeDumbbellSessions = [
   WorkoutDay('상체 (밴드·덤벨)', [
     Exercise('바닥 덤벨 프레스', '10개', 4),
     Exercise('밴드 로우', '12개', 4),
@@ -166,7 +170,6 @@ const homeDumbbellWeek = [
     Exercise('한 다리 스플릿 스쿼트', '8개', 3),
     Exercise('힙 쓰러스트', '12개', 3),
   ]),
-  WorkoutDay('휴식', []),
   WorkoutDay('상체 (밴드·덤벨)', [
     Exercise('덤벨 로우', '10개', 4),
     Exercise('밴드 페이스 풀', '15개', 3),

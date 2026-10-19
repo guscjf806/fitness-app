@@ -131,10 +131,10 @@ class _RecordsScreenState extends State<RecordsScreen> {
           const Muted('이번 주 운동 완료율', bottom: 2),
           Text.rich(TextSpan(children: [
             TextSpan(text: '$done', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
-            const TextSpan(text: ' / 4일 완료'),
+            TextSpan(text: ' / ${demo.workoutDaysThisWeek}일 완료'),
           ])),
-          ProgressBar(done / 4),
-          const Muted('이번 주 루틴 4일 기준이에요. 휴식일과 쉬기 모드 기간은 빼고 계산해요.', bottom: 0),
+          ProgressBar(done / demo.workoutDaysThisWeek),
+          Muted('이번 주 루틴 ${demo.workoutDaysThisWeek}일 기준이에요. 휴식일과 쉬기 모드 기간은 빼고 계산해요.', bottom: 0),
         ]),
       ),
       const Muted('통계는 나에게만 보여요. 기록이 쌓이면 체중 그래프, 종목별 기록 추이도 보여드릴게요.'),

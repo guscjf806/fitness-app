@@ -111,7 +111,7 @@ class DemoState extends ChangeNotifier {
 
   /// 조건(장소·장비·소음·시간·통증)을 반영한 이번 주 루틴
   List<WorkoutDay> get week => demoWeek(
-      place: place, equipment: equipment, noise: noise, minutes: minutes, painAreas: painAreas);
+      place: place, equipment: equipment, noise: noise, minutes: minutes, painAreas: painAreas, daysPerWeek: daysPerWeek);
 
   String get conditionText {
     final where = switch (place) {
@@ -121,6 +121,9 @@ class DemoState extends ChangeNotifier {
     };
     return '$where · $minutes · 주 $daysPerWeek';
   }
+
+  /// 이번 주 운동하는 날 수 (쉬는 날 제외)
+  int get workoutDaysThisWeek => week.where((d) => !d.isRest).length;
 
   bool get weightLoggedThisWeek => weightLogs.isNotEmpty;
   bool get mealPostedToday => mealPosts.any((p) => p.isToday);

@@ -45,29 +45,47 @@ WorkoutDay enforceConditions(
   return WorkoutDay(day.title, trimmed, atHome: day.atHome, removed: day.items.length - kept.length);
 }
 
-/// 목업 루틴: 조건에 맞는 예시 주간을 고른 뒤 안전망을 거친다. (실제 앱에서는 AI가 만든 루틴이 이 자리에 들어간다)
+/// 일주일 중 운동하는 요일 (0=월 … 6=일). 쉬는 날이 몰리지 않게 띄운다.
+/// 주 2~3일은 하루씩 쉬어 회복 시간을 두고, 주 6일은 일요일 하루를 쉰다.
+const trainingDays = {
+  2: [0, 3], // 월 목
+  3: [0, 2, 4], // 월 수 금
+  4: [0, 1, 3, 4], // 월 화 목 금
+  5: [0, 1, 2, 3, 4], // 월~금
+  6: [0, 1, 2, 3, 4, 5], // 월~토
+};
+
+/// 목업 루틴: 운동하는 요일마다 세션을 차례로 배치한 7일(월~일)을 만들고 안전망을 거친다.
+/// (실제 앱에서는 AI가 만든 루틴이 이 자리에 들어간다)
 List<WorkoutDay> demoWeek({
   required String place,
   required String equipment,
   required String noise,
   required String minutes,
   required List<String> painAreas,
+  required String daysPerWeek,
 }) {
   final quiet = noise == '예';
-  final homeBase = equipment == '맨몸' ? homeBodyweightWeek : homeDumbbellWeek;
+  final homeBase = equipment == '맨몸' ? homeBodyweightSessions : homeDumbbellSessions;
   // 층간소음 걱정이 없으면 맨몸 루틴의 일부를 점프 동작으로 바꾼다
   final home = [
     for (final d in homeBase)
       WorkoutDay(d.title, [for (final x in d.items) quiet || x.loudAlt == null ? x : Exercise(x.loudAlt!, x.amount, x.sets)],
           atHome: true),
   ];
-  final week = switch (place) {
-    '헬스장' => gymWeek,
-    '집' => home,
-    // 둘 다: 헬스장 날과 집 날을 섞는다 (기획서 16번)
-    _ => [gymWeek[0], home[1], gymWeek[2], gymWeek[3], home[4]],
-  };
+  final days = trainingDays[int.tryParse(daysPerWeek.replaceAll('일', '')) ?? 3] ?? trainingDays[3]!;
+  var gymIndex = 0, homeIndex = 0;
+  WorkoutDay session(int n) => switch (place) {
+        '헬스장' => gymSessions[gymIndex++ % gymSessions.length],
+        '집' => home[homeIndex++ % home.length],
+        // 둘 다: 헬스장 날과 집 날을 번갈아 둔다 (기획서 16번)
+        _ => n.isEven ? gymSessions[gymIndex++ % gymSessions.length] : home[homeIndex++ % home.length],
+      };
   return [
-    for (final d in week) enforceConditions(d, equipment: equipment, quiet: quiet, painAreas: painAreas, minutes: minutes),
+    for (var weekday = 0; weekday < 7; weekday++)
+      days.contains(weekday)
+          ? enforceConditions(session(days.indexOf(weekday)),
+              equipment: equipment, quiet: quiet, painAreas: painAreas, minutes: minutes)
+          : const WorkoutDay('휴식', []),
   ];
 }
