@@ -123,7 +123,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
               for (final d in cells) d == null ? const SizedBox() : _CalendarDay(d),
             ],
           ),
-          const Muted('진한 색 = 운동한 날 · 연한 색 = 쉬는 날(기록으로 인정)', bottom: 0),
+          const Muted('불꽃 = 운동한 날 · 연한 색 = 쉬는 날(기록으로 인정)', bottom: 0),
         ]),
       ),
       AppCard(
@@ -174,7 +174,10 @@ class _CalendarDay extends StatelessWidget {
           color: done ? AppColors.primaryDark : (rest ? AppColors.primarySoft : null),
           border: day == demoToday ? Border.all(color: AppColors.text, width: 2) : null,
         ),
-        child: Text('$day',
+        // 운동한 날은 불꽃 위에 날짜를 얹는다
+        child: Stack(alignment: Alignment.center, children: [
+          if (done) const Icon(Icons.local_fire_department, color: AppColors.streakFire, size: 30),
+          Text('$day',
             style: TextStyle(
               fontSize: 13,
               fontWeight: done ? FontWeight.w700 : FontWeight.w400,
@@ -186,6 +189,7 @@ class _CalendarDay extends StatelessWidget {
                           ? AppColors.textSub
                           : AppColors.text,
             )),
+        ]),
       ),
     );
   }

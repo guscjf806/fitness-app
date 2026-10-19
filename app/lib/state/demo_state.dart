@@ -5,6 +5,7 @@ import '../data/mock_data.dart';
 import '../logic/routine.dart';
 import '../logic/tdee.dart';
 import '../routes.dart';
+import 'workout_session.dart';
 
 final demoNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -62,6 +63,9 @@ class DemoState extends ChangeNotifier {
   // 운동·참여 기능
   final Set<int> checked = {};
   final List<String> addedExercises = [];
+
+  /// 진행 중인 운동 (S23 운동 진행)
+  WorkoutSession? session;
   bool workoutDone = false;
   bool restMode = false;
   int freezesLeft = 1;

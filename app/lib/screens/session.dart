@@ -1,0 +1,315 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+import '../data/exercises.dart';
+import '../logic/intensity.dart';
+import '../logic/routine.dart';
+import '../routes.dart';
+import '../state/demo_state.dart';
+import '../state/workout_session.dart';
+import '../theme/app_theme.dart';
+import '../widgets/common.dart';
+import '../widgets/exercise_figure.dart';
+import '../widgets/rest_timer.dart';
+
+IntensityRule get _rule =>
+    intensityRules[effectiveIntensity(desired: demo.desiredIntensity, current: demo.currentIntensity)]!;
+
+/// S23 운동 진행: 종목별로 세트를 기록하고, 세트를 마치면 휴식 타이머가 뜬다.
+class WorkoutSessionScreen extends StatefulWidget {
+  const WorkoutSessionScreen({super.key});
+
+  @override
+  State<WorkoutSessionScreen> createState() => _WorkoutSessionScreenState();
+}
+
+class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
+  int index = 0;
+  Timer? ticker;
+
+  WorkoutSession get session => demo.session!;
+  SessionExercise get current => session.items[index];
+
+  @override
+  void initState() {
+    super.initState();
+    // 위쪽 경과 시간을 1초마다 새로 그린다
+    ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    ticker?.cancel();
+    super.dispose();
+  }
+
+  String get elapsed {
+    final s = DateTime.now().difference(session.startedAt).inSeconds;
+    return '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
+  }
+
+  void _toggleSet(int i) {
+    final set = current.sets[i];
+    setState(() => set.done = !set.done);
+    final lastSet = index == session.items.length - 1 && current.sets.every((s) => s.done);
+    if (set.done && !lastSet) showRestTimer(context, _rule.restSeconds);
+  }
+
+  /// 3. 운동 대체: 같은 부위이면서 내 조건에 맞고, 오늘 루틴에 없는 종목
+  void _swap() {
+    final info = exerciseByName(current.name);
+    final names = session.items.map((x) => x.name).toSet();
+    final options = [
+      for (final e in exercises)
+        if (info != null &&
+            e.part == info.part &&
+            !names.contains(e.name) &&
+            exerciseAllowed(e,
+                atHome: session.atHome, equipment: demo.equipment, quiet: demo.noise == '예', painAreas: demo.painAreas))
+          e,
+    ];
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.background,
+      isScrollControlled: true,
+      builder: (sheet) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(sheet).size.height * .7),
+          child: ListView(shrinkWrap: true, padding: const EdgeInsets.fromLTRB(20, 20, 20, 20), children: [
+            const Text('운동 대체', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            Muted('${current.name} 대신 할 수 있는 ${info?.part ?? ''} 운동이에요. 내 조건에 맞는 것만 보여 줘요.'),
+            if (options.isEmpty) const Muted('바꿀 수 있는 운동이 없어요.'),
+            for (final e in options)
+              LineRow(
+                onTap: () {
+                  final (amount, sets) = targetFor(e, _rule);
+                  setState(() => session.items[index] = SessionExercise(e.name, amount, sets));
+                  Navigator.pop(sheet);
+                  toast(context, '${e.name}(으)로 바꿨어요');
+                },
+                left: Row(children: [
+                  ExerciseFigureView(e.id, size: 44, radius: 10),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(e.name)),
+                ]),
+                right: Muted(e.equipment, bottom: 0),
+              ),
+          ]),
+        ),
+      ),
+    );
+  }
+
+  /// 4. 순서 변경: 끌어서 순서를 바꾸고, 눌러서 그 운동으로 이동
+  void _showList() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.background,
+      isScrollControlled: true,
+      builder: (sheet) => StatefulBuilder(
+        builder: (sheet, setSheet) => SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(sheet).size.height * .7),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
+                child: Row(children: [
+                  const Expanded(child: Text('오늘 운동 순서', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
+                  Muted('총 ${session.items.length}개 · ${session.doneSets}/${session.totalSets}세트', bottom: 0),
+                ]),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Muted('오른쪽 손잡이를 끌어 순서를 바꿔요.'),
+              ),
+              Flexible(
+                child: ReorderableListView(
+                  shrinkWrap: true,
+                  buildDefaultDragHandles: false,
+                  onReorderItem: (from, to) {
+                    final currentItem = current;
+                    setSheet(() => session.items.insert(to, session.items.removeAt(from)));
+                    setState(() => index = session.items.indexOf(currentItem));
+                  },
+                  children: [
+                    for (var i = 0; i < session.items.length; i++)
+                      ListTile(
+                        key: ValueKey(session.items[i]),
+                        selected: i == index,
+                        selectedTileColor: AppColors.primarySoft,
+                        leading: ExerciseThumb(session.items[i].name),
+                        title: Text(session.items[i].name),
+                        subtitle: Text('${session.items[i].sets.where((s) => s.done).length}/${session.items[i].sets.length}세트'),
+                        trailing: ReorderableDragStartListener(index: i, child: const Icon(Icons.drag_handle)),
+                        onTap: () {
+                          setState(() => index = i);
+                          Navigator.pop(sheet);
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _finish() {
+    if (session.doneSets == 0) {
+      toast(context, '체크한 세트가 없어요. 세트를 마치면 ✓를 눌러 주세요');
+      return;
+    }
+    if (demo.isGuest) {
+      requireLogin(context, '운동 기록과 연속 기록은 계정에 저장돼요. 로그인하면 오늘부터 기록이 쌓여요.');
+      return;
+    }
+    final minutes = DateTime.now().difference(session.startedAt).inMinutes;
+    final sets = session.doneSets;
+    demo.update(() {
+      demo.workoutDone = true;
+      demo.checked.addAll([for (var i = 0; i < demo.week[0].items.length; i++) i]);
+    });
+    final messenger = ScaffoldMessenger.of(context);
+    Navigator.pop(context);
+    messenger.showSnackBar(SnackBar(content: Text('오늘 운동 완료! 총 $sets세트 · $minutes분 · 연속 ${demo.streak}일째예요')));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ex = current;
+    final info = exerciseByName(ex.name);
+    final last = index == session.items.length - 1;
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(children: [
+          const Icon(Icons.timer_outlined, size: 20, color: AppColors.primaryDark),
+          const SizedBox(width: 6),
+          Text(elapsed),
+        ]),
+        actions: [TextButton(onPressed: _showList, child: const Text('운동 목록'))],
+      ),
+      body: ListView(padding: const EdgeInsets.fromLTRB(18, 4, 18, 20), children: [
+        Muted('${index + 1} / ${session.items.length}', bottom: 2),
+        Text(ex.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 12),
+        if (info != null) Center(child: ExerciseFigureView(info.id, size: 170, radius: 20)),
+        if (info != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: AppCard(child: Text(info.caution, textAlign: TextAlign.center)),
+          ),
+        Wrap(spacing: 6, runSpacing: 6, children: [
+          ActionChip(
+            avatar: const Icon(Icons.menu_book_outlined, size: 18),
+            label: const Text('운동 방법'),
+            onPressed: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: ex.name),
+          ),
+          ActionChip(avatar: const Icon(Icons.swap_horiz, size: 18), label: const Text('운동 대체'), onPressed: _swap),
+          ActionChip(avatar: const Icon(Icons.swap_vert, size: 18), label: const Text('순서 변경'), onPressed: _showList),
+        ]),
+        const SizedBox(height: 10),
+        Muted('목표 ${ex.target}${ex.bodyweight ? '' : ' · 무게: 마지막 세트 뒤 ${_rule.repsInReserve} 더 할 수 있게'}'),
+        for (var i = 0; i < ex.sets.length; i++)
+          _SetRow(
+            key: ValueKey('${ex.name}-$i'),
+            number: i + 1,
+            entry: ex.sets[i],
+            unit: ex.unit,
+            bodyweight: ex.bodyweight,
+            onToggle: () => _toggleSet(i),
+          ),
+        Row(children: [
+          Expanded(
+            child: AppButton('세트 삭제', kind: ButtonKind.soft, onPressed: ex.sets.length <= 1
+                ? null
+                : () => setState(() => ex.sets.removeLast())),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: AppButton('+ 세트 추가', kind: ButtonKind.soft, onPressed: () => setState(() {
+              final prev = ex.sets.last;
+              ex.sets.add(SetEntry(kg: prev.kg, reps: prev.reps));
+            })),
+          ),
+        ]),
+      ]),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 8, 18, 12),
+          child: Row(children: [
+            if (index > 0) ...[
+              Expanded(child: AppButton('이전', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => index--))),
+              const SizedBox(width: 10),
+            ],
+            Expanded(
+              flex: 2,
+              child: AppButton(last ? '운동 완료' : '다음 운동', top: 0, onPressed: last ? _finish : () => setState(() => index++)),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
+/// 세트 한 줄: 무게(kg) / 횟수(회 또는 초) / 완료 체크
+class _SetRow extends StatelessWidget {
+  const _SetRow({
+    super.key,
+    required this.number,
+    required this.entry,
+    required this.unit,
+    required this.bodyweight,
+    required this.onToggle,
+  });
+  final int number;
+  final SetEntry entry;
+  final String unit;
+  final bool bodyweight;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget field(String value, String suffix, ValueChanged<String> onChanged) => SizedBox(
+          width: 82,
+          child: TextFormField(
+            initialValue: value,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(suffixText: suffix, hintText: suffix, isDense: true),
+            onChanged: onChanged,
+          ),
+        );
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: entry.done ? AppColors.primarySoft : AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: entry.done ? AppColors.primary : Colors.transparent),
+      ),
+      child: Row(children: [
+        SizedBox(width: 44, child: Text('$number세트', style: const TextStyle(fontWeight: FontWeight.w700))),
+        const Spacer(),
+        if (bodyweight)
+          const SizedBox(width: 82, child: Muted('맨몸', bottom: 0, align: TextAlign.center))
+        else
+          field(entry.kg, 'kg', (v) => entry.kg = v),
+        const Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: Text('/')),
+        field(entry.reps, unit, (v) => entry.reps = v),
+        const SizedBox(width: 6),
+        IconButton(
+          tooltip: '$number세트 완료',
+          onPressed: onToggle,
+          icon: Icon(entry.done ? Icons.check_circle : Icons.check_circle_outline,
+              color: entry.done ? AppColors.primary : AppColors.textSub, size: 30),
+        ),
+      ]),
+    );
+  }
+}

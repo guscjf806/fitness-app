@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/mock_data.dart';
 import '../logic/intensity.dart';
 import '../routes.dart';
+import '../state/workout_session.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
@@ -32,6 +33,15 @@ class _WorkoutTabState extends State<WorkoutTab> {
     toast(context, '오늘 운동 완료! 연속 ${demo.streak}일째예요 · 7일 연속 배지를 얻었어요');
   }
 
+  /// 운동 진행(S23)을 시작한다. 진행 중이던 운동이 있으면 이어서 한다.
+  void _start(WorkoutDay day) {
+    final rule = intensityRules[effectiveIntensity(desired: demo.desiredIntensity, current: demo.currentIntensity)]!;
+    demo.session ??= WorkoutSession([
+      for (final x in [...day.items, ..._addedAsExercises(rule)]) SessionExercise(x.name, x.amount, x.sets),
+    ], atHome: day.atHome);
+    Navigator.pushNamed(context, Routes.session);
+  }
+
   @override
   Widget build(BuildContext context) {
     final day = demo.week[weekday];
@@ -48,6 +58,12 @@ class _WorkoutTabState extends State<WorkoutTab> {
           selected: weekday,
           onSelect: (i) => setState(() => weekday = i)),
       H2(demo.place == '둘 다' && !day.isRest ? '${day.title} (${day.atHome ? '집' : '헬스장'})' : day.title, top: 0),
+      if (!day.isRest)
+        Builder(builder: (_) {
+          final rule = intensityRules[effectiveIntensity(desired: demo.desiredIntensity, current: demo.currentIntensity)]!;
+          final items = [...day.items, if (isToday) ..._addedAsExercises(rule)];
+          return Muted('총 ${items.length}개 · 약 ${estimateMinutes(items, rule)}분');
+        }),
       if (day.removed > 0)
         Muted('내 조건(${demo.place == '헬스장' ? '아픈 부위' : '장소·장비·소음·아픈 부위'})에 맞지 않는 운동 ${day.removed}개를 뺐어요.'),
       if (day.isRest)
@@ -64,7 +80,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
           ),
       if (isToday)
         for (final name in demo.addedExercises)
-          _ExerciseRow(name: name, amount: '10개 × 3세트', checked: demo.workoutDone, onCheck: null),
+          _ExerciseRow(name: name, amount: _addedAmount(name), checked: demo.workoutDone, onCheck: null),
       if (demo.painAreas.isNotEmpty)
         Padding(
           padding: const EdgeInsets.only(top: 8),
@@ -90,7 +106,10 @@ class _WorkoutTabState extends State<WorkoutTab> {
                   ]),
                 ),
               )
-            : AppButton('오늘 운동 완료', onPressed: _finish),
+            : Column(children: [
+                AppButton(demo.session == null ? '운동 시작' : '이어서 하기', onPressed: () => _start(day)),
+                AppButton('기록 없이 완료 체크만 하기', kind: ButtonKind.soft, onPressed: _finish),
+              ]),
       if (!isToday && !day.isRest)
         const Padding(
           padding: EdgeInsets.only(top: 10),
@@ -152,4 +171,18 @@ class _IntensityGuide extends StatelessWidget {
       ]),
     );
   }
+}
+
+/// 직접 추가한 운동도 강도 규칙으로 개수·세트를 정한다
+List<Exercise> _addedAsExercises(IntensityRule rule) => [
+      for (final n in demo.addedExercises)
+        if (exerciseByName(n) case final info?) Exercise(n, targetFor(info, rule).$1, targetFor(info, rule).$2),
+    ];
+
+String _addedAmount(String name) {
+  final rule = intensityRules[effectiveIntensity(desired: demo.desiredIntensity, current: demo.currentIntensity)]!;
+  final info = exerciseByName(name);
+  if (info == null) return '';
+  final (amount, sets) = targetFor(info, rule);
+  return '$amount × $sets세트';
 }

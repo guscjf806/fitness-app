@@ -77,12 +77,7 @@ WorkoutDay applyIntensity(WorkoutDay day, {required String intensity, required S
   final rule = intensityRules[intensity]!;
   final items = [
     for (final x in day.items)
-      if (exerciseByName(x.name) case final info?)
-        holdIds.contains(info.id)
-            ? Exercise(x.name, rule.holdSeconds, 3)
-            : isolationIds.contains(info.id)
-                ? Exercise(x.name, rule.isolationReps, rule.isolationSets)
-                : Exercise(x.name, rule.compoundReps, rule.compoundSets),
+      if (exerciseByName(x.name) case final info?) Exercise(x.name, targetFor(info, rule).$1, targetFor(info, rule).$2),
   ];
   final budget = (int.tryParse(minutes.replaceAll('분', '')) ?? 30) * 60;
   var used = 0;
@@ -96,3 +91,14 @@ WorkoutDay applyIntensity(WorkoutDay day, {required String intensity, required S
   }
   return WorkoutDay(day.title, fitted, atHome: day.atHome, removed: day.removed);
 }
+
+/// 종목 종류(큰 운동·작은 운동·버티기)에 맞는 목표 개수와 세트 수
+(String amount, int sets) targetFor(ExerciseInfo info, IntensityRule rule) => holdIds.contains(info.id)
+    ? (rule.holdSeconds, 3)
+    : isolationIds.contains(info.id)
+        ? (rule.isolationReps, rule.isolationSets)
+        : (rule.compoundReps, rule.compoundSets);
+
+/// 예상 운동 시간(분): 한 세트 약 40초 + 세트 사이 휴식
+int estimateMinutes(List<Exercise> items, IntensityRule rule) =>
+    (items.fold<int>(0, (t, x) => t + x.sets * (40 + rule.restSeconds)) / 60).round();

@@ -10,6 +10,7 @@ import 'screens/meal.dart';
 import 'screens/onboarding.dart';
 import 'screens/profile.dart';
 import 'screens/records.dart';
+import 'screens/session.dart';
 import 'widgets/common.dart';
 
 /// 화면 주소. 주석의 S번호는 기획서 3번 화면 목록과 같다.
@@ -32,6 +33,7 @@ class Routes {
   static const records = '/records'; // S20
   static const exercisePick = '/exercise/pick'; // S21
   static const exerciseDetail = '/exercise/detail'; // S22
+  static const session = '/workout/session'; // S23
 
   static final table = <String, WidgetBuilder>{
     start: (_) => watch(() => StartScreen()),
@@ -52,5 +54,6 @@ class Routes {
     records: (_) => watch(() => RecordsScreen()),
     exercisePick: (_) => watch(() => ExercisePickerScreen()),
     exerciseDetail: (_) => watch(() => ExerciseDetailScreen()),
+    session: (_) => watch(() => WorkoutSessionScreen()),
   };
 }

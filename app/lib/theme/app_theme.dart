@@ -15,6 +15,9 @@ class AppColors {
   /// 웹 미리보기에서 폰 화면 바깥 배경
   static const pageBackground = Color(0xFFE9EEED);
 
+  /// 운동한 날 달력의 불꽃 색
+  static const streakFire = Color(0xFFFF7A45);
+
   /// 동작 그림의 팔다리 색 (배경은 primaryDark)
   static const figureLimb = Color(0xFFA7DCD3);
 
