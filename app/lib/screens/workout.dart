@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../data/mock_data.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
+import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import '../widgets/exercise_figure.dart';
 
 /// S11 운동
 class WorkoutTab extends StatefulWidget {
@@ -44,22 +46,30 @@ class _WorkoutTabState extends State<WorkoutTab> {
         const AppCard(child: Text('쉬는 날이에요. 쉬는 날도 기록으로 인정돼요. 가벼운 걷기 30분을 추천해요.'))
       else
         for (var i = 0; i < day.items.length; i++)
-          LineRow(
-            onTap: isToday && !demo.workoutDone
+          _ExerciseRow(
+            name: day.items[i].name,
+            amount: '${day.items[i].amount} × ${day.items[i].sets}세트',
+            checked: isToday && (demo.workoutDone || demo.checked.contains(i)),
+            onCheck: isToday && !demo.workoutDone
                 ? () => demo.update(() => demo.checked.contains(i) ? demo.checked.remove(i) : demo.checked.add(i))
                 : null,
-            left: Row(children: [
-              CheckCircle(isToday && (demo.workoutDone || demo.checked.contains(i))),
-              const SizedBox(width: 10),
-              ExerciseThumb(day.items[i].name),
-              const SizedBox(width: 10),
-              Expanded(child: Text(day.items[i].name)),
-            ]),
-            right: Muted('${day.items[i].amount} × ${day.items[i].sets}세트', bottom: 0),
           ),
-      AppButton('+ 운동 추가',
-          kind: ButtonKind.soft,
-          onPressed: () => toast(context, '운동 추가 화면은 다음 단계에서 만들어요')),
+      if (isToday)
+        for (final name in demo.addedExercises)
+          _ExerciseRow(name: name, amount: '10개 × 3세트', checked: demo.workoutDone, onCheck: null),
+      if (demo.painAreas.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Muted('${demo.painAreas.join(', ')} 통증을 고르셨어요. 무리가 가는 운동은 AI가 루틴에서 빼고, 주의 표시를 해 둬요.'),
+        ),
+      AppButton('+ 운동 추가', kind: ButtonKind.soft, onPressed: () async {
+        final picked = await Navigator.pushNamed(context, Routes.exercisePick);
+        if (picked is List<String> && picked.isNotEmpty) {
+          demo.update(() => demo.addedExercises.addAll(picked.where((n) => !demo.addedExercises.contains(n))));
+          if (context.mounted) toast(context, '${picked.length}개 운동을 오늘 루틴에 추가했어요');
+          setState(() => weekday = 0);
+        }
+      }),
       if (isToday && !day.isRest)
         demo.workoutDone
             ? Padding(
@@ -80,5 +90,41 @@ class _WorkoutTabState extends State<WorkoutTab> {
         ),
       const Disclaimer(),
     ]);
+  }
+}
+
+/// 루틴 한 줄: 동그라미를 누르면 체크, 나머지를 누르면 운동 방법(S22)
+class _ExerciseRow extends StatelessWidget {
+  const _ExerciseRow({required this.name, required this.amount, required this.checked, required this.onCheck});
+  final String name;
+  final String amount;
+  final bool checked;
+  final VoidCallback? onCheck;
+
+  @override
+  Widget build(BuildContext context) {
+    final info = exerciseByName(name);
+    final caution = info != null && info.avoidFor.any(demo.painAreas.contains);
+    return LineRow(
+      onTap: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: name),
+      left: Row(children: [
+        InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onCheck,
+          child: Padding(padding: const EdgeInsets.all(6), child: CheckCircle(checked)),
+        ),
+        const SizedBox(width: 4),
+        ExerciseThumb(name),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(name),
+            if (caution)
+              const Text('통증 부위 주의', style: TextStyle(color: AppColors.warning, fontSize: 12)),
+          ]),
+        ),
+      ]),
+      right: Muted(amount, bottom: 0),
+    );
   }
 }

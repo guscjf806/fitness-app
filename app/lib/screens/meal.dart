@@ -5,6 +5,7 @@ import '../routes.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import '../widgets/failure.dart';
 
 /// S08 식단
 class MealTab extends StatefulWidget {
@@ -106,6 +107,10 @@ class _MealPostScreenState extends State<MealPostScreen> {
   String note = '';
 
   void _post() {
+    if (demo.quotaExhausted) {
+      showQuotaExhausted(context);
+      return;
+    }
     if (!photoPicked) {
       toast(context, '사진을 먼저 선택해 주세요');
       return;
@@ -174,12 +179,30 @@ class MealReplyScreen extends StatefulWidget {
 
 class _MealReplyScreenState extends State<MealReplyScreen> {
   bool waiting = true;
+  bool failed = false;
 
   @override
   void initState() {
     super.initState();
+    _wait();
+  }
+
+  void _ask() {
+    setState(() {
+      waiting = true;
+      failed = false;
+    });
+    _wait();
+  }
+
+  void _wait() {
     Future<void>.delayed(const Duration(milliseconds: 1200), () {
-      if (mounted) setState(() => waiting = false);
+      if (mounted) {
+        setState(() {
+          waiting = false;
+          failed = demo.failMode == 'AI 실패';
+        });
+      }
     });
   }
 
@@ -200,6 +223,8 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
             Muted('AI가 식단을 확인하는 중이에요'),
           ]),
         )
+      else if (failed)
+        FailureView(title: 'AI 답변을 받지 못했어요', onRetry: _ask)
       else
         Container(
           margin: const EdgeInsets.only(top: 10),

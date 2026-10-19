@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../config.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
@@ -34,6 +35,19 @@ class ProfileTab extends StatelessWidget {
           right: arrow(),
           onTap: () => Navigator.pushNamed(context, Routes.condition),
         ),
+        LineRow(
+          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('못 먹는 음식·아픈 부위 수정'),
+            Muted(
+                [
+                  demo.allergies.isEmpty && demo.allergyNote.isEmpty ? '못 먹는 음식 없음' : '못 먹는 음식 ${demo.allergies.length + (demo.allergyNote.isEmpty ? 0 : 1)}개',
+                  demo.painAreas.isEmpty ? '아픈 부위 없음' : demo.painAreas.join(', '),
+                ].join(' · '),
+                bottom: 0),
+          ]),
+          right: arrow(),
+          onTap: () => Navigator.pushNamed(context, Routes.condition2),
+        ),
         const Muted('게스트로 입력한 정보는 이 기기에만 저장돼요.', bottom: 0),
       ]);
     }
@@ -46,11 +60,11 @@ class ProfileTab extends StatelessWidget {
               : '일반 회원'),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Row(children: [
-            Expanded(child: Text('이번 달 AI 사용', style: TextStyle(fontWeight: FontWeight.w700))),
-            Muted('2 / 5회', bottom: 0),
+          Row(children: [
+            const Expanded(child: Text('이번 달 AI 사용', style: TextStyle(fontWeight: FontWeight.w700))),
+            Muted('${demo.quotaExhausted ? AppConfig.freeMonthlyAiLimit : demo.aiUsed} / ${AppConfig.freeMonthlyAiLimit}회', bottom: 0),
           ]),
-          const ProgressBar(0.4),
+          ProgressBar(demo.quotaExhausted ? 1 : demo.aiUsed / AppConfig.freeMonthlyAiLimit),
           AppButton('더 많이 쓰기',
               kind: ButtonKind.soft, top: 4, onPressed: () => Navigator.pushNamed(context, Routes.subscribe)),
         ]),
@@ -63,6 +77,14 @@ class ProfileTab extends StatelessWidget {
         ]),
         right: arrow(),
         onTap: () => Navigator.pushNamed(context, Routes.condition),
+      ),
+      LineRow(
+        left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('못 먹는 음식·아픈 부위 수정'),
+          Muted(demo.painAreas.isEmpty ? '아픈 부위 없음' : '아픈 부위: ${demo.painAreas.join(', ')}', bottom: 0),
+        ]),
+        right: arrow(),
+        onTap: () => Navigator.pushNamed(context, Routes.condition2),
       ),
       LineRow(
         left: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

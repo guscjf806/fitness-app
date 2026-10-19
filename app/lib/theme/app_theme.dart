@@ -15,6 +15,9 @@ class AppColors {
   /// 웹 미리보기에서 폰 화면 바깥 배경
   static const pageBackground = Color(0xFFE9EEED);
 
+  /// 동작 그림의 팔다리 색 (배경은 primaryDark)
+  static const figureLimb = Color(0xFFA7DCD3);
+
   static const kakao = Color(0xFFFEE500);
   static const kakaoText = Color(0xFF191600);
 }

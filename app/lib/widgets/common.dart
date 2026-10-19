@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
+import 'exercise_figure.dart';
 
 /// 데모 상태가 바뀌면 다시 그린다.
 Widget watch(Widget Function() build) =>
@@ -360,10 +361,11 @@ class ProgressBar extends StatelessWidget {
 
 /// 숫자 입력칸
 class NumField extends StatelessWidget {
-  const NumField({super.key, required this.label, required this.value, required this.onChanged, this.hint, this.enabled = true});
+  const NumField({super.key, required this.label, required this.value, required this.onChanged, this.hint, this.error, this.enabled = true});
   final String label;
   final String value;
   final String? hint;
+  final String? error;
   final bool enabled;
   final ValueChanged<String> onChanged;
 
@@ -373,22 +375,25 @@ class NumField extends StatelessWidget {
       initialValue: value,
       enabled: enabled,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(labelText: label, hintText: hint),
+      decoration: InputDecoration(labelText: label, hintText: hint, errorText: error, errorMaxLines: 2),
       onChanged: onChanged,
     );
   }
 }
 
-/// 운동 종목 썸네일 (동작 그림은 나중에, 지금은 첫 글자)
+/// 운동 종목 썸네일: 동작 그림이 있으면 그림, 선생님이 직접 입력한 종목이면 첫 글자
 class ExerciseThumb extends StatelessWidget {
-  const ExerciseThumb(this.name, {super.key});
+  const ExerciseThumb(this.name, {super.key, this.size = 40});
   final String name;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
+    final info = exerciseByName(name);
+    if (info != null) return ExerciseFigureView(info.id, size: size, radius: 10);
     return Container(
-      width: 40,
-      height: 40,
+      width: size,
+      height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
           color: AppColors.primaryDark, borderRadius: BorderRadius.circular(10)),

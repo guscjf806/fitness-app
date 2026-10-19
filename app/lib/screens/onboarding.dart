@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../logic/tdee.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import '../widgets/failure.dart';
 
 /// S01 시작
 class StartScreen extends StatelessWidget {
@@ -34,7 +36,10 @@ class StartScreen extends StatelessWidget {
         padding: const EdgeInsets.only(top: 4),
         child: TextButton(
           onPressed: () {
-            demo.update(() => demo.tab = 0);
+            demo.update(() {
+              demo.tab = 0;
+              demo.entered = true;
+            });
             Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
           },
           style: TextButton.styleFrom(foregroundColor: AppColors.textSub, minimumSize: const Size.fromHeight(44)),
@@ -47,21 +52,48 @@ class StartScreen extends StatelessWidget {
 }
 
 /// S02 몸 정보 입력
-class BodyInfoScreen extends StatelessWidget {
+class BodyInfoScreen extends StatefulWidget {
   const BodyInfoScreen({super.key});
 
   @override
+  State<BodyInfoScreen> createState() => _BodyInfoScreenState();
+}
+
+class _BodyInfoScreenState extends State<BodyInfoScreen> {
+  /// [다음]을 한 번 누른 뒤부터 칸 아래에 안내를 보여 준다
+  bool tried = false;
+
+  void _next() {
+    final errors = validateBody(height: demo.height, age: demo.age, weight: demo.weight);
+    if (errors.isNotEmpty) {
+      setState(() => tried = true);
+      toast(context, errors['age'] == '만 14세 이상' ? '만 14세 이상만 이용할 수 있어요.' : '입력한 값을 확인해 주세요.');
+      return;
+    }
+    demo.update(() {}); // 입력한 숫자를 기기에 저장
+    Navigator.pushNamed(context, Routes.condition);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final errors = tried ? validateBody(height: demo.height, age: demo.age, weight: demo.weight) : const <String, String>{};
+    final teen = (int.tryParse(demo.age) ?? 99) >= minAge && (int.tryParse(demo.age) ?? 99) <= teenMaxAge;
     return AppPage(title: '몸 정보', children: [
       const Muted('성별', bottom: 0),
       Seg(options: const ['남', '여'], value: demo.sex, onChanged: (v) => demo.update(() => demo.sex = v)),
-      Row(children: [
-        Expanded(child: NumField(label: '키 (cm)', value: demo.height, onChanged: (v) => demo.height = v)),
+      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(child: NumField(label: '키 (cm)', value: demo.height, error: errors['height'], onChanged: (v) => demo.update(() => demo.height = v))),
         const SizedBox(width: 8),
-        Expanded(child: NumField(label: '나이', value: demo.age, onChanged: (v) => demo.age = v)),
+        Expanded(child: NumField(label: '나이 (만)', value: demo.age, error: errors['age'], onChanged: (v) => demo.update(() => demo.age = v))),
         const SizedBox(width: 8),
-        Expanded(child: NumField(label: '몸무게 (kg)', value: demo.weight, onChanged: (v) => demo.weight = v)),
+        Expanded(child: NumField(label: '몸무게 (kg)', value: demo.weight, error: errors['weight'], onChanged: (v) => demo.update(() => demo.weight = v))),
       ]),
+      if (errors['age'] == '만 14세 이상')
+        const Padding(
+          padding: EdgeInsets.only(top: 8),
+          child: Text('만 14세 미만은 보호자 동의 절차가 필요해서 지금은 이용할 수 없어요.',
+              style: TextStyle(color: AppColors.warning, fontSize: 13)),
+        ),
       const SizedBox(height: 12),
       _OptionalField(
         label: '근육량 (kg, 선택)',
@@ -80,7 +112,13 @@ class BodyInfoScreen extends StatelessWidget {
       const Muted("체지방량을 알면 더 정확한 공식으로 계산해요. 모르면 '잘 모르겠음'을 눌러 주세요."),
       const Muted('목표', bottom: 0),
       Seg(options: const ['감량', '유지', '증량'], value: demo.goal, onChanged: (v) => demo.update(() => demo.goal = v)),
-      AppButton('다음', onPressed: () => Navigator.pushNamed(context, Routes.condition)),
+      if (teen && demo.goal == '감량')
+        const AppCard(
+          accent: true,
+          child: Text('성장기에는 키가 크는 데도 에너지가 필요해요. 그래서 감량 폭을 줄여서 계산해요. '
+              '보호자나 전문가와 상의하며 천천히 관리하는 걸 권해요.'),
+        ),
+      AppButton('다음', onPressed: _next),
     ]);
   }
 }
@@ -147,7 +185,66 @@ class ConditionScreen extends StatelessWidget {
       ],
       title('한 번에 운동할 시간'),
       Seg(options: const ['15분', '30분', '45분'], value: demo.minutes, onChanged: (v) => demo.update(() => demo.minutes = v)),
-      AppButton('결과 보기', onPressed: () => Navigator.pushNamed(context, Routes.result)),
+      AppButton('다음', onPressed: () => Navigator.pushNamed(context, Routes.condition2)),
+    ]);
+  }
+}
+
+/// S03-2 식단·몸 상태 (기획서 B1: 못 먹는 음식, 아픈 부위, 주당 운동 일수)
+class FoodBodyScreen extends StatelessWidget {
+  const FoodBodyScreen({super.key});
+
+  /// 식품 알레르기 표시 대상 중 자주 있는 것
+  static const allergyOptions = ['우유', '달걀', '땅콩', '견과류', '대두', '밀가루', '메밀', '갑각류(새우·게)', '조개류', '생선', '복숭아', '토마토'];
+  static const painOptions = ['목', '어깨', '허리', '손목', '무릎', '발목'];
+
+  @override
+  Widget build(BuildContext context) {
+    void toggle(List<String> list, String v) => demo.update(() => list.contains(v) ? list.remove(v) : list.add(v));
+    Widget chips(List<String> options, List<String> selected, {String? noneLabel}) => Padding(
+          padding: const EdgeInsets.only(top: 6, bottom: 12),
+          child: Wrap(spacing: 6, runSpacing: 6, children: [
+            if (noneLabel != null)
+              FilterChip(
+                label: Text(noneLabel),
+                selected: selected.isEmpty,
+                selectedColor: AppColors.primarySoft,
+                onSelected: (_) => demo.update(selected.clear),
+              ),
+            for (final o in options)
+              FilterChip(
+                label: Text(o),
+                selected: selected.contains(o),
+                selectedColor: AppColors.primarySoft,
+                onSelected: (_) => toggle(selected, o),
+              ),
+          ]),
+        );
+    return AppPage(title: '식단·몸 상태', children: [
+      const Text('못 먹는 음식', style: TextStyle(fontWeight: FontWeight.w700)),
+      const Muted('알레르기가 있거나 못 먹는 음식은 식단에서 빼요. 여러 개 고를 수 있어요.', bottom: 0),
+      chips(allergyOptions, demo.allergies, noneLabel: '없음'),
+      TextFormField(
+        initialValue: demo.allergyNote,
+        decoration: const InputDecoration(labelText: '그 밖에 못 먹는 음식 (선택)', hintText: '예: 오이, 고수'),
+        onChanged: (v) => demo.allergyNote = v,
+      ),
+      const SizedBox(height: 16),
+      const Text('아픈 부위', style: TextStyle(fontWeight: FontWeight.w700)),
+      const Muted('고른 부위에 무리가 가는 운동은 루틴에서 빼요.', bottom: 0),
+      chips(painOptions, demo.painAreas, noneLabel: '없음'),
+      if (demo.painAreas.isNotEmpty)
+        const Padding(
+          padding: EdgeInsets.only(bottom: 12),
+          child: Text('통증이 심하거나 질환이 있다면 운동 전에 의사와 먼저 상담하세요.',
+              style: TextStyle(color: AppColors.warning, fontSize: 13)),
+        ),
+      const Text('일주일에 운동할 수 있는 날', style: TextStyle(fontWeight: FontWeight.w700)),
+      Seg(options: const ['2일', '3일', '4일', '5일', '6일'], value: demo.daysPerWeek, onChanged: (v) => demo.update(() => demo.daysPerWeek = v)),
+      AppButton('결과 보기', onPressed: () {
+        demo.update(() {}); // 직접 입력한 음식을 기기에 저장
+        Navigator.pushNamed(context, Routes.result);
+      }),
     ]);
   }
 }
@@ -178,6 +275,8 @@ class ResultScreen extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Muted('${demo.goal} 목표 칼로리', bottom: 2),
           BigNumber('${formatNumber(r.target)} kcal'),
+          if (r.teen && demo.goal == '감량')
+            const Muted('성장기라 감량 폭을 줄여서(−10%) 계산했어요.', bottom: 0),
           if (r.clampedToFloor)
             Text('너무 낮은 칼로리는 위험해서 최소 ${formatNumber(r.floor)}kcal로 맞췄어요.',
                 style: const TextStyle(color: AppColors.warning, fontSize: 13)),
@@ -196,7 +295,9 @@ class ResultScreen extends StatelessWidget {
 
 /// '식단·운동 루틴 만들기': 로그인했으면 기간 선택(S06)으로, 아니면 로그인 안내 후 S06으로 이어진다.
 void openPlanMaker(BuildContext context) {
-  if (demo.loggedIn) {
+  if (demo.loggedIn && demo.quotaExhausted) {
+    showQuotaExhausted(context);
+  } else if (demo.loggedIn) {
     Navigator.pushNamed(context, Routes.generate);
   } else {
     requireLogin(context, 'AI가 내 몸에 맞춘 식단·운동 루틴을 만들려면 로그인이 필요해요. 로그인하면 바로 이어서 만들 수 있어요.',
@@ -209,12 +310,14 @@ class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   void _login(BuildContext context) {
-    demo.update(() => demo.role = 'user');
-    if (demo.continueToGenerate) {
-      demo.continueToGenerate = false;
-      Navigator.pushReplacementNamed(context, Routes.generate);
+    demo.update(() {
+      demo.role = 'user';
+      demo.entered = true;
+    });
+    if (!demo.consented) {
+      Navigator.pushReplacementNamed(context, Routes.consent);
     } else {
-      Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
+      continueAfterLogin(context);
     }
   }
 
@@ -244,6 +347,92 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
+/// 로그인(과 동의)을 마친 뒤: 식단·운동 루틴을 만들던 중이면 기간 선택으로, 아니면 홈으로
+void continueAfterLogin(BuildContext context) {
+  if (demo.continueToGenerate) {
+    demo.continueToGenerate = false;
+    Navigator.pushReplacementNamed(context, Routes.generate);
+  } else {
+    Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
+  }
+}
+
+/// S05-1 동의 (로그인 직후 한 번). 문구는 전문가 검토 후 넣는다 (기획서 13번 L1·L2·L4·L5·L8).
+class ConsentScreen extends StatefulWidget {
+  const ConsentScreen({super.key});
+
+  @override
+  State<ConsentScreen> createState() => _ConsentScreenState();
+}
+
+class _ConsentScreenState extends State<ConsentScreen> {
+  static const items = [
+    ('만 14세 이상이에요', true),
+    ('이용약관 동의', true),
+    ('개인정보 수집·이용 동의', true),
+    ('건강정보(몸 정보, 식단 사진) 수집·이용 동의', true),
+    ('AI 기반 서비스 안내 및 개인정보 국외 처리 위탁 동의', true),
+    ('이벤트·혜택 알림 받기', false),
+  ];
+  final Set<int> agreed = {};
+
+  bool get requiredDone => [for (var i = 0; i < items.length; i++) if (items[i].$2) i].every(agreed.contains);
+
+  void _showDraft(String title) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.background,
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 10),
+          const Muted('이 자리에는 전문가 검토를 마친 약관·동의서 원문이 들어가요. 목업에서는 비워 두었어요.'),
+        ]),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppPage(title: '시작하기 전에', children: [
+      const Muted('서비스를 쓰려면 아래 내용에 동의해 주세요. 몸 정보와 식단 사진은 민감한 건강정보라 따로 동의를 받아요.'),
+      AppCard(
+        onTap: () => setState(() => agreed.length == items.length
+            ? agreed.clear()
+            : agreed.addAll([for (var i = 0; i < items.length; i++) i])),
+        child: Row(children: [
+          CheckCircle(agreed.length == items.length),
+          const SizedBox(width: 10),
+          const Expanded(child: Text('전체 동의', style: TextStyle(fontWeight: FontWeight.w700))),
+        ]),
+      ),
+      for (var i = 0; i < items.length; i++)
+        LineRow(
+          onTap: () => setState(() => agreed.contains(i) ? agreed.remove(i) : agreed.add(i)),
+          left: Row(children: [
+            CheckCircle(agreed.contains(i)),
+            const SizedBox(width: 10),
+            Expanded(child: Text('[${items[i].$2 ? '필수' : '선택'}] ${items[i].$1}')),
+          ]),
+          right: i == 0 ? null : TextButton(onPressed: () => _showDraft(items[i].$1), child: const Text('보기')),
+        ),
+      const Disclaimer(text: '이 앱은 AI로 식단·운동 루틴과 답변을 만들어요. AI가 만든 내용은 의료 조언이 아닙니다.'),
+      AppButton('동의하고 시작하기', onPressed: requiredDone
+          ? () {
+              demo.update(() => demo.consented = true);
+              continueAfterLogin(context);
+            }
+          : null),
+      if (!requiredDone)
+        const Padding(
+          padding: EdgeInsets.only(top: 8),
+          child: Muted('필수 항목에 모두 동의해야 시작할 수 있어요.', align: TextAlign.center),
+        ),
+    ]);
+  }
+}
+
 /// S06 기간 선택·생성
 class GenerateScreen extends StatefulWidget {
   const GenerateScreen({super.key});
@@ -254,12 +443,25 @@ class GenerateScreen extends StatefulWidget {
 
 class _GenerateScreenState extends State<GenerateScreen> {
   bool generating = false;
+  bool failed = false;
 
   Future<void> _generate() async {
-    setState(() => generating = true);
+    setState(() {
+      generating = true;
+      failed = false;
+    });
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
     await Future<void>.delayed(const Duration(milliseconds: 1600));
+    if (demo.failMode == 'AI 실패') {
+      if (mounted) {
+        setState(() {
+          generating = false;
+          failed = true;
+        });
+      }
+      return;
+    }
     demo.update(() => demo.tab = 0);
     navigator.pushNamedAndRemoveUntil(Routes.main, (_) => false);
     messenger.showSnackBar(SnackBar(content: Text('${demo.period}치 식단과 운동 루틴을 만들었어요')));
@@ -279,6 +481,15 @@ class _GenerateScreenState extends State<GenerateScreen> {
         ),
       );
     }
+    if (failed) {
+      return AppPage(title: '기간 선택', children: [
+        FailureView(
+          title: '식단·운동 루틴을 만들지 못했어요',
+          onRetry: _generate,
+          onLater: () => Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false),
+        ),
+      ]);
+    }
     final r = demo.tdee;
     return AppPage(title: '기간 선택', children: [
       const Muted('식단과 운동 루틴을 얼마 동안 만들까요?'),
@@ -288,6 +499,9 @@ class _GenerateScreenState extends State<GenerateScreen> {
           const Muted('반영되는 정보', bottom: 2),
           Text('목표 칼로리 ${formatNumber(r.target)} kcal · 현재 강도 ${demo.currentIntensity} · '
               '원하는 강도 ${demo.desiredIntensity} · ${demo.conditionText}'),
+          if (demo.allergies.isNotEmpty || demo.allergyNote.isNotEmpty)
+            Text('빼는 음식: ${[...demo.allergies, if (demo.allergyNote.isNotEmpty) demo.allergyNote].join(', ')}'),
+          if (demo.painAreas.isNotEmpty) Text('조심할 부위: ${demo.painAreas.join(', ')}'),
         ]),
       ),
       AppButton('식단·운동 루틴 생성하기', onPressed: _generate),

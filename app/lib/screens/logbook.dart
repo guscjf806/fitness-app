@@ -81,6 +81,7 @@ class LogDetailScreen extends StatelessWidget {
     return AppPage(title: '${log.date} · ${log.title}', children: [
       for (final item in log.items)
         LineRow(
+          onTap: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: item.name),
           left: Row(children: [
             ExerciseThumb(item.name),
             const SizedBox(width: 10),
@@ -255,11 +256,22 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         Expanded(
           child: customExercise
               ? const TextField(decoration: InputDecoration(labelText: '종목 이름', hintText: '예: TRX 로우'))
-              : DropdownButtonFormField<String>(
-                  initialValue: exercise,
-                  decoration: const InputDecoration(labelText: '종목'),
-                  items: [for (final e in exerciseNames) DropdownMenuItem(value: e, child: Text(e))],
-                  onChanged: (v) => setState(() => exercise = v ?? exercise),
+              : InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  // 운동 추가하기(S21)에서 1개를 고른다
+                  onTap: () async {
+                    final picked = await Navigator.pushNamed(context, Routes.exercisePick, arguments: 1);
+                    if (picked is List<String> && picked.isNotEmpty) setState(() => exercise = picked.first);
+                  },
+                  child: InputDecorator(
+                    decoration: const InputDecoration(labelText: '종목'),
+                    child: Row(children: [
+                      ExerciseThumb(exercise, size: 32),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(exercise)),
+                      const Icon(Icons.chevron_right, color: AppColors.textSub),
+                    ]),
+                  ),
                 ),
         ),
         const SizedBox(width: 8),

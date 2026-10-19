@@ -7,6 +7,7 @@ class TdeeResult {
     required this.usedKatchMcArdle,
     required this.clampedToFloor,
     required this.floor,
+    required this.teen,
   });
 
   final int bmr;
@@ -15,10 +16,24 @@ class TdeeResult {
   final bool usedKatchMcArdle;
   final bool clampedToFloor;
   final int floor;
+
+  /// 만 14~18세: 감량 폭을 줄이고 하한선을 높여 계산했다
+  final bool teen;
 }
 
 const activityFactor = {'하': 1.375, '중': 1.55, '상': 1.725};
 const goalFactor = {'감량': 0.82, '유지': 1.0, '증량': 1.12};
+
+/// 성장기(만 14~18세) 규칙 — 초안 값, 출시 전 전문가 검토
+const teenMaxAge = 18;
+const teenLossFactor = 0.9; // 성인 −18% 대신 −10%
+const teenFloor = {'남': 1800, '여': 1500};
+const adultFloor = {'남': 1500, '여': 1200};
+
+/// 입력 범위 (이 밖이면 다음으로 넘어가지 않는다)
+const minAge = 14, maxAge = 100;
+const minHeight = 120.0, maxHeight = 230.0;
+const minWeight = 30.0, maxWeight = 250.0;
 
 int _round10(double v) => (v / 10).round() * 10;
 
@@ -39,8 +54,10 @@ TdeeResult calcTdee({
       ? 370 + 21.6 * (weightKg - fat)
       : 10 * weightKg + 6.25 * heightCm - 5 * age + (sex == '남' ? 5 : -161);
   final tdee = bmr * activityFactor[currentIntensity]!;
-  final rawTarget = _round10(tdee * goalFactor[goal]!);
-  final floor = sex == '남' ? 1500 : 1200;
+  final teen = age <= teenMaxAge;
+  final factor = teen && goal == '감량' ? teenLossFactor : goalFactor[goal]!;
+  final rawTarget = _round10(tdee * factor);
+  final floor = (teen ? teenFloor : adultFloor)[sex]!;
   return TdeeResult(
     bmr: _round10(bmr),
     tdee: _round10(tdee),
@@ -48,5 +65,22 @@ TdeeResult calcTdee({
     usedKatchMcArdle: useKatch,
     clampedToFloor: rawTarget < floor,
     floor: floor,
+    teen: teen,
   );
+}
+
+/// 몸 정보 입력 확인. 문제가 있으면 칸별 안내 문구를 돌려준다.
+Map<String, String> validateBody({required String height, required String age, required String weight}) {
+  final errors = <String, String>{};
+  final h = double.tryParse(height), a = int.tryParse(age), w = double.tryParse(weight);
+  if (h == null || h < minHeight || h > maxHeight) errors['height'] = '${minHeight.toInt()}~${maxHeight.toInt()}cm';
+  if (a == null) {
+    errors['age'] = '숫자로 입력';
+  } else if (a < minAge) {
+    errors['age'] = '만 14세 이상';
+  } else if (a > maxAge) {
+    errors['age'] = '$maxAge세 이하';
+  }
+  if (w == null || w < minWeight || w > maxWeight) errors['weight'] = '${minWeight.toInt()}~${maxWeight.toInt()}kg';
+  return errors;
 }

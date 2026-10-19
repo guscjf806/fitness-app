@@ -4,6 +4,7 @@ import '../data/mock_data.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
 import '../widgets/common.dart';
+import '../widgets/weight_sheet.dart';
 import 'onboarding.dart';
 
 /// S07 홈
@@ -17,10 +18,7 @@ class HomeTab extends StatelessWidget {
     final goals = [
       ('식단 1끼 올리기', demo.mealPostedToday, () => Navigator.pushNamed(context, Routes.mealPost)),
       ('오늘 운동 완료', demo.workoutDone, () => demo.update(() => demo.tab = 2)),
-      ('이번 주 몸무게 기록', demo.weightLogged, () {
-        demo.update(() => demo.weightLogged = true);
-        toast(context, '이번 주 몸무게를 기록했어요 (${demo.weight}kg)');
-      }),
+      ('이번 주 몸무게 기록', demo.weightLoggedThisWeek, () => showWeightSheet(context)),
     ];
     if (demo.isGuest) return _guestHome(context, target, today);
     return TabBody(children: [
