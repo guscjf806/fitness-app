@@ -1,6 +1,7 @@
 import '../data/exercise_lookup.dart';
 import '../data/exercise_models.dart';
 import '../data/mock_data.dart';
+import 'intensity.dart';
 
 /// 이 종목을 이 조건에서 써도 되는지 (기획서 6번 '홈트 조건 필터', 16번 안전 규칙).
 /// - 아픈 부위에 무리가 가는 종목은 장소와 상관없이 뺀다
@@ -64,8 +65,11 @@ List<WorkoutDay> demoWeek({
   required String minutes,
   required List<String> painAreas,
   required String daysPerWeek,
+  String desiredIntensity = '중',
+  String currentIntensity = '중',
 }) {
   final quiet = noise == '예';
+  final intensity = effectiveIntensity(desired: desiredIntensity, current: currentIntensity);
   final homeBase = equipment == '맨몸' ? homeBodyweightSessions : homeDumbbellSessions;
   // 층간소음 걱정이 없으면 맨몸 루틴의 일부를 점프 동작으로 바꾼다
   final home = [
@@ -84,8 +88,26 @@ List<WorkoutDay> demoWeek({
   return [
     for (var weekday = 0; weekday < 7; weekday++)
       days.contains(weekday)
-          ? enforceConditions(session(days.indexOf(weekday)),
-              equipment: equipment, quiet: quiet, painAreas: painAreas, minutes: minutes)
+          ? _build(session(days.indexOf(weekday)),
+              intensity: intensity, equipment: equipment, quiet: quiet, painAreas: painAreas, minutes: minutes)
           : const WorkoutDay('휴식', []),
   ];
+}
+
+/// 한 운동일: 강도에 맞는 동작으로 바꾸기 → 안전망 → 개수·세트와 시간 맞추기
+WorkoutDay _build(
+  WorkoutDay day, {
+  required String intensity,
+  required String equipment,
+  required bool quiet,
+  required List<String> painAreas,
+  required String minutes,
+}) {
+  bool allowed(ExerciseInfo e) =>
+      exerciseAllowed(e, atHome: day.atHome, equipment: equipment, quiet: quiet, painAreas: painAreas);
+  final varied = WorkoutDay(
+      day.title, [for (final x in day.items) Exercise(variantFor(x.name, intensity, allowed), x.amount, x.sets)],
+      atHome: day.atHome);
+  final safe = enforceConditions(varied, equipment: equipment, quiet: quiet, painAreas: painAreas, minutes: minutes);
+  return applyIntensity(safe, intensity: intensity, minutes: minutes);
 }

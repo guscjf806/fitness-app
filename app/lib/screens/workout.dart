@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/mock_data.dart';
+import '../logic/intensity.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
@@ -39,7 +40,8 @@ class _WorkoutTabState extends State<WorkoutTab> {
       H1(demo.isGuest ? '예시 운동' : '운동'),
       if (demo.isGuest)
         const GuestBanner('로그인하면 내 운동 장소·장비·시간에 맞춘 루틴을 AI가 만들어요. 체크는 해 볼 수 있지만 저장되지 않아요.'),
-      Muted('원하는 강도: ${demo.desiredIntensity} · ${demo.conditionText}'),
+      Muted(demo.conditionText),
+      _IntensityGuide(),
       // 7일을 모두 보여 주고, 쉬는 날은 칩에 '휴식'으로 표시한다
       DayChips(
           labels: [for (var i = 0; i < 7; i++) demo.week[i].isRest ? '${dayLabels[i]} 휴식' : dayLabels[i]],
@@ -131,6 +133,23 @@ class _ExerciseRow extends StatelessWidget {
         ),
       ]),
       right: Muted(amount, bottom: 0),
+    );
+  }
+}
+
+/// 강도 안내: 무게 고르는 법과 휴식 시간 (기획서 6번 강도 규칙)
+class _IntensityGuide extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final applied = effectiveIntensity(desired: demo.desiredIntensity, current: demo.currentIntensity);
+    final rule = intensityRules[applied]!;
+    return AppCard(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('강도 $applied', style: const TextStyle(fontWeight: FontWeight.w700)),
+        if (applied != demo.desiredIntensity)
+          Muted('지금 강도가 낮아서 첫 $rampUpWeeks주는 \'중\'으로 시작해요. 그다음 \'${demo.desiredIntensity}\'로 올려요.', bottom: 4),
+        Muted('무게: 마지막 세트 뒤에 ${rule.repsInReserve} 더 할 수 있을 만큼\n세트 사이 휴식: ${rule.restText}', bottom: 0),
+      ]),
     );
   }
 }

@@ -111,7 +111,8 @@ class DemoState extends ChangeNotifier {
 
   /// 조건(장소·장비·소음·시간·통증)을 반영한 이번 주 루틴
   List<WorkoutDay> get week => demoWeek(
-      place: place, equipment: equipment, noise: noise, minutes: minutes, painAreas: painAreas, daysPerWeek: daysPerWeek);
+      place: place, equipment: equipment, noise: noise, minutes: minutes, painAreas: painAreas, daysPerWeek: daysPerWeek,
+      desiredIntensity: desiredIntensity, currentIntensity: currentIntensity);
 
   String get conditionText {
     final where = switch (place) {
