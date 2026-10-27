@@ -20,6 +20,9 @@ const _levelLabel = {1: '초급', 2: '중급', 3: '상급'};
 bool fitsMyCondition(ExerciseInfo e) => exerciseAllowed(e,
     atHome: demo.place == '집', equipment: demo.equipment, quiet: demo.noise == '예', painAreas: demo.painAreas);
 
+/// 검색할 때 띄어쓰기를 무시한다: '벤치 프레스'로도 '벤치프레스'를 찾는다 (리뷰 10/27 #4)
+String _squash(String s) => s.replaceAll(RegExp(r'\s+'), '');
+
 /// S21 운동 추가하기. 고른 종목 이름 목록을 돌려준다.
 /// arguments: 한 번에 고를 수 있는 개수 (선생님 일지는 1개)
 class ExercisePickerScreen extends StatefulWidget {
@@ -44,7 +47,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
         for (final e in exercises)
           if ((part == '전체' || e.part == part) &&
               (equipment == '전체' || e.equipment == equipment) &&
-              (query.trim().isEmpty || e.name.contains(query.trim())) &&
+              (_squash(query).isEmpty || _squash(e.name).contains(_squash(query))) &&
               (!fitOnly || fitsMyCondition(e)))
             e,
       ];
