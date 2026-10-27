@@ -27,3 +27,10 @@
 - 지금은 목업 단계: 데이터는 `app/lib/data/mock_data.dart`, 역할 전환은 `app/lib/state/demo_state.dart`
 - 비밀 값(키, 서명 파일)은 `private/`에만 둔다. 이 폴더는 .gitignore 처리됨
 - 운동 종목 데이터 `app/lib/data/exercises.dart`, `docs/운동설명_검수.md`, `supabase/migrations/20261027000000_exercises.sql`, `supabase/seed.sql`은 `tools/gen_exercises.py`로 만든다 (`python3 -I tools/gen_exercises.py tools/prototype_figures.json app/lib/data/exercises.dart docs/운동설명_검수.md supabase`). 트레이너 검수가 시작된 뒤에는 다시 실행하지 말고(검수 체크가 지워짐) 두 파일을 직접 고친다
+
+## Supabase
+
+- 프로젝트: `guscjf806's Project` (ref `feqxciztzgadnvamwakv`, 도쿄 리전 ap-northeast-1). Claude Code의 Supabase 커넥터로 연결됨
+- 적용된 것 (2026-10-27): `supabase/migrations/`의 exercises·gear·exercise_gear 표, `supabase/seed.sql` 데이터 (운동 71, 기구 25, 연결 81)
+- 개인정보가 들어가는 표(profiles, meal_posts 등)는 약관·동의서 전문가 검토가 끝난 뒤에 만든다
+- 표를 바꾼 뒤에는 Supabase 보안·성능 점검(advisors)을 다시 돌린다
