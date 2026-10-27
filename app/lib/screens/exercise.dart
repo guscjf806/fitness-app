@@ -138,6 +138,10 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(e.name, style: const TextStyle(fontWeight: FontWeight.w700)),
                       Muted('${e.part} · ${e.equipment}', bottom: 0),
+                      // '내 조건 맞춤'을 꺼도 아픈 부위와 겹치면 표시한다 (리뷰 10/27 #2)
+                      if (e.avoidFor.any(demo.painAreas.contains))
+                        Text('${e.avoidFor.where(demo.painAreas.contains).join(', ')} 주의',
+                            style: const TextStyle(color: AppColors.warning, fontSize: 13, fontWeight: FontWeight.w700)),
                     ]),
                   ),
                   IconButton(
