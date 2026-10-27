@@ -204,18 +204,31 @@ class ExerciseDetailScreen extends StatelessWidget {
 
     return AppPage(title: e.name, children: [
       Center(child: ExerciseFigureView(e.id, size: 200, radius: 20)),
+      // 내 아픈 부위와 겹치면 그림 바로 아래에 크게 경고한다 (리뷰 10/27 #1)
+      if (painHit.isNotEmpty)
+        Container(
+          margin: const EdgeInsets.only(top: 12),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.warningSoft,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.warning),
+          ),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 26),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text('${painHit.join(', ')} 통증이 있으면 이 운동은 피하는 게 좋아요.',
+                  style: const TextStyle(color: AppColors.warning, fontSize: 16, fontWeight: FontWeight.w700, height: 1.4)),
+            ),
+          ]),
+        ),
       const SizedBox(height: 14),
       Wrap(spacing: 6, runSpacing: 6, children: [
         for (final t in [e.part, e.equipment, _placeLabel[e.place]!, _levelLabel[e.level]!]) Chip(label: Text(t)),
         if (e.impact == 'high') const Chip(label: Text('점프·고충격')),
         if (e.noise == 'loud') const Chip(label: Text('소음 큼')),
       ]),
-      if (painHit.isNotEmpty)
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Text('${painHit.join(', ')} 통증이 있으면 이 운동은 피하는 게 좋아요.',
-              style: const TextStyle(color: AppColors.warning, fontSize: 13)),
-        ),
       const H2('필요한 기구'),
       Text(e.gear.isEmpty ? '기구 없이 할 수 있어요' : e.gear.join(', ')),
       if (e.gearOptional.isNotEmpty) Muted('있으면 좋은 것: ${e.gearOptional.join(', ')}'),

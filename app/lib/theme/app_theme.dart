@@ -12,6 +12,9 @@ class AppColors {
   static const line = Color(0xFFE4EAE8);
   static const warning = Color(0xFFD9534F);
 
+  /// 경고 상자 배경
+  static const warningSoft = Color(0xFFFCECEB);
+
   /// 웹 미리보기에서 폰 화면 바깥 배경
   static const pageBackground = Color(0xFFE9EEED);
 
