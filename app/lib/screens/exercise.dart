@@ -126,7 +126,12 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
             onSelected: (v) => setState(() => fitOnly = v),
           ),
         ]),
-        if (fitOnly) Muted('${demo.conditionText}${demo.painAreas.isEmpty ? '' : ' · ${demo.painAreas.join(', ')} 주의'} 기준이에요.'),
+        if (fitOnly)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text('${demo.conditionText}${demo.painAreas.isEmpty ? '' : ' · ${demo.painAreas.join(', ')} 주의'} 기준이에요.',
+                style: const TextStyle(fontSize: 14, color: AppColors.text)),
+          ),
         const SizedBox(height: 8),
         TextField(
           decoration: const InputDecoration(hintText: '운동 이름으로 검색해 보세요', prefixIcon: Icon(Icons.search)),
@@ -265,7 +270,12 @@ class ExerciseDetailScreen extends StatelessWidget {
       ]),
       const H2('필요한 기구'),
       Text(e.gear.isEmpty ? '기구 없이 할 수 있어요' : e.gear.join(', ')),
-      if (e.gearOptional.isNotEmpty) Muted('있으면 좋은 것: ${e.gearOptional.join(', ')}'),
+      // 작은 회색 글씨 대신 14px 본문 색으로 (리뷰 10/27 #6)
+      if (e.gearOptional.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text('있으면 좋은 것: ${e.gearOptional.join(', ')}', style: const TextStyle(fontSize: 14, color: AppColors.text)),
+        ),
       const H2('하는 방법'),
       for (var i = 0; i < e.howTo.length; i++)
         Padding(
