@@ -34,3 +34,9 @@
 - 적용된 것 (2026-10-27): `supabase/migrations/`의 exercises·gear·exercise_gear 표, `supabase/seed.sql` 데이터 (운동 71, 기구 25, 연결 81)
 - 개인정보가 들어가는 표(profiles, meal_posts 등)는 약관·동의서 전문가 검토가 끝난 뒤에 만든다
 - 표를 바꾼 뒤에는 Supabase 보안·성능 점검(advisors)을 다시 돌린다
+
+## 운동 종목 관리 페이지
+
+- 주소: https://claude.ai/artifact/3QufBk19HNCFQFZY5Cxf28 (선생님이 운동 데이터를 보고 고치는 곳, 원본: `tools/admin/exercise-manager.src.html` — `__FIGS__` 자리에 `tools/prototype_figures.json`의 FIG를 넣어 게시)
+- 데이터는 이 페이지의 DB(`exercises` 71개, `meta/gear`, `meta/sync`)에 있다. 동작 그림 상태(anim: own/borrowed/none, anim_needed), 강도별 기본 횟수(dose.low/mid/high: sets·reps·unit·rest), 시작 무게(start_weight), 메모, 검수(reviewed)는 아직 여기에만 있다
+- 사용자가 "운동 관리 페이지 반영해줘"라고 하면: ArtifactData로 `updated_at`이 `meta/sync.synced_at`보다 새로운 문서를 읽어 → `app/lib/data/exercises.dart`·`docs/운동설명_검수.md`·Supabase(`exercises`, `exercise_gear`)에 반영 → 테스트 → `meta/sync.synced_at`을 지금 시각으로 바꾼다. 새 칸(anim, dose 등)은 처음 반영할 때 Supabase에 칸을 추가한다

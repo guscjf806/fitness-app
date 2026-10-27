@@ -1,0 +1,542 @@
+<title>운동 종목 관리</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* 레이아웃: 왼쪽 종목 목록(훑어보기) + 오른쪽 편집 칸(고치기). 휴대폰에서는 편집 칸이 전체 화면으로 덮인다.
+   색은 운동 앱과 같은 청록 계열, 상태는 초록(좋음)·주황(확인 필요)·빨강(없음)으로 구분한다. */
+:root {
+  --bg: #F6F8F7;
+  --panel: #FFFFFF;
+  --line: #DCE4E1;
+  --fg: #14211F;
+  --muted: #56655F;
+  --accent: #0A7A6D;
+  --accent-soft: #E1F2EE;
+  --ok: #1F7A4D; --ok-bg: #E3F3EA;
+  --warn: #A35A00; --warn-bg: #FCEFD9;
+  --bad: #B3392F; --bad-bg: #FBE7E5;
+  --fig-bg: #0A7A6D;
+  --font: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1716; --panel: #16201E; --line: #2A3835; --fg: #E4EEEB; --muted: #9DB0AA;
+    --accent: #5CC7B6; --accent-soft: #1C3632;
+    --ok: #7FD3A3; --ok-bg: #173226; --warn: #F2B65E; --warn-bg: #3A2C14; --bad: #F08A80; --bad-bg: #3B1E1B;
+    --fig-bg: #0D5C53; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1716; --panel: #16201E; --line: #2A3835; --fg: #E4EEEB; --muted: #9DB0AA;
+  --accent: #5CC7B6; --accent-soft: #1C3632;
+  --ok: #7FD3A3; --ok-bg: #173226; --warn: #F2B65E; --warn-bg: #3A2C14; --bad: #F08A80; --bad-bg: #3B1E1B;
+  --fig-bg: #0D5C53; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.55; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; max-width: 1320px; margin: 0 auto; }
+h1 { font-size: 24px; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h2 { font-size: 16px; margin: 0; }
+h3 { font-size: 13px; margin: 0 0 8px; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.top { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; justify-content: space-between; }
+.sub { color: var(--muted); margin: 4px 0 0; max-width: 62ch; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; display: grid; gap: 0; min-width: 96px; text-align: left; }
+.stat b { font-size: 20px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.stat span { font-size: 12px; color: var(--muted); }
+.stat.warn { border-color: var(--warn); }
+.stat.on { outline: 2px solid var(--accent); }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.toolbar input[type=search] { flex: 1 1 220px; min-width: 0; }
+.field, .toolbar input, .toolbar select { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-height: 40px; }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 8px 14px; min-height: 40px; font-weight: 600; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 16px; align-items: start; }
+.list { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; min-width: 0; }
+.group { padding: 10px 14px; font-size: 13px; font-weight: 600; color: var(--muted); background: var(--bg); border-top: 1px solid var(--line); position: sticky; top: env(safe-area-inset-top, 0px); }
+.group:first-child { border-top: 0; }
+.row { display: grid; grid-template-columns: 52px minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.3fr) auto; gap: 12px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--line); width: 100%; text-align: left; background: none; border-left: 0; border-right: 0; border-bottom: 0; }
+.row:hover { background: var(--accent-soft); }
+.row.sel { background: var(--accent-soft); box-shadow: inset 4px 0 0 var(--accent); }
+.row .name { font-weight: 600; }
+.row .meta { font-size: 13px; color: var(--muted); }
+.dose { font-size: 13px; }
+canvas.thumb { width: 52px; height: 52px; border-radius: 10px; background: var(--fig-bg); display: block; }
+.pills { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+.pill { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.ok { color: var(--ok); background: var(--ok-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); }
+.pill.bad { color: var(--bad); background: var(--bad-bg); }
+.pill.plain { color: var(--muted); background: var(--bg); }
+.empty { padding: 40px 20px; text-align: center; color: var(--muted); }
+
+.editor { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - 24px); overflow: auto; min-width: 0; }
+.ed-head { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--panel); z-index: 2; }
+.ed-body { padding: 16px; display: grid; gap: 20px; }
+.sec { display: grid; gap: 10px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+label.lb { display: grid; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
+label.lb .field { color: var(--fg); width: 100%; min-width: 0; }
+textarea.field { resize: vertical; min-height: 64px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 12px; font-size: 13px; min-height: 34px; }
+.chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.chip.req { background: var(--accent); border-color: var(--accent); color: var(--panel); font-weight: 600; }
+.chip.opt { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); border-style: dashed; }
+.chip.pain.on { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
+.figbox { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 14px; align-items: start; }
+canvas.big { width: 160px; height: 160px; border-radius: 16px; background: var(--fig-bg); display: block; max-width: 100%; }
+table.dose-t { width: 100%; border-collapse: collapse; }
+.dose-wrap { overflow-x: auto; }
+table.dose-t th, table.dose-t td { padding: 6px 4px; text-align: left; font-size: 13px; }
+table.dose-t th { color: var(--muted); font-weight: 600; }
+table.dose-t td .field { width: 100%; min-width: 56px; padding: 6px 8px; min-height: 36px; }
+table.dose-t td:first-child { font-weight: 700; width: 36px; }
+.hint { font-size: 13px; color: var(--muted); margin: 0; }
+.notice { border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+.notice.warn { background: var(--warn-bg); color: var(--warn); }
+.notice.info { background: var(--accent-soft); color: var(--fg); }
+.foot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid var(--line); position: sticky; bottom: 0; background: var(--panel); }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--panel); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 30; }
+.back { display: none; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .editor { position: fixed; inset: 0; max-height: none; border-radius: 0; border: 0; z-index: 20; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+  .editor[data-open="false"] { display: none; }
+  .back { display: inline-flex; }
+  .row { grid-template-columns: 52px minmax(0, 1fr) auto; }
+  .row .c-gear, .row .c-dose { display: none; }
+}
+@media (max-width: 520px) {
+  .figbox { grid-template-columns: minmax(0, 1fr); }
+  .grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>운동 종목 관리</h1>
+      <p class="sub">앱에서 추천하는 운동 종목을 한곳에서 보고 고쳐요. 동작 그림, 강도별 기본 횟수, 필요한 기구, 하는 방법을 확인하고 검수 표시를 해 주세요.</p>
+    </div>
+    <button class="btn" id="addBtn" type="button">+ 새 운동</button>
+  </div>
+
+  <div class="stats" id="stats" aria-label="요약"></div>
+
+  <div class="notice info" id="syncNote" hidden></div>
+
+  <div class="toolbar" role="search">
+    <input type="search" id="q" placeholder="운동 이름으로 찾기 (띄어쓰기 무시)" aria-label="운동 이름으로 찾기">
+    <select id="fPlace" aria-label="장소"><option value="">장소 전체</option><option value="gym">헬스장 전용</option><option value="home">집에서도 가능</option></select>
+    <select id="fPart" aria-label="부위"><option value="">부위 전체</option></select>
+    <select id="fAnim" aria-label="동작 그림"><option value="">그림 전체</option><option value="own">전용 그림</option><option value="borrowed">빌린 그림</option><option value="none">그림 없음</option><option value="needed">새 그림 필요 표시</option></select>
+    <select id="fReview" aria-label="검수"><option value="">검수 전체</option><option value="no">검수 전</option><option value="yes">검수 완료</option></select>
+  </div>
+
+  <div class="layout">
+    <div class="list" id="list"><div class="empty">운동 목록을 불러오는 중이에요…</div></div>
+    <aside class="editor" id="editor" data-open="false" aria-label="운동 편집">
+      <div class="empty" id="edEmpty">왼쪽 목록에서 운동을 고르면 여기서 고칠 수 있어요.</div>
+      <form id="edForm" hidden>
+        <div class="ed-head">
+          <button class="btn back" type="button" id="backBtn">← 목록</button>
+          <h2 id="edTitle">운동</h2>
+          <span class="pill plain" id="edId"></span>
+        </div>
+        <div class="ed-body">
+          <div class="sec" id="newIdSec" hidden>
+            <label class="lb">영문 고유 이름 (소문자·숫자, 나중에 못 바꿔요)
+              <input class="field" id="f_id" pattern="[a-z0-9]+" autocomplete="off">
+            </label>
+          </div>
+
+          <div class="sec">
+            <h3>동작 그림</h3>
+            <div class="figbox">
+              <canvas class="big" id="bigFig" width="320" height="320" aria-label="동작 그림 미리보기"></canvas>
+              <div class="sec">
+                <label class="lb">그림 상태
+                  <select class="field" id="f_anim">
+                    <option value="own">전용 그림 있음</option>
+                    <option value="borrowed">비슷한 동작 그림을 빌려 씀</option>
+                    <option value="none">그림 없음</option>
+                  </select>
+                </label>
+                <label class="lb">쓰고 있는 그림
+                  <select class="field" id="f_figure"></select>
+                </label>
+                <label class="chip" style="display:inline-flex;gap:8px;align-items:center;width:max-content;max-width:100%">
+                  <input type="checkbox" id="f_animNeeded"> 전용 그림을 새로 만들어야 해요
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec">
+            <h3>기본 정보</h3>
+            <div class="grid2">
+              <label class="lb">이름<input class="field" id="f_name" required></label>
+              <label class="lb">부위<select class="field" id="f_part"></select></label>
+              <label class="lb">기구 분류<select class="field" id="f_equip"></select></label>
+              <label class="lb">장소
+                <select class="field" id="f_place"><option value="gym">헬스장 전용</option><option value="home">집에서도 가능 (헬스장 포함)</option></select>
+              </label>
+              <label class="lb">종류
+                <select class="field" id="f_kind"><option value="compound">큰 운동 (여러 관절)</option><option value="isolation">작은 운동 (한 관절)</option><option value="hold">버티기·시간</option></select>
+              </label>
+              <label class="lb">난이도
+                <select class="field" id="f_level"><option value="1">초급</option><option value="2">중급</option><option value="3">상급</option></select>
+              </label>
+              <label class="lb">점프·충격
+                <select class="field" id="f_impact"><option value="low">없음</option><option value="high">있음 (점프 등)</option></select>
+              </label>
+              <label class="lb">층간소음
+                <select class="field" id="f_noise"><option value="quiet">조용함</option><option value="loud">소음 큼</option></select>
+              </label>
+            </div>
+          </div>
+
+          <div class="sec">
+            <h3>강도별 기본 횟수</h3>
+            <p class="hint">'앞으로 원하는 강도'(하·중·상)에 따라 루틴에 들어가는 기본값이에요. 무게는 kg 대신 '마지막 세트 뒤 몇 개 더 할 수 있게'로 안내해요.</p>
+            <div class="dose-wrap">
+              <table class="dose-t">
+                <thead><tr><th>강도</th><th>세트</th><th>횟수</th><th>단위</th><th>휴식(초)</th></tr></thead>
+                <tbody id="doseBody"></tbody>
+              </table>
+            </div>
+            <label class="lb">처음 시작 무게 안내<input class="field" id="f_start" placeholder="예: 빈 봉(20kg)부터"></label>
+          </div>
+
+          <div class="sec">
+            <h3>필요한 기구</h3>
+            <p class="hint">한 번 누르면 꼭 필요, 두 번 누르면 있으면 좋음, 세 번 누르면 해제돼요.</p>
+            <div class="chips" id="gearChips"></div>
+          </div>
+
+          <div class="sec">
+            <h3>이 부위가 아프면 추천하지 않음</h3>
+            <div class="chips" id="painChips"></div>
+          </div>
+
+          <div class="sec">
+            <h3>하는 방법과 주의할 점</h3>
+            <label class="lb">1단계<input class="field" id="f_how0"></label>
+            <label class="lb">2단계<input class="field" id="f_how1"></label>
+            <label class="lb">3단계<input class="field" id="f_how2"></label>
+            <label class="lb">주의할 점<textarea class="field" id="f_caution" rows="2"></textarea></label>
+          </div>
+
+          <div class="sec">
+            <h3>비슷한 운동</h3>
+            <div class="grid2">
+              <label class="lb">쉬운 동작<select class="field" id="f_easier"></select></label>
+              <label class="lb">어려운 동작<select class="field" id="f_harder"></select></label>
+            </div>
+          </div>
+
+          <div class="sec">
+            <h3>메모</h3>
+            <textarea class="field" id="f_memo" rows="2" placeholder="선생님만 보는 메모 (앱에는 안 나와요)"></textarea>
+            <label class="chip" style="display:inline-flex;gap:8px;align-items:center;width:max-content;max-width:100%">
+              <input type="checkbox" id="f_reviewed"> 검수 완료
+            </label>
+            <p class="hint" id="edUpdated"></p>
+          </div>
+        </div>
+        <div class="foot">
+          <span class="hint" id="dirtyNote">바뀐 내용 없음</span>
+          <div style="display:flex;gap:8px">
+            <button class="btn" type="button" id="resetBtn">되돌리기</button>
+            <button class="btn primary" type="submit" id="saveBtn">저장</button>
+          </div>
+        </div>
+      </form>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+const FIGS = __FIGS__;
+const PARTS = ['가슴', '등', '어깨', '삼두', '이두', '하체', '코어', '전신'];
+const EQUIP = ['바벨', '덤벨', '밴드', '머신', '케이블', '맨몸'];
+const PAIN = ['목', '어깨', '허리', '손목', '무릎', '발목'];
+const LEVELS = [['low', '하'], ['mid', '중'], ['high', '상']];
+const PLACE = { gym: '헬스장 전용', home: '집에서도 가능' };
+const LEVEL_KO = { 1: '초급', 2: '중급', 3: '상급' };
+const ANIM = { own: ['전용 그림', 'ok'], borrowed: ['빌린 그림', 'warn'], none: ['그림 없음', 'bad'] };
+const $ = (id) => document.getElementById(id);
+const squash = (s) => (s || '').replace(/\s+/g, '');
+
+let db = null, readOnly = false;
+let rows = new Map();          // id -> 운동 문서
+let gear = [];                 // [{id,name,category,place}]
+let syncedAt = null;           // Claude가 앱·Supabase에 마지막으로 반영한 시각
+let selectedId = null, isNew = false, draft = null, dirty = false;
+let statFilter = '';
+
+// ── 동작 그림 (운동 앱과 같은 그림 데이터·박자) ─────────────────────────
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function pose(t) {
+  const ease = (x) => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+  if (t < .15) return 0; if (t < .5) return ease((t - .15) / .35); if (t < .65) return 1; return 1 - ease((t - .65) / .35);
+}
+function drawFig(canvas, figId, p) {
+  const ctx = canvas.getContext('2d'); const W = canvas.width;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, W);
+  const f = FIGS[figId]; if (!f) return;
+  ctx.scale(W / 100, W / 100); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const L = (a, b) => [a[0] + (b[0] - a[0]) * p, a[1] + (b[1] - a[1]) * p];
+  const line = (pts, color, w) => { ctx.strokeStyle = color; ctx.lineWidth = w; ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.stroke(); };
+  line([[8, 92], [92, 92]], 'rgba(255,255,255,.35)', 2);
+  (f.S.lines || []).forEach((l) => line([[l.x1, l.y1], [l.x2, l.y2]], l.c, l.w));
+  (f.X || []).forEach(([a, b]) => line([[a[0], a[1]], L([a[2], a[3]], [b[2], b[3]])], 'rgba(255,255,255,.55)', 1.5));
+  (f.S.circles || []).forEach((c) => { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(c.cx, c.cy, c.r, 0, 7); ctx.fill(); });
+  f.L.forEach(([a, b, hl]) => {
+    const pts = a.map((q, i) => L(q, b[i])); const w = a.length === 2 && hl ? 11 : 8;
+    line(pts, '#A7DCD3', w); if (hl) line(pts, '#fff', w);
+  });
+  const h = L(f.h[0], f.h[1]); ctx.fillStyle = '#A7DCD3'; ctx.beginPath(); ctx.arc(h[0], h[1], 7.5, 0, 7); ctx.fill();
+  (f.P || []).forEach(([a, b]) => { const q = L(a, b); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(q[0], q[1], 7, 0, 7); ctx.stroke(); });
+}
+let animStart = performance.now();
+function tick(now) {
+  if (draft && !$('edForm').hidden) drawFig($('bigFig'), draft.anim === 'none' ? '' : draft.figure_id, reduced ? 0 : pose(((now - animStart) % 2400) / 2400));
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+// ── 목록 ───────────────────────────────────────────────────────────
+PARTS.forEach((p) => $('fPart').append(new Option(p, p)));
+function filtered() {
+  const q = squash($('q').value), pl = $('fPlace').value, pa = $('fPart').value, an = $('fAnim').value, rv = $('fReview').value;
+  return [...rows.values()].filter((e) =>
+    (!q || squash(e.name).includes(q)) && (!pl || e.place === pl) && (!pa || e.body_part === pa) &&
+    (!an || (an === 'needed' ? e.anim_needed : e.anim === an)) &&
+    (!rv || (rv === 'yes') === !!e.reviewed) &&
+    (!statFilter || (statFilter === 'pending' ? isPending(e) : statFilter === 'unreviewed' ? !e.reviewed : statFilter === 'borrowed' ? e.anim !== 'own' : true))
+  ).sort((a, b) => (a.place > b.place ? 1 : a.place < b.place ? -1 : 0) || PARTS.indexOf(a.body_part) - PARTS.indexOf(b.body_part) || a.level - b.level || a.name.localeCompare(b.name, 'ko'));
+}
+const isPending = (e) => syncedAt && e.updated_at && e.updated_at > syncedAt;
+function doseText(e) { const d = e.dose && e.dose.mid; return d ? `중 ${d.sets}세트 × ${d.reps}${d.unit} · 휴식 ${d.rest}초` : '—'; }
+const gearName = (id) => (gear.find((g) => g.id === id) || {}).name || id;
+
+function renderStats() {
+  const all = [...rows.values()];
+  const n = (f) => all.filter(f).length;
+  const items = [
+    ['', all.length, '전체 종목'],
+    ['', n((e) => e.place === 'gym') + ' / ' + n((e) => e.place === 'home'), '헬스장 / 집'],
+    ['', n((e) => e.anim === 'own'), '전용 그림'],
+    ['borrowed', n((e) => e.anim !== 'own'), '빌린 그림·없음'],
+    ['unreviewed', n((e) => !e.reviewed), '검수 전'],
+    ['pending', n(isPending), '앱 반영 대기'],
+  ];
+  const box = $('stats'); box.textContent = '';
+  items.forEach(([key, val, label]) => {
+    const b = document.createElement(key ? 'button' : 'div');
+    b.className = 'stat' + (key && statFilter === key ? ' on' : '') + (key === 'pending' && n(isPending) ? ' warn' : '');
+    if (key) { b.type = 'button'; b.title = '눌러서 이것만 보기'; b.onclick = () => { statFilter = statFilter === key ? '' : key; renderStats(); renderList(); }; }
+    const v = document.createElement('b'); v.textContent = val; const l = document.createElement('span'); l.textContent = label;
+    b.append(v, l); box.append(b);
+  });
+  const pend = n(isPending);
+  $('syncNote').hidden = !pend;
+  $('syncNote').textContent = `여기서 고친 운동 ${pend}개가 아직 앱과 Supabase에 반영되지 않았어요. Claude에게 "운동 관리 페이지 반영해줘"라고 말해 주세요.`;
+}
+
+function renderList() {
+  const list = $('list'); list.textContent = '';
+  const items = filtered();
+  if (!rows.size) { list.innerHTML = '<div class="empty">아직 운동이 없어요. 위의 <b>+ 새 운동</b>으로 첫 운동을 추가해 주세요.</div>'; return; }
+  if (!items.length) { list.innerHTML = '<div class="empty">조건에 맞는 운동이 없어요. 찾기 조건을 바꿔 보세요.</div>'; return; }
+  let lastGroup = '';
+  items.forEach((e) => {
+    const group = `${PLACE[e.place] || e.place} · ${e.body_part}`;
+    if (group !== lastGroup) { const g = document.createElement('div'); g.className = 'group'; g.textContent = group; list.append(g); lastGroup = group; }
+    const r = document.createElement('button'); r.type = 'button'; r.className = 'row' + (e.id === selectedId ? ' sel' : '');
+    r.onclick = () => select(e.id);
+    const c = document.createElement('canvas'); c.className = 'thumb'; c.width = 104; c.height = 104;
+    if (e.anim !== 'none') drawFig(c, e.figure_id, 0);
+    const nm = document.createElement('div');
+    nm.innerHTML = `<div class="name"></div><div class="meta"></div>`;
+    nm.children[0].textContent = e.name;
+    nm.children[1].textContent = `${e.equipment} · ${LEVEL_KO[e.level] || ''}${e.impact === 'high' ? ' · 점프' : ''}${e.noise === 'loud' ? ' · 소음' : ''}`;
+    const gr = document.createElement('div'); gr.className = 'meta c-gear';
+    gr.textContent = (e.gear_required || []).length ? e.gear_required.map(gearName).join(', ') : '기구 없음';
+    const ds = document.createElement('div'); ds.className = 'dose num c-dose'; ds.textContent = doseText(e);
+    const pills = document.createElement('div'); pills.className = 'pills';
+    const [al, ac] = ANIM[e.anim] || ANIM.none;
+    pills.append(pill(al, ac));
+    if (e.anim_needed) pills.append(pill('새 그림 필요', 'warn'));
+    pills.append(pill(e.reviewed ? '검수 완료' : '검수 전', e.reviewed ? 'ok' : 'plain'));
+    if (isPending(e)) pills.append(pill('반영 대기', 'warn'));
+    r.append(c, nm, gr, ds, pills); list.append(r);
+  });
+}
+function pill(text, cls) { const s = document.createElement('span'); s.className = 'pill ' + cls; s.textContent = text; return s; }
+
+// ── 편집 ───────────────────────────────────────────────────────────
+PARTS.forEach((p) => $('f_part').append(new Option(p, p)));
+EQUIP.forEach((p) => $('f_equip').append(new Option(p, p)));
+Object.keys(FIGS).sort().forEach((k) => $('f_figure').append(new Option(k, k)));
+
+function blank() {
+  return { name: '', body_part: '하체', equipment: '맨몸', place: 'home', kind: 'compound', level: 1, impact: 'low', noise: 'quiet',
+    easier_id: null, harder_id: null, avoid_for: [], how_to: ['', '', ''], caution: '', gear_required: [], gear_optional: [],
+    figure_id: 'squat', anim: 'none', anim_needed: true, start_weight: '맨몸', memo: '', reviewed: false,
+    dose: { low: { sets: 3, reps: '12~15', unit: '개', rest: 60 }, mid: { sets: 4, reps: '8~12', unit: '개', rest: 75 }, high: { sets: 5, reps: '6~8', unit: '개', rest: 105 } } };
+}
+function confirmLeave() {
+  if (!dirty) return true;
+  toast('저장하지 않은 수정이 있어요. 저장하거나 되돌리기를 먼저 눌러 주세요.');
+  return false;
+}
+function select(id) {
+  if (id !== selectedId && !confirmLeave()) return;
+  isNew = false; selectedId = id; draft = structuredClone(rows.get(id)); delete draft.id;
+  fillForm(); renderList(); openEditor();
+}
+function openEditor() { $('editor').dataset.open = 'true'; $('edEmpty').hidden = true; $('edForm').hidden = false; animStart = performance.now(); }
+$('backBtn').onclick = () => { if (!confirmLeave()) return; $('editor').dataset.open = 'false'; };
+$('addBtn').onclick = () => {
+  if (readOnly) return toast('보기 권한만 있어서 추가할 수 없어요.');
+  if (!confirmLeave()) return;
+  isNew = true; selectedId = null; draft = blank(); fillForm(); renderList(); openEditor(); setDirty(true); $('f_id').focus();
+};
+
+function fillForm() {
+  const d = draft;
+  $('edTitle').textContent = isNew ? '새 운동' : d.name;
+  $('edId').textContent = isNew ? '새로 만드는 중' : selectedId;
+  $('newIdSec').hidden = !isNew; $('f_id').value = '';
+  $('f_anim').value = d.anim; $('f_figure').value = d.figure_id; $('f_animNeeded').checked = !!d.anim_needed;
+  $('f_name').value = d.name; $('f_part').value = d.body_part; $('f_equip').value = d.equipment; $('f_place').value = d.place;
+  $('f_kind').value = d.kind; $('f_level').value = String(d.level); $('f_impact').value = d.impact; $('f_noise').value = d.noise;
+  $('f_start').value = d.start_weight || '';
+  [0, 1, 2].forEach((i) => $('f_how' + i).value = (d.how_to || [])[i] || '');
+  $('f_caution').value = d.caution || ''; $('f_memo').value = d.memo || ''; $('f_reviewed').checked = !!d.reviewed;
+  // 강도별 기본 횟수
+  const tb = $('doseBody'); tb.textContent = '';
+  LEVELS.forEach(([k, ko]) => {
+    const x = d.dose[k]; const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${ko}</td><td><input class="field num" type="number" min="1" max="10" inputmode="numeric" id="d_${k}_sets" aria-label="${ko} 세트"></td>` +
+      `<td><input class="field num" id="d_${k}_reps" aria-label="${ko} 횟수"></td>` +
+      `<td><select class="field" id="d_${k}_unit" aria-label="${ko} 단위"><option>개</option><option>초</option></select></td>` +
+      `<td><input class="field num" type="number" min="0" max="600" step="5" inputmode="numeric" id="d_${k}_rest" aria-label="${ko} 휴식"></td>`;
+    tb.append(tr);
+    $(`d_${k}_sets`).value = x.sets; $(`d_${k}_reps`).value = x.reps; $(`d_${k}_unit`).value = x.unit; $(`d_${k}_rest`).value = x.rest;
+  });
+  // 쉬운/어려운
+  ['f_easier', 'f_harder'].forEach((sid) => {
+    const s = $(sid); s.textContent = ''; s.append(new Option('없음', ''));
+    [...rows.values()].filter((e) => e.id !== selectedId).sort((a, b) => a.name.localeCompare(b.name, 'ko')).forEach((e) => s.append(new Option(e.name, e.id)));
+  });
+  $('f_easier').value = d.easier_id || ''; $('f_harder').value = d.harder_id || '';
+  renderGearChips(); renderPainChips();
+  const by = d.updated_by ? ` · ${d.updated_by}` : '';
+  $('edUpdated').textContent = d.updated_at ? `마지막 수정: ${new Date(d.updated_at).toLocaleString('ko-KR')}${by}` : '';
+  setDirty(false);
+  [...$('edForm').querySelectorAll('input,select,textarea,button')].forEach((el) => { if (!['backBtn'].includes(el.id)) el.disabled = readOnly; });
+}
+function renderGearChips() {
+  const box = $('gearChips'); box.textContent = '';
+  const groups = [['gym', '헬스장 기구'], ['home', '집 도구']];
+  groups.forEach(([pl, label]) => {
+    const t = document.createElement('div'); t.className = 'hint'; t.style.width = '100%'; t.textContent = label; box.append(t);
+    gear.filter((g) => g.place === pl).forEach((g) => {
+      const req = draft.gear_required.includes(g.id), opt = draft.gear_optional.includes(g.id);
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip' + (req ? ' req' : opt ? ' opt' : '');
+      b.textContent = g.name + (req ? ' · 필수' : opt ? ' · 있으면 좋음' : '');
+      b.setAttribute('aria-pressed', String(req || opt)); b.disabled = readOnly;
+      b.onclick = () => {
+        draft.gear_required = draft.gear_required.filter((x) => x !== g.id); draft.gear_optional = draft.gear_optional.filter((x) => x !== g.id);
+        if (!req && !opt) draft.gear_required.push(g.id); else if (req) draft.gear_optional.push(g.id);
+        renderGearChips(); setDirty(true);
+      };
+      box.append(b);
+    });
+  });
+}
+function renderPainChips() {
+  const box = $('painChips'); box.textContent = '';
+  PAIN.forEach((p) => {
+    const on = draft.avoid_for.includes(p);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip pain' + (on ? ' on' : '');
+    b.textContent = p; b.setAttribute('aria-pressed', String(on)); b.disabled = readOnly;
+    b.onclick = () => { draft.avoid_for = on ? draft.avoid_for.filter((x) => x !== p) : [...draft.avoid_for, p]; renderPainChips(); setDirty(true); };
+    box.append(b);
+  });
+}
+function readForm() {
+  const d = draft;
+  d.anim = $('f_anim').value; d.figure_id = $('f_figure').value; d.anim_needed = $('f_animNeeded').checked;
+  d.name = $('f_name').value.trim(); d.body_part = $('f_part').value; d.equipment = $('f_equip').value; d.place = $('f_place').value;
+  d.kind = $('f_kind').value; d.level = Number($('f_level').value); d.impact = $('f_impact').value; d.noise = $('f_noise').value;
+  d.start_weight = $('f_start').value.trim();
+  d.how_to = [0, 1, 2].map((i) => $('f_how' + i).value.trim());
+  d.caution = $('f_caution').value.trim(); d.memo = $('f_memo').value.trim(); d.reviewed = $('f_reviewed').checked;
+  d.easier_id = $('f_easier').value || null; d.harder_id = $('f_harder').value || null;
+  LEVELS.forEach(([k]) => { d.dose[k] = { sets: Number($(`d_${k}_sets`).value) || 1, reps: $(`d_${k}_reps`).value.trim(), unit: $(`d_${k}_unit`).value, rest: Number($(`d_${k}_rest`).value) || 0 }; });
+}
+function setDirty(v) { dirty = v; $('dirtyNote').textContent = v ? '저장하지 않은 수정이 있어요' : '바뀐 내용 없음'; $('saveBtn').disabled = readOnly || !v; $('resetBtn').disabled = readOnly || !v; }
+$('edForm').addEventListener('input', (ev) => { if (!draft) return; readForm(); setDirty(true); if (['f_name'].includes(ev.target.id)) $('edTitle').textContent = draft.name || '새 운동'; });
+$('edForm').addEventListener('change', () => { if (!draft) return; readForm(); setDirty(true); });
+$('resetBtn').onclick = () => { if (isNew) { isNew = false; draft = null; dirty = false; $('edForm').hidden = true; $('edEmpty').hidden = false; $('editor').dataset.open = 'false'; return; } dirty = false; select(selectedId); };
+
+$('edForm').addEventListener('submit', async (ev) => {
+  ev.preventDefault(); if (!db || readOnly) return;
+  readForm();
+  const id = isNew ? $('f_id').value.trim() : selectedId;
+  if (isNew && !/^[a-z0-9]+$/.test(id)) return toast('영문 고유 이름은 소문자와 숫자로만 써 주세요. 예: legraise2');
+  if (isNew && rows.has(id)) return toast('같은 영문 이름의 운동이 이미 있어요. 다른 이름을 써 주세요.');
+  if (!draft.name) return toast('운동 이름을 써 주세요.');
+  if (draft.how_to.some((s) => !s)) return toast('하는 방법 3단계를 모두 써 주세요.');
+  if ([...rows.values()].some((e) => e.name === draft.name && e.id !== id)) return toast('같은 이름의 운동이 이미 있어요.');
+  const body = { ...draft, updated_at: new Date().toISOString(), updated_by: '관리 페이지' };
+  $('saveBtn').disabled = true;
+  try {
+    await db.doc('exercises/' + id).set(body);
+    isNew = false; selectedId = id; dirty = false; setDirty(false); toast('저장했어요');
+  } catch (e) {
+    if (e && e.code === 'invalid_argument') { readOnly = true; fillForm(); toast('이 페이지를 고칠 권한이 없어요. 보기만 할 수 있어요.'); }
+    else if (e && e.code === 'unavailable') toast('잠시 연결이 불안정해요. 다시 저장해 주세요.');
+    else toast('저장하지 못했어요. 다시 시도해 주세요.');
+    setDirty(true);
+  }
+});
+
+let tTimer; function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(tTimer); tTimer = setTimeout(() => t.hidden = true, 2600); }
+['q', 'fPlace', 'fPart', 'fAnim', 'fReview'].forEach((id) => $(id).addEventListener('input', renderList));
+
+// ── 저장소 연결 ─────────────────────────────────────────────────────
+renderStats();
+claude.use('db').then((d) => {
+  if (!d) { $('list').innerHTML = '<div class="empty">운동 목록을 불러올 수 없어요. claude.ai에 로그인한 상태로 이 페이지를 열어 주세요.</div>'; $('addBtn').disabled = true; return; }
+  db = d;
+  db.collection('exercises').onSnapshot((snap) => {
+    rows = new Map(snap.docs.map((x) => [x.id, { id: x.id, ...structuredClone(x.data()) }]));
+    renderStats(); renderList();
+    if (selectedId && !dirty && rows.has(selectedId)) { draft = structuredClone(rows.get(selectedId)); delete draft.id; fillForm(); }
+  }, () => { $('list').innerHTML = '<div class="empty">연결이 끊겼어요. 페이지를 새로 고쳐 주세요.</div>'; });
+  db.doc('meta/gear').onSnapshot((s) => { gear = s.exists ? (s.data().items || []) : []; if (draft) renderGearChips(); renderList(); });
+  db.doc('meta/sync').onSnapshot((s) => { syncedAt = s.exists ? s.data().synced_at : null; renderStats(); renderList(); });
+});
+</script>
