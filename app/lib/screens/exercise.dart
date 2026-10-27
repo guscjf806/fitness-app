@@ -125,7 +125,10 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
         for (final e in list)
           Material(
             color: selected.contains(e.id) ? AppColors.primarySoft : Colors.transparent,
-            borderRadius: BorderRadius.circular(14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+              side: BorderSide(color: selected.contains(e.id) ? AppColors.primary : Colors.transparent, width: 2),
+            ),
             child: InkWell(
               borderRadius: BorderRadius.circular(14),
               onTap: () => _toggle(e),
@@ -155,6 +158,8 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
                         color: favorites.contains(e.id) ? AppColors.primaryDark : AppColors.textSub),
                     onPressed: () => setState(() => favorites.contains(e.id) ? favorites.remove(e.id) : favorites.add(e.id)),
                   ),
+                  // 고른 운동은 색뿐 아니라 체크 표시로도 알린다 (리뷰 10/27 #3)
+                  CheckCircle(selected.contains(e.id)),
                 ]),
               ),
             ),
