@@ -93,7 +93,28 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
   @override
   Widget build(BuildContext context) {
     final list = filtered;
-    return Scaffold(
+    // 고른 운동이 있는데 뒤로 가면 버릴지 먼저 묻는다 (리뷰 10/27 #5)
+    return PopScope(
+      canPop: selected.isEmpty,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        final discard = await showDialog<bool>(
+          context: context,
+          builder: (dialog) => AlertDialog(
+            title: Text('고른 운동 ${selected.length}개를 버릴까요?'),
+            content: const Text('나가면 고른 운동이 추가되지 않아요.'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('계속 고르기')),
+              TextButton(
+                onPressed: () => Navigator.pop(dialog, true),
+                child: const Text('버리고 나가기', style: TextStyle(color: AppColors.warning)),
+              ),
+            ],
+          ),
+        );
+        if (discard == true && context.mounted) Navigator.pop(context);
+      },
+      child: Scaffold(
       appBar: AppBar(title: const Text('운동 추가하기')),
       body: ListView(padding: const EdgeInsets.fromLTRB(18, 8, 18, 20), children: [
         Row(children: [
@@ -184,6 +205,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 }
