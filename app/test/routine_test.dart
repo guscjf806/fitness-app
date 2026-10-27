@@ -111,4 +111,21 @@ void main() {
       }
     }
   });
+
+  test('장소는 헬스장 전용과 집에서도 가능 두 가지이고, 기구와 맞는다', () {
+    const homeGear = {'덤벨', '저항 밴드', '밴드 고정 고리(문·기둥)', '운동 매트', '튼튼한 의자·계단', '벽'};
+    for (final e in exercises) {
+      expect(['gym', 'home'], contains(e.place), reason: e.name);
+      if (e.place == 'home') {
+        expect(homeGear.containsAll(e.gear), isTrue, reason: '${e.name}: ${e.gear}');
+        expect(['맨몸', '덤벨', '밴드'], contains(e.equipment), reason: e.name);
+      } else {
+        expect(e.gear.any((g) => !homeGear.contains(g)), isTrue, reason: '${e.name}는 헬스장 기구가 필요해야 함');
+      }
+      expect(['compound', 'isolation', 'hold'], contains(e.kind), reason: e.name);
+      expect([1, 2, 3], contains(e.level), reason: e.name);
+    }
+    expect(exercises.where((e) => e.place == 'home').length, greaterThanOrEqualTo(30), reason: '홈트 종목 30개 이상 (기획서)');
+    expect(exercises.length, inInclusiveRange(50, 100), reason: '종목 50~100개 (기획서)');
+  });
 }

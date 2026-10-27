@@ -16,6 +16,10 @@ class ExerciseInfo {
     required this.howTo,
     required this.caution,
     required this.figureId,
+    required this.kind,
+    required this.level,
+    required this.gear,
+    required this.gearOptional,
   });
 
   final String id;
@@ -27,7 +31,7 @@ class ExerciseInfo {
   /// 바벨 / 덤벨 / 밴드 / 머신 / 케이블 / 맨몸
   final String equipment;
 
-  /// gym / home / both
+  /// gym = 헬스장 전용(바벨·머신·케이블·고정 기구) / home = 집에서도 가능(맨몸·덤벨·밴드). home은 헬스장에서도 할 수 있다
   final String place;
 
   /// low / high
@@ -47,6 +51,18 @@ class ExerciseInfo {
 
   /// 동작 그림 id (비슷한 동작의 그림을 빌려 쓰기도 한다)
   final String figureId;
+
+  /// compound(여러 관절) / isolation(한 관절) / hold(버티기·시간). 강도 규칙의 세트·개수에 쓴다
+  final String kind;
+
+  /// 1 초급 · 2 중급 · 3 상급
+  final int level;
+
+  /// 꼭 필요한 기구 (예: 바벨, 플랫 벤치, 스쿼트 랙)
+  final List<String> gear;
+
+  /// 있으면 좋은 기구 (예: 운동 매트)
+  final List<String> gearOptional;
 }
 
 /// 움직이는 동작 그림 (100×100 좌표, 프로토타입에서 옮김). 자세 A ↔ 자세 B를 오간다.

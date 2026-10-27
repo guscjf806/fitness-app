@@ -12,7 +12,8 @@ import '../widgets/exercise_figure.dart';
 
 const _parts = ['전체', '가슴', '등', '하체', '어깨', '삼두', '이두', '코어', '전신'];
 const _equipments = ['전체', '바벨', '덤벨', '밴드', '머신', '케이블', '맨몸'];
-const _placeLabel = {'gym': '헬스장', 'home': '집', 'both': '헬스장·집'};
+const _placeLabel = {'gym': '헬스장 전용', 'home': '집에서도 가능'};
+const _levelLabel = {1: '초급', 2: '중급', 3: '상급'};
 
 /// 내 조건(장소·장비·층간소음·아픈 부위)에 맞는 종목인지 (기획서 6번 '홈트 조건 필터', 16번 안전 규칙)
 /// 장소가 '둘 다'면 헬스장 종목도 고를 수 있다
@@ -205,7 +206,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       Center(child: ExerciseFigureView(e.id, size: 200, radius: 20)),
       const SizedBox(height: 14),
       Wrap(spacing: 6, runSpacing: 6, children: [
-        for (final t in [e.part, e.equipment, _placeLabel[e.place]!]) Chip(label: Text(t)),
+        for (final t in [e.part, e.equipment, _placeLabel[e.place]!, _levelLabel[e.level]!]) Chip(label: Text(t)),
         if (e.impact == 'high') const Chip(label: Text('점프·고충격')),
         if (e.noise == 'loud') const Chip(label: Text('소음 큼')),
       ]),
@@ -215,6 +216,9 @@ class ExerciseDetailScreen extends StatelessWidget {
           child: Text('${painHit.join(', ')} 통증이 있으면 이 운동은 피하는 게 좋아요.',
               style: const TextStyle(color: AppColors.warning, fontSize: 13)),
         ),
+      const H2('필요한 기구'),
+      Text(e.gear.isEmpty ? '기구 없이 할 수 있어요' : e.gear.join(', ')),
+      if (e.gearOptional.isNotEmpty) Muted('있으면 좋은 것: ${e.gearOptional.join(', ')}'),
       const H2('하는 방법'),
       for (var i = 0; i < e.howTo.length; i++)
         Padding(

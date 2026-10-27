@@ -46,15 +46,6 @@ const intensityRules = {
       repsInReserve: '1개', restSeconds: 105, restText: '90~120초'),
 };
 
-/// 한 관절만 쓰는 작은 운동 (나머지는 큰 운동)
-const isolationIds = {
-  'crossover', 'facepull', 'bandfacepull', 'latraise', 'pushdown', 'kickback', 'dbcurl', 'legcurl', 'calfraise',
-  'deadbug', 'birddog', 'superman', 'mclimber',
-};
-
-/// 버티기 운동 (개수 대신 초)
-const holdIds = {'plank', 'sideplank'};
-
 /// 지금 강도가 '하'인데 '상'을 고르면 첫 2주는 '중'으로 시작한다 (갑자기 올리면 다칠 위험)
 const rampUpWeeks = 2;
 
@@ -93,11 +84,11 @@ WorkoutDay applyIntensity(WorkoutDay day, {required String intensity, required S
 }
 
 /// 종목 종류(큰 운동·작은 운동·버티기)에 맞는 목표 개수와 세트 수
-(String amount, int sets) targetFor(ExerciseInfo info, IntensityRule rule) => holdIds.contains(info.id)
-    ? (rule.holdSeconds, 3)
-    : isolationIds.contains(info.id)
-        ? (rule.isolationReps, rule.isolationSets)
-        : (rule.compoundReps, rule.compoundSets);
+(String amount, int sets) targetFor(ExerciseInfo info, IntensityRule rule) => switch (info.kind) {
+      'hold' => (rule.holdSeconds, 3),
+      'isolation' => (rule.isolationReps, rule.isolationSets),
+      _ => (rule.compoundReps, rule.compoundSets),
+    };
 
 /// 예상 운동 시간(분): 한 세트 약 40초 + 세트 사이 휴식
 int estimateMinutes(List<Exercise> items, IntensityRule rule) =>
