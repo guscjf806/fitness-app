@@ -14,6 +14,9 @@ Future<void> showRestTimer(BuildContext context, int recommendedSeconds) {
     context: context,
     // 작은 화면에서도 아래 버튼이 잘리지 않게 높이를 내용에 맞추고, 넘치면 스크롤한다
     isScrollControlled: true,
+    // 땀 묻은 손으로 바깥을 잘못 눌러 닫히지 않게, 닫는 건 아래 버튼으로만 (리뷰 10/28 #2)
+    isDismissible: false,
+    enableDrag: false,
     builder: (_) => SafeArea(child: SingleChildScrollView(child: _RestTimer(recommended: recommendedSeconds))),
   );
 }
