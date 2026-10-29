@@ -224,6 +224,9 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         Text(ex.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
         const SizedBox(height: 12),
         if (info != null) Center(child: ExerciseFigureView(info.id, size: 170, radius: 20)),
+        // 아픈 부위와 겹치면 운동 상세와 같은 경고 상자를 그림 바로 아래에 (리뷰 10/28 #3)
+        if (info != null && info.avoidFor.any(demo.painAreas.contains))
+          WarningBox(painPhrase(info.avoidFor.where(demo.painAreas.contains).toList())),
         if (info != null)
           Padding(
             padding: const EdgeInsets.only(top: 12),
