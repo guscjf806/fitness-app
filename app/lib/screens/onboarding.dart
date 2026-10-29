@@ -331,7 +331,7 @@ class LoginScreen extends StatelessWidget {
             style: FilledButton.styleFrom(
               backgroundColor: bg,
               foregroundColor: fg,
-              side: outlined ? const BorderSide(color: Color(0xFFD5DCDA)) : null,
+              side: outlined ? const BorderSide(color: AppColors.socialBorder) : null,
             ),
             child: Text(label),
           ),
@@ -340,7 +340,7 @@ class LoginScreen extends StatelessWidget {
       const H1('3초 만에 시작해요'),
       const Muted('로그인하면 식단·운동 루틴 생성, 식단 올리기를 쓸 수 있어요.'),
       social('카카오로 시작하기', AppColors.kakao, AppColors.kakaoText),
-      social('구글로 시작하기', Colors.white, const Color(0xFF222222), outlined: true),
+      social('구글로 시작하기', Colors.white, AppColors.googleText, outlined: true),
       social('Apple로 시작하기', Colors.black, Colors.white),
       const Disclaimer(text: '목업이라 실제 로그인은 하지 않아요. 누르면 일반 회원으로 들어가요.'),
     ]);

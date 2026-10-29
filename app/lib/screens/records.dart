@@ -150,7 +150,7 @@ class _Dot extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         width: 30,
         height: 30,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: on ? AppColors.primary : const Color(0xFFDBE6E3)),
+        decoration: BoxDecoration(shape: BoxShape.circle, color: on ? AppColors.primary : AppColors.track),
         child: on ? const Icon(Icons.check, size: 16, color: Colors.white) : null,
       );
 }

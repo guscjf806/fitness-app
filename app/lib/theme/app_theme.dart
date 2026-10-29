@@ -24,6 +24,16 @@ class AppColors {
   /// 동작 그림의 팔다리 색 (배경은 primaryDark)
   static const figureLimb = Color(0xFFA7DCD3);
 
+  /// 진행 막대·빈 점 배경
+  static const track = Color(0xFFDBE6E3);
+
+  /// 빈 체크 동그라미 테두리
+  static const lineStrong = Color(0xFFCFD8D5);
+
+  /// 흰 소셜 로그인 버튼 테두리와 글씨
+  static const socialBorder = Color(0xFFD5DCDA);
+  static const googleText = Color(0xFF222222);
+
   static const kakao = Color(0xFFFEE500);
   static const kakaoText = Color(0xFF191600);
 }

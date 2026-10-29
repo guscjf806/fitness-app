@@ -342,7 +342,7 @@ class CheckCircle extends StatelessWidget {
         shape: BoxShape.circle,
         color: on ? AppColors.primary : null,
         border: Border.all(
-            color: on ? AppColors.primary : const Color(0xFFCFD8D5), width: 2),
+            color: on ? AppColors.primary : AppColors.lineStrong, width: 2),
       ),
       child: on ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
     );
@@ -362,7 +362,7 @@ class ProgressBar extends StatelessWidget {
             value: value.clamp(0, 1),
             minHeight: 8,
             color: AppColors.primary,
-            backgroundColor: const Color(0xFFDBE6E3),
+            backgroundColor: AppColors.track,
           ),
         ),
       );
