@@ -83,11 +83,39 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
             if (options.isEmpty) const Muted('바꿀 수 있는 운동이 없어요.'),
             for (final e in options)
               LineRow(
-                onTap: () {
+                onTap: () async {
+                  // 체크한 세트가 있으면 사라진다고 먼저 묻고, 바꾼 뒤에도 되돌릴 수 있게 한다 (리뷰 10/28 #1)
+                  final doneCount = current.sets.where((s) => s.done).length;
+                  if (doneCount > 0) {
+                    final ok = await showDialog<bool>(
+                      context: sheet,
+                      builder: (dialog) => AlertDialog(
+                        title: Text('기록한 $doneCount세트가 사라져요. 바꿀까요?'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('그대로 두기')),
+                          TextButton(onPressed: () => Navigator.pop(dialog, true), child: const Text('바꾸기')),
+                        ],
+                      ),
+                    );
+                    if (ok != true || !sheet.mounted) return;
+                  }
+                  final before = current;
+                  final at = index;
                   final (amount, sets) = targetFor(e, _rule);
-                  setState(() => session.items[index] = SessionExercise(e.name, amount, sets));
+                  setState(() => session.items[at] = SessionExercise(e.name, amount, sets));
                   Navigator.pop(sheet);
-                  toast(context, '${e.name}(으)로 바꿨어요');
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(SnackBar(
+                      content: Text('${e.name}(으)로 바꿨어요'),
+                      action: SnackBarAction(
+                        label: '되돌리기',
+                        onPressed: () {
+                          if (mounted) setState(() => session.items[at] = before);
+                        },
+                      ),
+                    ));
                 },
                 left: Row(children: [
                   ExerciseFigureView(e.id, size: 44, radius: 10),
