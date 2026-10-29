@@ -422,5 +422,36 @@ class PainTag extends StatelessWidget {
       style: const TextStyle(color: AppColors.warning, fontSize: 13, fontWeight: FontWeight.w700));
 }
 
+/// 아픈 부위와 겹치는 운동의 경고 문구 (운동 상세와 운동 진행에서 같이 쓴다)
+String painPhrase(List<String> areas) => '${areas.join(', ')} 통증이 있으면 이 운동은 피하는 게 좋아요.';
+
+/// 빨간 큰 경고 상자 (디자인 리뷰 10/28 #3)
+class WarningBox extends StatelessWidget {
+  const WarningBox(this.text, {super.key, this.top = 12});
+  final String text;
+  final double top;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: top),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.warningSoft,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.warning),
+      ),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 26),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(text,
+              style: const TextStyle(color: AppColors.warning, fontSize: 16, fontWeight: FontWeight.w700, height: 1.4)),
+        ),
+      ]),
+    );
+  }
+}
+
 String formatNumber(int n) => n.toString().replaceAllMapped(
     RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => ',');
