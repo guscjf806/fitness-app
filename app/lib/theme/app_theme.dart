@@ -86,6 +86,8 @@ class AppTheme {
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.text,
       ),
+      // 아래에서 올라오는 창의 배경색은 여기서만 정한다 (디자인 리뷰 10/28 #4)
+      bottomSheetTheme: const BottomSheetThemeData(backgroundColor: AppColors.background),
       dividerColor: AppColors.line,
     );
   }

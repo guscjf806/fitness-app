@@ -73,13 +73,12 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
     ];
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: AppColors.background,
       isScrollControlled: true,
       builder: (sheet) => SafeArea(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxHeight: MediaQuery.of(sheet).size.height * .7),
           child: ListView(shrinkWrap: true, padding: const EdgeInsets.fromLTRB(20, 20, 20, 20), children: [
-            const Text('운동 대체', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            const SheetTitle('운동 대체'),
             Muted('${current.name} 대신 할 수 있는 ${info?.part ?? ''} 운동이에요. 내 조건에 맞는 것만 보여 줘요.'),
             if (options.isEmpty) const Muted('바꿀 수 있는 운동이 없어요.'),
             for (final e in options)
@@ -107,7 +106,6 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
   void _showList() {
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: AppColors.background,
       isScrollControlled: true,
       builder: (sheet) => StatefulBuilder(
         builder: (sheet, setSheet) => SafeArea(
@@ -117,7 +115,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
                 child: Row(children: [
-                  const Expanded(child: Text('오늘 운동 순서', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
+                  const Expanded(child: SheetTitle('오늘 운동 순서')),
                   Muted('총 ${session.items.length}개 · ${session.doneSets}/${session.totalSets}세트', bottom: 0),
                 ]),
               ),

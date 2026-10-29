@@ -381,7 +381,6 @@ class _ConsentScreenState extends State<ConsentScreen> {
   void _showDraft(String title) {
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: AppColors.background,
       builder: (_) => Padding(
         padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [

@@ -20,11 +20,10 @@ void toast(BuildContext context, String message) {
 void requireLogin(BuildContext context, String reason, {bool thenGenerate = false}) {
   showModalBottomSheet<void>(
     context: context,
-    backgroundColor: AppColors.background,
     builder: (sheetContext) => Padding(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('로그인이 필요해요', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        const SheetTitle('로그인이 필요해요'),
         const SizedBox(height: 8),
         Muted(reason),
         const Muted('게스트로 입력한 몸 정보는 로그인 후에도 그대로 이어져요.'),
@@ -100,6 +99,16 @@ class H1 extends StatelessWidget {
             style: const TextStyle(
                 fontSize: 24, fontWeight: FontWeight.w700, height: 1.3)),
       );
+}
+
+/// 아래에서 올라오는 창(바텀시트)의 제목 (디자인 리뷰 10/28 #4)
+class SheetTitle extends StatelessWidget {
+  const SheetTitle(this.text, {super.key});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) =>
+      Text(text, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700));
 }
 
 class H2 extends StatelessWidget {

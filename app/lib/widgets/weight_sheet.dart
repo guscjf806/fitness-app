@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../screens/onboarding.dart';
 import '../state/demo_state.dart';
-import '../theme/app_theme.dart';
 import 'common.dart';
 
 /// 이번 주 몸무게 기록 (기획서 B4: 몸무게 재입력 → TDEE 재계산 → 식단·운동 루틴 재생성 제안).
@@ -12,7 +11,6 @@ void showWeightSheet(BuildContext context) {
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: AppColors.background,
     builder: (sheetContext) => Padding(
       padding: EdgeInsets.fromLTRB(20, 24, 20, 28 + MediaQuery.of(sheetContext).viewInsets.bottom),
       child: _WeightForm(controller: controller, parentContext: context),
@@ -54,7 +52,7 @@ class _WeightFormState extends State<_WeightForm> {
     if (result != null) {
       final changed = (result.$2 - result.$1).abs() >= 50;
       return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('이번 주 몸무게를 기록했어요', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        const SheetTitle('이번 주 몸무게를 기록했어요'),
         const SizedBox(height: 10),
         Muted(result.$1 == result.$2
             ? '목표 칼로리는 ${formatNumber(result.$2)}kcal 그대로예요.'
@@ -71,7 +69,7 @@ class _WeightFormState extends State<_WeightForm> {
     }
     final last = demo.weightLogs.isEmpty ? null : demo.weightLogs.last;
     return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('이번 주 몸무게', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+      const SheetTitle('이번 주 몸무게'),
       const SizedBox(height: 6),
       Muted(last == null ? '일주일에 한 번, 같은 시간대(예: 아침 공복)에 재면 좋아요.' : '지난 기록: ${last.date} ${last.kg}kg'),
       TextField(

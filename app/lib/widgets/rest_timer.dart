@@ -12,7 +12,6 @@ String _mmss(int seconds) => '${seconds ~/ 60}:${(seconds % 60).toString().padLe
 Future<void> showRestTimer(BuildContext context, int recommendedSeconds) {
   return showModalBottomSheet<void>(
     context: context,
-    backgroundColor: AppColors.background,
     // 작은 화면에서도 아래 버튼이 잘리지 않게 높이를 내용에 맞추고, 넘치면 스크롤한다
     isScrollControlled: true,
     builder: (_) => SafeArea(child: SingleChildScrollView(child: _RestTimer(recommended: recommendedSeconds))),
@@ -73,7 +72,7 @@ class _RestTimerState extends State<_RestTimer> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const Text('휴식 타이머', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        const SheetTitle('휴식 타이머'),
         const SizedBox(height: 12),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,

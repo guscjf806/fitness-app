@@ -63,11 +63,10 @@ void showQuotaExhausted(BuildContext context) {
   final reset = AppConfig.nextQuotaReset(DateTime.now());
   showModalBottomSheet<void>(
     context: context,
-    backgroundColor: AppColors.background,
     builder: (sheetContext) => Padding(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('이번 달 무료 횟수를 모두 썼어요', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        const SheetTitle('이번 달 무료 횟수를 모두 썼어요'),
         const SizedBox(height: 10),
         Row(children: [
           const Expanded(child: Text('이번 달 AI 사용')),
