@@ -207,7 +207,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
             const Muted('마지막 일지 10월 6일', bottom: 0),
           ]),
           right: FilledButton.tonal(
-            style: FilledButton.styleFrom(minimumSize: const Size(0, 38)),
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
             onPressed: () => Navigator.pushNamed(context, Routes.logWrite, arguments: m),
             child: const Text('일지 작성'),
           ),
@@ -293,7 +293,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       for (var i = 0; i < videos.length; i++)
         LineRow(
           left: Text(videos[i]),
-          right: TextButton(onPressed: () => setState(() => videos.removeAt(i)), child: const Text('삭제')),
+          right: TextButton(onPressed: () => setState(() => videos.removeAt(i)), child: const Text('삭제', style: TextStyle(color: AppColors.warning))),
         ),
       Row(children: [
         Expanded(child: AppButton('촬영하기', kind: ButtonKind.soft, onPressed: () => _addVideo('촬영'))),
