@@ -135,10 +135,11 @@ class _ExerciseRow extends StatelessWidget {
     return LineRow(
       onTap: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: name),
       left: Row(children: [
+        // 손가락으로 누르기 쉽게 누르는 자리를 48px로 (디자인 리뷰 10/28 #1)
         InkWell(
           customBorder: const CircleBorder(),
           onTap: onCheck,
-          child: Padding(padding: const EdgeInsets.all(6), child: CheckCircle(checked)),
+          child: SizedBox(width: 48, height: 48, child: Center(child: CheckCircle(checked))),
         ),
         const SizedBox(width: 4),
         ExerciseThumb(name),
