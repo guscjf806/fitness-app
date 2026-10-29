@@ -125,14 +125,12 @@ class LogDetailScreen extends StatelessWidget {
           ),
         ],
       ],
-      Container(
-        margin: const EdgeInsets.only(top: 10),
-        padding: const EdgeInsets.all(14),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(left: BorderSide(color: AppColors.primary, width: 4)),
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      // 다른 강조 카드와 같은 모양 (디자인 리뷰 10/28 #6)
+      Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: AppCard(
+          accent: true,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('선생님 코멘트', bottom: 4),
           Text(log.comment),
           const SizedBox(height: 8),
@@ -142,6 +140,7 @@ class LogDetailScreen extends StatelessWidget {
             labelStyle: const TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.w700),
           ),
         ]),
+        ),
       ),
     ]);
   }

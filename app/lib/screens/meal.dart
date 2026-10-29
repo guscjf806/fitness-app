@@ -226,15 +226,9 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
       else if (failed)
         FailureView(title: 'AI 답변을 받지 못했어요', onRetry: _ask)
       else
-        Container(
-          margin: const EdgeInsets.only(top: 10),
-          padding: const EdgeInsets.all(14),
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            border: Border(left: BorderSide(color: AppColors.primary, width: 4)),
-            borderRadius: BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12)),
-          ),
-          child: Text(post.reply),
+        Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: AppCard(accent: true, child: Text(post.reply)),
         ),
     ]);
   }
