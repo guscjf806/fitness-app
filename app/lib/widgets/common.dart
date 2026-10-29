@@ -412,5 +412,15 @@ class Disclaimer extends StatelessWidget {
       Padding(padding: const EdgeInsets.only(top: 10), child: Muted(text));
 }
 
+/// 아픈 부위와 겹치는 운동에 붙이는 표시. 예: '무릎·허리 주의' (디자인 리뷰 10/28 #2)
+class PainTag extends StatelessWidget {
+  const PainTag(this.areas, {super.key});
+  final List<String> areas;
+
+  @override
+  Widget build(BuildContext context) => Text('${areas.join('·')} 주의',
+      style: const TextStyle(color: AppColors.warning, fontSize: 13, fontWeight: FontWeight.w700));
+}
+
 String formatNumber(int n) => n.toString().replaceAllMapped(
     RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => ',');

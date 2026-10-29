@@ -5,7 +5,6 @@ import '../logic/intensity.dart';
 import '../routes.dart';
 import '../state/workout_session.dart';
 import '../state/demo_state.dart';
-import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/exercise_figure.dart';
 
@@ -131,7 +130,7 @@ class _ExerciseRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final info = exerciseByName(name);
-    final caution = info != null && info.avoidFor.any(demo.painAreas.contains);
+    final painHit = info == null ? const <String>[] : info.avoidFor.where(demo.painAreas.contains).toList();
     return LineRow(
       onTap: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: name),
       left: Row(children: [
@@ -147,8 +146,7 @@ class _ExerciseRow extends StatelessWidget {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(name),
-            if (caution)
-              const Text('통증 부위 주의', style: TextStyle(color: AppColors.warning, fontSize: 12)),
+            if (painHit.isNotEmpty) PainTag(painHit),
           ]),
         ),
       ]),
