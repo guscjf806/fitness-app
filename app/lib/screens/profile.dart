@@ -26,28 +26,7 @@ class ProfileTab extends StatelessWidget {
             AppButton('3초 만에 로그인하기', onPressed: () => Navigator.pushNamed(context, Routes.login)),
           ]),
         ),
-        LineRow(left: const Text('몸 정보 수정'), right: arrow(), onTap: () => Navigator.pushNamed(context, Routes.body)),
-        LineRow(
-          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('운동 장소·장비 수정'),
-            Muted(demo.conditionText, bottom: 0),
-          ]),
-          right: arrow(),
-          onTap: () => Navigator.pushNamed(context, Routes.condition),
-        ),
-        LineRow(
-          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('못 먹는 음식·아픈 부위 수정'),
-            Muted(
-                [
-                  demo.allergies.isEmpty && demo.allergyNote.isEmpty ? '못 먹는 음식 없음' : '못 먹는 음식 ${demo.allergies.length + (demo.allergyNote.isEmpty ? 0 : 1)}개',
-                  demo.painAreas.isEmpty ? '아픈 부위 없음' : demo.painAreas.join(', '),
-                ].join(' · '),
-                bottom: 0),
-          ]),
-          right: arrow(),
-          onTap: () => Navigator.pushNamed(context, Routes.condition2),
-        ),
+        const _ConditionRows(),
         const Muted('게스트로 입력한 정보는 이 기기에만 저장돼요.', bottom: 0),
       ]);
     }
@@ -69,23 +48,7 @@ class ProfileTab extends StatelessWidget {
               kind: ButtonKind.soft, top: 4, onPressed: () => Navigator.pushNamed(context, Routes.subscribe)),
         ]),
       ),
-      LineRow(left: const Text('몸 정보 수정'), right: arrow(), onTap: () => Navigator.pushNamed(context, Routes.body)),
-      LineRow(
-        left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('운동 장소·장비 수정'),
-          Muted(demo.conditionText, bottom: 0),
-        ]),
-        right: arrow(),
-        onTap: () => Navigator.pushNamed(context, Routes.condition),
-      ),
-      LineRow(
-        left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('못 먹는 음식·아픈 부위 수정'),
-          Muted(demo.painAreas.isEmpty ? '아픈 부위 없음' : '아픈 부위: ${demo.painAreas.join(', ')}', bottom: 0),
-        ]),
-        right: arrow(),
-        onTap: () => Navigator.pushNamed(context, Routes.condition2),
-      ),
+      const _ConditionRows(),
       LineRow(
         left: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('매일 알림'),
@@ -132,6 +95,40 @@ class ProfileTab extends StatelessWidget {
       LineRow(
         left: const Text('계정 삭제', style: TextStyle(color: AppColors.warning)),
         onTap: () => toast(context, '계정 삭제 확인 화면이 열려요 (데모)'),
+      ),
+    ]);
+  }
+}
+
+/// 몸 정보·운동 조건·못 먹는 음식 수정 3줄. 게스트와 회원이 같이 쓴다 (디자인 리뷰 10/29 #1)
+class _ConditionRows extends StatelessWidget {
+  const _ConditionRows();
+
+  @override
+  Widget build(BuildContext context) {
+    Widget arrow() => const Muted('›', bottom: 0);
+    return Column(children: [
+      LineRow(left: const Text('몸 정보 수정'), right: arrow(), onTap: () => Navigator.pushNamed(context, Routes.body)),
+      LineRow(
+        left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('운동 장소·장비 수정'),
+          Muted(demo.conditionText, bottom: 0),
+        ]),
+        right: arrow(),
+        onTap: () => Navigator.pushNamed(context, Routes.condition),
+      ),
+      LineRow(
+        left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('못 먹는 음식·아픈 부위 수정'),
+          Muted(
+              [
+                demo.allergies.isEmpty && demo.allergyNote.isEmpty ? '못 먹는 음식 없음' : '못 먹는 음식 ${demo.allergies.length + (demo.allergyNote.isEmpty ? 0 : 1)}개',
+                demo.painAreas.isEmpty ? '아픈 부위 없음' : demo.painAreas.join(', '),
+              ].join(' · '),
+              bottom: 0),
+        ]),
+        right: arrow(),
+        onTap: () => Navigator.pushNamed(context, Routes.condition2),
       ),
     ]);
   }
