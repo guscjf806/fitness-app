@@ -128,9 +128,16 @@ class _TodayWorkoutCard extends StatelessWidget {
         onTap: () => demo.update(() => demo.tab = 2),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(today.title, style: AppText.bodyStrong),
-          Muted('${today.items.length}종목 · ${today.items.take(2).map((e) => e.name).join(', ')} 외', bottom: 8),
-          // 좁은 폰에서 줄이 넘어가도 그림끼리 붙지 않게
-          Wrap(spacing: 6, runSpacing: 6, children: [for (final e in today.items) ExerciseThumb(e.name)]),
+          // 쉬는 날은 '0종목'이 아니라 쉬는 날 안내, '외'는 3개 이상일 때만 (리뷰 10/30 #4)
+          if (today.isRest || today.items.isEmpty)
+            const Muted('오늘은 쉬는 날이에요 · 가벼운 걷기 30분 추천', bottom: 0)
+          else ...[
+            Muted(
+                '${today.items.length}종목 · ${today.items.take(2).map((e) => e.name).join(', ')}${today.items.length > 2 ? ' 외' : ''}',
+                bottom: 8),
+            // 좁은 폰에서 줄이 넘어가도 그림끼리 붙지 않게
+            Wrap(spacing: 6, runSpacing: 6, children: [for (final e in today.items) ExerciseThumb(e.name)]),
+          ],
         ]),
       );
 }
