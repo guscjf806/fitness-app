@@ -64,6 +64,9 @@ class DemoState extends ChangeNotifier {
   final Set<int> checked = {};
   final List<String> addedExercises = [];
 
+  /// 직접 추가한 운동 중 체크한 것 (리뷰 10/30 #2)
+  final Set<String> checkedAdded = {};
+
   /// 진행 중인 운동 (S23 운동 진행)
   WorkoutSession? session;
   bool workoutDone = false;

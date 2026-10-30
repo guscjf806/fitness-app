@@ -21,6 +21,7 @@ void main() {
       ..session = null
       ..workoutDone = false
       ..addedExercises.clear()
+      ..checkedAdded.clear()
       ..checked.clear();
   });
 
@@ -189,6 +190,16 @@ void main() {
     await tester.tap(find.text('전신 · 맨몸')); // 검색창에도 '버피'가 있어서 목록 줄의 설명을 누른다
     await tester.pumpAndSettle();
     await tester.tap(find.text('추가 완료 (1)'));
+    await tester.pumpAndSettle();
+    expect(demo.addedExercises, contains('버피'));
+
+    // 직접 추가한 운동도 빼고 되돌릴 수 있다 (리뷰 10/30 #2)
+    await tester.ensureVisible(find.byTooltip('버피 빼기'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('버피 빼기'));
+    await tester.pumpAndSettle();
+    expect(demo.addedExercises, isNot(contains('버피')));
+    await tester.tap(find.text('되돌리기'));
     await tester.pumpAndSettle();
     expect(demo.addedExercises, contains('버피'));
   });

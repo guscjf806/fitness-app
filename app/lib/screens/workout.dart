@@ -5,6 +5,7 @@ import '../logic/intensity.dart';
 import '../routes.dart';
 import '../state/workout_session.dart';
 import '../state/demo_state.dart';
+import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/exercise_figure.dart';
 
@@ -24,7 +25,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
       requireLogin(context, '운동 완료와 연속 기록은 계정에 저장돼요. 로그인하면 오늘부터 기록이 쌓여요.');
       return;
     }
-    if (demo.checked.isEmpty) {
+    if (demo.checked.isEmpty && demo.checkedAdded.isEmpty) {
       toast(context, '체크한 종목이 없어요. 종목을 체크해 주세요');
       return;
     }
@@ -39,6 +40,28 @@ class _WorkoutTabState extends State<WorkoutTab> {
   }
 
   void _undoFinish() => demo.update(() => demo.workoutDone = false);
+
+  /// 잘못 추가한 운동을 빼고, 스낵바로 되돌릴 수 있게 한다 (리뷰 10/30 #2)
+  void _removeAdded(String name) {
+    final at = demo.addedExercises.indexOf(name);
+    final wasChecked = demo.checkedAdded.contains(name);
+    demo.update(() {
+      demo.addedExercises.remove(name);
+      demo.checkedAdded.remove(name);
+    });
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text('$name을(를) 오늘 루틴에서 뺐어요'),
+        action: SnackBarAction(
+          label: '되돌리기',
+          onPressed: () => demo.update(() {
+            demo.addedExercises.insert(at.clamp(0, demo.addedExercises.length), name);
+            if (wasChecked) demo.checkedAdded.add(name);
+          }),
+        ),
+      ));
+  }
 
   /// 운동 진행(S23)을 시작한다. 진행 중이던 운동이 있으면 이어서 한다.
   void _start(WorkoutDay day) {
@@ -87,7 +110,15 @@ class _WorkoutTabState extends State<WorkoutTab> {
           ),
       if (isToday)
         for (final name in demo.addedExercises)
-          _ExerciseRow(name: name, amount: _addedAmount(name), checked: demo.workoutDone, onCheck: null),
+          _ExerciseRow(
+            name: name,
+            amount: _addedAmount(name),
+            checked: demo.workoutDone || demo.checkedAdded.contains(name),
+            onCheck: demo.workoutDone
+                ? null
+                : () => demo.update(() => demo.checkedAdded.contains(name) ? demo.checkedAdded.remove(name) : demo.checkedAdded.add(name)),
+            onRemove: demo.workoutDone ? null : () => _removeAdded(name),
+          ),
       if (demo.painAreas.isNotEmpty)
         Padding(
           padding: const EdgeInsets.only(top: 8),
@@ -133,11 +164,14 @@ class _WorkoutTabState extends State<WorkoutTab> {
 
 /// 루틴 한 줄: 동그라미를 누르면 체크, 나머지를 누르면 운동 방법(S22)
 class _ExerciseRow extends StatelessWidget {
-  const _ExerciseRow({required this.name, required this.amount, required this.checked, required this.onCheck});
+  const _ExerciseRow({required this.name, required this.amount, required this.checked, required this.onCheck, this.onRemove});
   final String name;
   final String amount;
   final bool checked;
   final VoidCallback? onCheck;
+
+  /// 직접 추가한 운동만 뺄 수 있다
+  final VoidCallback? onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +196,17 @@ class _ExerciseRow extends StatelessWidget {
           ]),
         ),
       ]),
-      right: Muted(amount, bottom: 0),
+      right: onRemove == null
+          ? Muted(amount, bottom: 0)
+          : Row(mainAxisSize: MainAxisSize.min, children: [
+              Muted(amount, bottom: 0),
+              IconButton(
+                tooltip: '$name 빼기',
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                icon: const Icon(Icons.close, color: AppColors.textSub),
+                onPressed: onRemove,
+              ),
+            ]),
     );
   }
 }
