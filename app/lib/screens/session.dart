@@ -217,7 +217,8 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
           const SizedBox(width: 6),
           Text(elapsed),
         ]),
-        actions: [TextButton(onPressed: _showList, child: const Text('운동 목록'))],
+        // 같은 창을 여는 버튼이 두 개라 헷갈려서 하나로 (디자인 리뷰 10/30 #7)
+        actions: [TextButton(onPressed: _showList, child: const Text('목록·순서'))],
       ),
       body: ListView(padding: const EdgeInsets.fromLTRB(18, 4, 18, 20), children: [
         // 끝까지 하고 나서야 저장 안 된다는 걸 알지 않게 처음부터 알린다 (리뷰 10/28 #6)
@@ -241,7 +242,6 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
             onPressed: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: ex.name),
           ),
           ActionChip(avatar: const Icon(Icons.swap_horiz, size: 18), label: const Text('운동 대체'), onPressed: _swap),
-          ActionChip(avatar: const Icon(Icons.swap_vert, size: 18), label: const Text('순서 변경'), onPressed: _showList),
         ]),
         const SizedBox(height: 10),
         // 세트 칸이 화면 위쪽에 오도록 그림을 줄이고, 무게 고르는 법은 쉬운 말과 본문 글씨로 (리뷰 10/28 #7)
