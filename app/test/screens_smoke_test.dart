@@ -244,6 +244,22 @@ void main() {
     expect(find.text('푸시업'), findsOneWidget);
     await tester.tap(find.text('푸시업'));
     await step(tester);
+    // 기록한 세트가 있으면 먼저 묻는다 (리뷰 10/28 #1)
+    expect(find.text('기록한 1세트가 사라져요. 바꿀까요?'), findsOneWidget);
+    await tester.tap(find.text('바꾸기'));
+    await step(tester);
+    expect(demo.session!.items[0].name, '푸시업');
+    // 되돌리면 원래 운동과 기록이 돌아온다
+    await tester.tap(find.text('되돌리기'));
+    await step(tester);
+    expect(demo.session!.items[0].name, '벤치프레스');
+    expect(demo.session!.items[0].sets.where((s) => s.done).length, 1);
+    await tester.tap(find.text('운동 대체'));
+    await step(tester);
+    await tester.tap(find.text('푸시업'));
+    await step(tester);
+    await tester.tap(find.text('바꾸기'));
+    await step(tester);
     expect(demo.session!.items[0].name, '푸시업');
 
     // 다음 운동으로 넘어가 마지막에서 완료
