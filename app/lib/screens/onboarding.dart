@@ -42,7 +42,7 @@ class StartScreen extends StatelessWidget {
             });
             Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
           },
-          style: TextButton.styleFrom(foregroundColor: AppColors.textSub, minimumSize: const Size.fromHeight(44)),
+          style: TextButton.styleFrom(foregroundColor: AppColors.textSub),
           child: const Text('로그인 없이 둘러보기'), // 50대 이상에게 낯선 '게스트' 대신 (리뷰 10/29 #7)
         ),
       ),

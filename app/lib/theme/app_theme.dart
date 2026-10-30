@@ -85,6 +85,22 @@ class AppTheme {
           textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
         ),
       ),
+      // 테두리 버튼·글자 버튼·확인 창도 여기서 한 번만 정한다 (디자인 리뷰 10/30 #4)
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primaryDark,
+          minimumSize: const Size(0, 48),
+          side: const BorderSide(color: AppColors.line),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(foregroundColor: AppColors.primaryDark, minimumSize: const Size(48, 48)),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.background,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         isDense: true,
         contentPadding:
