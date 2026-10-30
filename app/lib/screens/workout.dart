@@ -18,7 +18,7 @@ class WorkoutTab extends StatefulWidget {
 }
 
 class _WorkoutTabState extends State<WorkoutTab> {
-  int weekday = 0; // 0 = 오늘(월)
+  int weekday = 0; // 0 = 오늘
 
   void _finish() {
     if (demo.isGuest) {
@@ -87,7 +87,10 @@ class _WorkoutTabState extends State<WorkoutTab> {
       _IntensityGuide(),
       // 7일을 모두 보여 주고, 쉬는 날은 칩에 '휴식'으로 표시한다
       DayChips(
-          labels: [for (var i = 0; i < 7; i++) demo.week[i].isRest ? '${dayLabels[i]} 휴식' : dayLabels[i]],
+          // 오늘 칩에는 '오늘'을 붙인다 (리뷰 10/30 #6). 목업에서는 늘 첫 칸이 오늘이다
+          labels: [
+            for (var i = 0; i < 7; i++) '${dayLabels[i]}${i == 0 ? '·오늘' : ''}${demo.week[i].isRest ? ' 휴식' : ''}',
+          ],
           selected: weekday,
           onSelect: (i) => setState(() => weekday = i)),
       H2(demo.place == '둘 다' && !day.isRest ? '${day.title} (${day.atHome ? '집' : '헬스장'})' : day.title, top: 0),
@@ -159,9 +162,9 @@ class _WorkoutTabState extends State<WorkoutTab> {
               )
             : AppButton('기록 없이 완료 체크만 하기', kind: ButtonKind.soft, onPressed: _finish),
       if (!isToday && !day.isRest)
-        const Padding(
-          padding: EdgeInsets.only(top: 10),
-          child: Muted('운동 완료는 오늘(월) 루틴에서만 누를 수 있어요.'),
+        Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Muted('운동 완료는 오늘(${dayLabels[0]}) 루틴에서만 누를 수 있어요.'),
         ),
       const Disclaimer(),
       ])),
