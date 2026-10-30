@@ -220,11 +220,7 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
       if (waiting)
         const Padding(
           padding: EdgeInsets.only(top: 24),
-          child: Column(children: [
-            CircularProgressIndicator(color: AppColors.primary),
-            SizedBox(height: 10),
-            Muted('AI가 식단을 확인하는 중이에요'),
-          ]),
+          child: LoadingView('AI가 식단을 확인하는 중이에요'),
         )
       else if (failed)
         FailureView(title: 'AI 답변을 받지 못했어요', onRetry: _ask)

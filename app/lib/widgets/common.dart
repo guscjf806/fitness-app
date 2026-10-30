@@ -441,6 +441,21 @@ class PainTag extends StatelessWidget {
       style: const TextStyle(color: AppColors.warning, fontSize: 13, fontWeight: FontWeight.w700));
 }
 
+/// '만드는 중' 로딩 표시: 빙글빙글 + 굵은 문구 + 회색 보조 문구 (디자인 리뷰 10/30 #5)
+class LoadingView extends StatelessWidget {
+  const LoadingView(this.message, {super.key, this.sub});
+  final String message;
+  final String? sub;
+
+  @override
+  Widget build(BuildContext context) => Column(mainAxisSize: MainAxisSize.min, children: [
+        const CircularProgressIndicator(color: AppColors.primary),
+        const SizedBox(height: 16),
+        Text(message, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700)),
+        if (sub != null) Muted(sub!, align: TextAlign.center),
+      ]);
+}
+
 /// 아픈 부위와 겹치는 운동의 경고 문구 (운동 상세와 운동 진행에서 같이 쓴다)
 String painPhrase(List<String> areas) => '${areas.join(', ')} 통증이 있으면 이 운동은 피하는 게 좋아요.';
 

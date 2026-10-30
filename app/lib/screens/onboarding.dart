@@ -522,14 +522,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
   Widget build(BuildContext context) {
     if (generating) {
       return const Scaffold(
-        body: Center(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            CircularProgressIndicator(color: AppColors.primary),
-            SizedBox(height: 16),
-            Text('AI가 식단과 운동 루틴을 만들고 있어요', style: TextStyle(fontWeight: FontWeight.w700)),
-            Muted('잠시만 기다려 주세요'),
-          ]),
-        ),
+        body: Center(child: LoadingView('AI가 식단과 운동 루틴을 만들고 있어요', sub: '잠시만 기다려 주세요')),
       );
     }
     if (failed) {
