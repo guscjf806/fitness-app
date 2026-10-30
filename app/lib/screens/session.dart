@@ -251,6 +251,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
             unit: ex.unit,
             bodyweight: ex.bodyweight,
             onToggle: () => _toggleSet(i),
+            onKg: (v) => setState(() => ex.copyKgDown(i, v)),
           ),
         Row(children: [
           Expanded(
@@ -295,25 +296,19 @@ class _SetRow extends StatelessWidget {
     required this.unit,
     required this.bodyweight,
     required this.onToggle,
+    required this.onKg,
   });
   final int number;
   final SetEntry entry;
   final String unit;
   final bool bodyweight;
   final VoidCallback onToggle;
+  final ValueChanged<String> onKg;
 
   @override
   Widget build(BuildContext context) {
-    Widget field(String value, String suffix, ValueChanged<String> onChanged) => SizedBox(
-          width: 82,
-          child: TextFormField(
-            initialValue: value,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            textAlign: TextAlign.center,
-            decoration: InputDecoration(suffixText: suffix, hintText: suffix, isDense: true),
-            onChanged: onChanged,
-          ),
-        );
+    Widget field(String value, String suffix, ValueChanged<String> onChanged) =>
+        SizedBox(width: 82, child: _NumCell(value: value, suffix: suffix, onChanged: onChanged));
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -328,7 +323,7 @@ class _SetRow extends StatelessWidget {
         if (bodyweight)
           const SizedBox(width: 82, child: Muted('맨몸', bottom: 0, align: TextAlign.center))
         else
-          field(entry.kg, 'kg', (v) => entry.kg = v),
+          field(entry.kg, 'kg', onKg),
         const Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: Text('/')),
         field(entry.reps, unit, (v) => entry.reps = v),
         const SizedBox(width: 6),
@@ -341,4 +336,43 @@ class _SetRow extends StatelessWidget {
       ]),
     );
   }
+}
+
+/// 숫자 칸. 다른 세트에서 값이 채워지면(무게 복사) 이 칸도 따라 바뀐다. 입력 중인 칸은 건드리지 않는다.
+class _NumCell extends StatefulWidget {
+  const _NumCell({required this.value, required this.suffix, required this.onChanged});
+  final String value;
+  final String suffix;
+  final ValueChanged<String> onChanged;
+
+  @override
+  State<_NumCell> createState() => _NumCellState();
+}
+
+class _NumCellState extends State<_NumCell> {
+  late final controller = TextEditingController(text: widget.value);
+  final focus = FocusNode();
+
+  @override
+  void didUpdateWidget(_NumCell old) {
+    super.didUpdateWidget(old);
+    if (!focus.hasFocus && controller.text != widget.value) controller.text = widget.value;
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    focus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => TextField(
+        controller: controller,
+        focusNode: focus,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        textAlign: TextAlign.center,
+        decoration: InputDecoration(suffixText: widget.suffix, hintText: widget.suffix, isDense: true),
+        onChanged: widget.onChanged,
+      );
 }

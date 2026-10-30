@@ -6,6 +6,9 @@ class SetEntry {
   String kg;
   String reps;
   bool done;
+
+  /// 위 세트에서 복사해 온 무게인지 (직접 적은 무게는 덮어쓰지 않는다)
+  bool kgCopied = false;
 }
 
 class SessionExercise {
@@ -17,6 +20,20 @@ class SessionExercise {
   /// 목표 개수 (예: '8~12개', '30~40초')
   String target;
   final List<SetEntry> sets;
+
+  /// [i]세트에 무게를 적으면 아래의 빈 칸(또는 복사해 온 칸)에도 같은 값을 채운다 (리뷰 10/28 #5)
+  void copyKgDown(int i, String kg) {
+    sets[i]
+      ..kg = kg
+      ..kgCopied = false;
+    for (final s in sets.skip(i + 1)) {
+      if (s.kg.isEmpty || s.kgCopied) {
+        s
+          ..kg = kg
+          ..kgCopied = kg.isNotEmpty;
+      }
+    }
+  }
 
   /// 버티기 운동이면 '초', 아니면 '회'
   String get unit => target.endsWith('초') ? '초' : '회';
