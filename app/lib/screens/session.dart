@@ -314,8 +314,9 @@ class _SetRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 폭을 숫자로 고정하지 않아서 큰 글씨·좁은 폰에서도 줄이 넘치지 않게 (디자인 리뷰 10/30 #3)
     Widget field(String value, String suffix, ValueChanged<String> onChanged) =>
-        SizedBox(width: 82, child: _NumCell(value: value, suffix: suffix, onChanged: onChanged));
+        Expanded(child: _NumCell(value: value, suffix: suffix, onChanged: onChanged));
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -325,10 +326,13 @@ class _SetRow extends StatelessWidget {
         border: Border.all(color: entry.done ? AppColors.primary : Colors.transparent),
       ),
       child: Row(children: [
-        SizedBox(width: 44, child: Text('$number세트', style: const TextStyle(fontWeight: FontWeight.w700))),
-        const Spacer(),
+        ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 44),
+          child: Text('$number세트', softWrap: false, style: const TextStyle(fontWeight: FontWeight.w700)),
+        ),
+        const SizedBox(width: 8),
         if (bodyweight)
-          const SizedBox(width: 82, child: Muted('맨몸', bottom: 0, align: TextAlign.center))
+          const Expanded(child: Muted('맨몸', bottom: 0, align: TextAlign.center))
         else
           field(entry.kg, 'kg', onKg),
         const Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: Text('/')),
