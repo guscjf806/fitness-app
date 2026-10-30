@@ -254,13 +254,16 @@ class _SegButton extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(label,
+        // 손가락으로 누르기 쉽게 높이 48px 이상 (디자인 리뷰 10/30 #1)
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Center(
+            child: Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: selected ? AppColors.primaryDark : AppColors.text,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w400)),
+          ),
         ),
       ),
     );
