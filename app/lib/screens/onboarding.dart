@@ -43,7 +43,7 @@ class StartScreen extends StatelessWidget {
             Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
           },
           style: TextButton.styleFrom(foregroundColor: AppColors.textSub, minimumSize: const Size.fromHeight(44)),
-          child: const Text('게스트로 시작하기'),
+          child: const Text('로그인 없이 둘러보기'), // 50대 이상에게 낯선 '게스트' 대신 (리뷰 10/29 #7)
         ),
       ),
       const Muted('로그인 없이 예시 식단·운동 루틴과 칼로리 계산을 써 볼 수 있어요.', align: TextAlign.center),
@@ -308,7 +308,7 @@ class ResultScreen extends StatelessWidget {
       if (!demo.loggedIn)
         const Padding(
           padding: EdgeInsets.only(top: 8),
-          child: Muted('만들려면 로그인이 필요해요.', align: TextAlign.center),
+          child: Text('만들려면 로그인이 필요해요.', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColors.text)),
         ),
     ]);
   }
@@ -477,7 +477,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
       if (!requiredDone)
         const Padding(
           padding: EdgeInsets.only(top: 8),
-          child: Muted('필수 항목에 모두 동의해야 시작할 수 있어요.', align: TextAlign.center),
+          child: Text('필수 항목에 모두 동의해야 시작할 수 있어요.', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColors.text)),
         ),
     ]),
     );

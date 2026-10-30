@@ -81,7 +81,7 @@ void main() {
 
   testWidgets('게스트로 시작하면 탭을 둘러보고, 저장 기능은 로그인 안내가 뜬다', (tester) async {
     await start(tester);
-    await tester.tap(find.text('게스트로 시작하기'));
+    await tester.tap(find.text('로그인 없이 둘러보기'));
     await tester.pumpAndSettle();
     expect(demo.isGuest, isTrue);
     expect(demo.entered, isTrue, reason: '다시 열면 바로 탭으로 들어가야 한다');
@@ -100,7 +100,7 @@ void main() {
 
   testWidgets('게스트: 칼로리 계산 → 식단·운동 루틴 만들기 → 로그인 → 동의 → 기간 선택', (tester) async {
     await start(tester);
-    await tester.tap(find.text('게스트로 시작하기'));
+    await tester.tap(find.text('로그인 없이 둘러보기'));
     await tester.pumpAndSettle();
 
     await tapText(tester, '내 칼로리 계산하기');
