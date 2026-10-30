@@ -79,28 +79,19 @@ class _RecordsScreenState extends State<RecordsScreen> {
         ),
       ),
       const H2('배지'),
-      GridView.count(
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 2,
-        children: [
-          for (final b in badges)
-            Opacity(
-              opacity: b.$2 ? 1 : 0.55,
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(14)),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(b.$1, style: const TextStyle(fontWeight: FontWeight.w700)),
-                  Muted(b.$2 ? '획득했어요' : b.$3, bottom: 0),
-                ]),
-              ),
-            ),
-        ],
-      ),
+      // 두 칸씩 놓고 내용만큼 높이가 늘게 해서 큰 글씨에서도 잘리지 않게.
+      // 못 받은 배지는 통째로 흐리게 하지 않고 이름 색만 바꿔 글씨를 읽을 수 있게 (디자인 리뷰 10/30 #2)
+      for (var i = 0; i < badges.length; i += 2)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: IntrinsicHeight(
+            child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              Expanded(child: _BadgeCell(badges[i])),
+              const SizedBox(width: 10),
+              Expanded(child: i + 1 < badges.length ? _BadgeCell(badges[i + 1]) : const SizedBox()),
+            ]),
+          ),
+        ),
     ];
   }
 
@@ -191,6 +182,25 @@ class _CalendarDay extends StatelessWidget {
             )),
         ]),
       ),
+    );
+  }
+}
+
+/// 배지 한 칸
+class _BadgeCell extends StatelessWidget {
+  const _BadgeCell(this.badge);
+  final (String, bool, String) badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final (name, earned, how) = badge;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(14)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(name, style: TextStyle(fontWeight: FontWeight.w700, color: earned ? AppColors.text : AppColors.textSub)),
+        Muted(earned ? '획득했어요' : how, bottom: 0),
+      ]),
     );
   }
 }
