@@ -37,7 +37,7 @@ class HomeTab extends StatelessWidget {
           accent: true,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Muted('선생님이 준 이번 주 미션', bottom: 2),
-            Text(demo.missions['김지아'] ?? '아직 미션이 없어요'),
+            Text(demo.missions[demo.memberName] ?? '아직 미션이 없어요'),
           ]),
         ),
       const H2('오늘의 작은 목표', top: 6),
@@ -57,6 +57,9 @@ class HomeTab extends StatelessWidget {
             TextSpan(text: ' / ${formatNumber(target)} kcal'),
           ])),
           ProgressBar(todayEatenKcal / target),
+          // 목표를 넘으면 막대만 꽉 차지 않게 한 줄로 알린다 (겁주지 않는 말투, 리뷰 10/30 #7)
+          if (todayEatenKcal > target)
+            Muted('목표보다 ${formatNumber(todayEatenKcal - target)} kcal 더 드셨어요. 내일 조금 가볍게 맞춰 봐요.', bottom: 0),
         ]),
       ),
       const H2('오늘 식단'),
