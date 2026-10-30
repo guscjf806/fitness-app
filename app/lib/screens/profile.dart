@@ -94,6 +94,8 @@ class ProfileTab extends StatelessWidget {
       if (role == 'trainer')
         LineRow(left: const Text('회원 관리'), showArrow: true, onTap: () => demo.update(() => demo.tab = 3)),
       LineRow(left: const Text('구독'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.subscribe)),
+      // 위험한 줄은 실수로 누르지 않게 떼어서 맨 아래에 (디자인 리뷰 10/29 #6)
+      const SizedBox(height: 24),
       LineRow(left: const Text('로그아웃'), onTap: () => demo.switchRole('guest')),
       LineRow(
         left: const Text('계정 삭제', style: TextStyle(color: AppColors.warning)),
