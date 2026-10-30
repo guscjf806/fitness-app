@@ -26,12 +26,12 @@ class SessionExercise {
     sets[i]
       ..kg = kg
       ..kgCopied = false;
+    // 직접 적은 칸을 만나면 거기서 멈춘다 (그 아래는 그 칸의 무게를 따른다)
     for (final s in sets.skip(i + 1)) {
-      if (s.kg.isEmpty || s.kgCopied) {
-        s
-          ..kg = kg
-          ..kgCopied = kg.isNotEmpty;
-      }
+      if (s.kg.isNotEmpty && !s.kgCopied) break;
+      s
+        ..kg = kg
+        ..kgCopied = kg.isNotEmpty;
     }
   }
 
