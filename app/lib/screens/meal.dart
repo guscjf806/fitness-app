@@ -145,6 +145,8 @@ class _PhotoBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 누를 수 없는 사진 자리(AI 답변 화면)는 버튼처럼 보이지 않게 (디자인 리뷰 10/29 #7)
+    final tappable = onTap != null;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -154,14 +156,15 @@ class _PhotoBox extends StatelessWidget {
           height: 150,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: AppColors.primarySoft,
+            color: tappable ? AppColors.primarySoft : AppColors.surface,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.primary),
+            border: tappable ? Border.all(color: AppColors.primary) : null,
           ),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Icon(Icons.photo_camera_outlined, color: AppColors.primaryDark),
+            Icon(tappable ? Icons.photo_camera_outlined : Icons.image_outlined,
+                color: tappable ? AppColors.primaryDark : AppColors.textSub),
             const SizedBox(height: 4),
-            Text(label, style: AppText.caption.copyWith(color: AppColors.primaryDark)),
+            Text(label, style: AppText.caption.copyWith(color: tappable ? AppColors.primaryDark : AppColors.textSub)),
           ]),
         ),
       ),

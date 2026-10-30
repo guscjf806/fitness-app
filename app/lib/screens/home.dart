@@ -29,7 +29,7 @@ class HomeTab extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Muted('연속 기록${demo.restMode ? ' · 쉬기 모드 중' : ''}', bottom: 2),
           BigNumber('${demo.streak}일째'),
-          Muted('${demo.recordedToday ? '오늘 기록 완료!' : '오늘 하나만 기록하면 7일이에요'} · 자세히 ›', bottom: 0),
+          Muted('${demo.recordedToday ? '오늘 기록 완료!' : '오늘 하나만 기록하면 ${demo.streak + 1}일이에요'} · 자세히 ›', bottom: 0),
         ]),
       ),
       if (demo.role == 'member')
