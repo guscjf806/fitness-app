@@ -69,18 +69,22 @@ TdeeResult calcTdee({
   );
 }
 
+/// 만 14세 미만일 때의 안내 (화면에서 이 문구로 미성년 안내를 띄운다)
+const underAgeError = '만 14세 이상만 이용할 수 있어요';
+
 /// 몸 정보 입력 확인. 문제가 있으면 칸별 안내 문구를 돌려준다.
+/// 무엇이 틀렸는지 알 수 있게 문장으로 쓴다 (리뷰 10/29 #2)
 Map<String, String> validateBody({required String height, required String age, required String weight}) {
   final errors = <String, String>{};
   final h = double.tryParse(height), a = int.tryParse(age), w = double.tryParse(weight);
-  if (h == null || h < minHeight || h > maxHeight) errors['height'] = '${minHeight.toInt()}~${maxHeight.toInt()}cm';
+  if (h == null || h < minHeight || h > maxHeight) errors['height'] = '키는 ${minHeight.toInt()}~${maxHeight.toInt()}cm 사이로 적어 주세요';
   if (a == null) {
-    errors['age'] = '숫자로 입력';
+    errors['age'] = '나이를 숫자로 적어 주세요';
   } else if (a < minAge) {
-    errors['age'] = '만 14세 이상';
+    errors['age'] = underAgeError;
   } else if (a > maxAge) {
-    errors['age'] = '$maxAge세 이하';
+    errors['age'] = '나이는 $maxAge세 이하로 적어 주세요';
   }
-  if (w == null || w < minWeight || w > maxWeight) errors['weight'] = '${minWeight.toInt()}~${maxWeight.toInt()}kg';
+  if (w == null || w < minWeight || w > maxWeight) errors['weight'] = '몸무게는 ${minWeight.toInt()}~${maxWeight.toInt()}kg 사이로 적어 주세요';
   return errors;
 }

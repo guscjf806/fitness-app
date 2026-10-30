@@ -157,6 +157,9 @@ void main() {
     await tester.enterText(find.widgetWithText(TextFormField, '나이 (만)'), '16');
     await tester.pumpAndSettle();
     expect(find.textContaining('성장기에는'), findsOneWidget);
+    // 앞에서 뜬 안내 토스트가 '다음' 버튼을 가리지 않게 닫는다
+    ScaffoldMessenger.of(tester.element(find.text('몸 정보'))).removeCurrentSnackBar();
+    await tester.pumpAndSettle();
     await tapText(tester, '다음');
     expect(find.text('운동 강도와 조건'), findsOneWidget);
   });

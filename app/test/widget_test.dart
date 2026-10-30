@@ -13,6 +13,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('몸 정보'), findsOneWidget);
 
+    // 몸 정보 칸이 한 줄에 하나씩이라 '다음'이 아래에 있다
+    await tester.dragUntilVisible(find.text('다음'), find.byType(Scrollable).last, const Offset(0, -300));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('다음'));
     await tester.pumpAndSettle();
     await tester.dragUntilVisible(find.text('다음'), find.byType(Scrollable).last, const Offset(0, -300));

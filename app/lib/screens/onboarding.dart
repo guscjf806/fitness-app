@@ -67,7 +67,7 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
     final errors = validateBody(height: demo.height, age: demo.age, weight: demo.weight);
     if (errors.isNotEmpty) {
       setState(() => tried = true);
-      toast(context, errors['age'] == '만 14세 이상' ? '만 14세 이상만 이용할 수 있어요.' : '입력한 값을 확인해 주세요.');
+      toast(context, errors['age'] == underAgeError ? '$underAgeError.' : '입력한 값을 확인해 주세요.');
       return;
     }
     demo.update(() {}); // 입력한 숫자를 기기에 저장
@@ -81,14 +81,13 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
     return AppPage(title: '몸 정보', children: [
       const Muted('성별', bottom: 0),
       Seg(options: const ['남', '여'], value: demo.sex, onChanged: (v) => demo.update(() => demo.sex = v)),
-      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Expanded(child: NumField(label: '키 (cm)', value: demo.height, error: errors['height'], onChanged: (v) => demo.update(() => demo.height = v))),
-        const SizedBox(width: 8),
-        Expanded(child: NumField(label: '나이 (만)', value: demo.age, error: errors['age'], onChanged: (v) => demo.update(() => demo.age = v))),
-        const SizedBox(width: 8),
-        Expanded(child: NumField(label: '몸무게 (kg)', value: demo.weight, error: errors['weight'], onChanged: (v) => demo.update(() => demo.weight = v))),
-      ]),
-      if (errors['age'] == '만 14세 이상')
+      // 폰에서 라벨이 잘리지 않게 한 줄에 한 칸씩 (리뷰 10/29 #2)
+      NumField(label: '키 (cm)', value: demo.height, error: errors['height'], onChanged: (v) => demo.update(() => demo.height = v)),
+      const SizedBox(height: 12),
+      NumField(label: '나이 (만)', value: demo.age, error: errors['age'], onChanged: (v) => demo.update(() => demo.age = v)),
+      const SizedBox(height: 12),
+      NumField(label: '몸무게 (kg)', value: demo.weight, error: errors['weight'], onChanged: (v) => demo.update(() => demo.weight = v)),
+      if (errors['age'] == underAgeError)
         const Padding(
           padding: EdgeInsets.only(top: 8),
           child: Text('만 14세 미만은 보호자 동의 절차가 필요해서 지금은 이용할 수 없어요.',

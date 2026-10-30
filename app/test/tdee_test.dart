@@ -42,7 +42,7 @@ void main() {
 
   test('입력 범위를 벗어나면 안내한다', () {
     expect(validateBody(height: '175', age: '30', weight: '72'), isEmpty);
-    expect(validateBody(height: '175', age: '13', weight: '72')['age'], '만 14세 이상');
+    expect(validateBody(height: '175', age: '13', weight: '72')['age'], underAgeError);
     expect(validateBody(height: '0', age: '30', weight: '500').keys, containsAll(['height', 'weight']));
   });
 }
