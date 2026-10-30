@@ -225,7 +225,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         Muted('${index + 1} / ${session.items.length}', bottom: 2),
         Text(ex.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
         const SizedBox(height: 12),
-        if (info != null) Center(child: ExerciseFigureView(info.id, size: 170, radius: 20)),
+        if (info != null) Center(child: ExerciseFigureView(info.id, size: 120, radius: 16)),
         // 아픈 부위와 겹치면 운동 상세와 같은 경고 상자를 그림 바로 아래에 (리뷰 10/28 #3)
         if (info != null && info.avoidFor.any(demo.painAreas.contains))
           WarningBox(painPhrase(info.avoidFor.where(demo.painAreas.contains).toList())),
@@ -244,7 +244,12 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
           ActionChip(avatar: const Icon(Icons.swap_vert, size: 18), label: const Text('순서 변경'), onPressed: _showList),
         ]),
         const SizedBox(height: 10),
-        Muted('목표 ${ex.target}${ex.bodyweight ? '' : ' · 무게: 마지막 세트 뒤 ${_rule.repsInReserve} 더 할 수 있게'}'),
+        // 세트 칸이 화면 위쪽에 오도록 그림을 줄이고, 무게 고르는 법은 쉬운 말과 본문 글씨로 (리뷰 10/28 #7)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text('목표 ${ex.target}${ex.bodyweight ? '' : '\n무게: 마지막 세트를 끝냈을 때 ${_rule.repsInReserve}쯤 더 할 수 있는 무게'}',
+              style: const TextStyle(fontSize: 14, color: AppColors.text)),
+        ),
         for (var i = 0; i < ex.sets.length; i++)
           _SetRow(
             key: ValueKey('${ex.name}-$i'),
