@@ -26,6 +26,6 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('결과 보기'));
     await tester.pumpAndSettle();
-    expect(find.text('하루 소비 칼로리 (TDEE)'), findsOneWidget);
+    expect(find.text('하루에 쓰는 칼로리'), findsOneWidget);
   });
 }

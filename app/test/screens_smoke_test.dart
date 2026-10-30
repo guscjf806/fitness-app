@@ -110,7 +110,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('의사와 먼저 상담'), findsOneWidget);
     await tapText(tester, '결과 보기'); // S03-2
-    expect(find.text('하루 소비 칼로리 (TDEE)'), findsOneWidget);
+    expect(find.text('하루에 쓰는 칼로리'), findsOneWidget);
     expect(find.text('감량 목표 칼로리'), findsOneWidget);
 
     await tapText(tester, '식단·운동 루틴 만들기');

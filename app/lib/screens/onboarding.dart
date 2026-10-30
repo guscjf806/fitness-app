@@ -18,7 +18,7 @@ class StartScreen extends StatelessWidget {
       const Text('내 몸에 맞춘 식단과 운동, AI가 짜드려요',
           style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, height: 1.3)),
       const SizedBox(height: 8),
-      const Muted('몸 정보로 하루 소비 칼로리(TDEE)를 계산하고, 일주일 또는 한 달치 식단과 운동 루틴을 만들어요.'),
+      const Muted('몸 정보로 하루에 쓰는 칼로리를 계산하고, 일주일 또는 한 달치 식단과 운동 루틴을 만들어요.'),
       const SizedBox(height: 10),
       const AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -271,13 +271,26 @@ class ResultScreen extends StatelessWidget {
     return AppPage(title: '내 칼로리', children: [
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Muted('하루 소비 칼로리 (TDEE)', bottom: 2),
+          const Muted('하루에 쓰는 칼로리', bottom: 2),
           BigNumber('${formatNumber(r.tdee)} kcal'),
-          Muted(
-            '기초대사량 ${formatNumber(r.bmr)} + 활동량(${demo.currentIntensity}) 반영\n'
-            '${r.usedKatchMcArdle ? '체지방량을 반영한 공식(Katch-McArdle)으로 계산했어요' : '표준 공식(Mifflin-St Jeor)으로 계산했어요'}'
-            '${hasMuscle ? '\n근육량은 AI가 식단·운동 루틴을 짤 때 참고해요' : ''}',
-            bottom: 0,
+          if (hasMuscle) const Muted('근육량은 AI가 식단·운동 루틴을 짤 때 참고해요', bottom: 0),
+          // 영어 공식 이름은 궁금한 사람만 펼쳐 보게 접어 둔다 (리뷰 10/29 #4)
+          Theme(
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              title: const Text('어떻게 계산했나요?', style: TextStyle(fontSize: 14, color: AppColors.primaryDark)),
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: EdgeInsets.zero,
+              expandedCrossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Muted(
+                  '가만히 있어도 쓰는 칼로리(기초대사량) ${formatNumber(r.bmr)}kcal에 '
+                  '지금 운동 강도(${demo.currentIntensity})를 곱했어요.\n'
+                  '${r.usedKatchMcArdle ? '체지방량을 반영한 Katch-McArdle 공식' : '키·나이·몸무게로 계산하는 Mifflin-St Jeor 공식'}을 썼어요.',
+                  bottom: 0,
+                ),
+              ],
+            ),
           ),
         ]),
       ),

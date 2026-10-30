@@ -89,7 +89,7 @@ class HomeTab extends StatelessWidget {
           const Text('내 칼로리', style: TextStyle(fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           if (demo.calorieCalculated) ...[
-            const Muted('하루 소비 칼로리 (TDEE)', bottom: 2),
+            const Muted('하루에 쓰는 칼로리', bottom: 2),
             BigNumber('${formatNumber(demo.tdee.tdee)} kcal'),
             const SizedBox(height: 8),
             Muted('${demo.goal} 목표 칼로리', bottom: 2),
