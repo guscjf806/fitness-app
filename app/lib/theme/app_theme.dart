@@ -38,6 +38,15 @@ class AppColors {
   static const kakaoText = Color(0xFF191600);
 }
 
+/// 글자 크기는 여기서만 정한다 (디자인 리뷰 10/29 #4). 화면은 차례로 옮기는 중: 홈·식단·내 정보 먼저
+class AppText {
+  static const caption = TextStyle(fontSize: 13);
+  static const body = TextStyle(fontSize: 14);
+  static const bodyStrong = TextStyle(fontSize: 14, fontWeight: FontWeight.w700);
+  static const title = TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
+  static const number = TextStyle(fontSize: 22, fontWeight: FontWeight.w700);
+}
+
 class AppTheme {
   static ThemeData get light {
     final scheme = ColorScheme.fromSeed(

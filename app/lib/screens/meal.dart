@@ -39,17 +39,17 @@ class _MealTabState extends State<MealTab> {
       const Muted("g(그램) 수와 칼로리는 AI가 추정한 값이에요. 같은 음식이 없으면 오른쪽 '대체' 음식으로 바꿔 드세요.", bottom: 10),
       for (final m in meals) _MealCard(m),
       LineRow(
-        left: const Text('합계', style: TextStyle(fontWeight: FontWeight.w700)),
-        right: Text('${formatNumber(total)} kcal', style: const TextStyle(fontWeight: FontWeight.w700)),
+        left: const Text('합계', style: AppText.bodyStrong),
+        right: Text('${formatNumber(total)} kcal', style: AppText.bodyStrong),
       ),
       const H2('내가 올린 식단'),
       for (var i = 0; i < demo.mealPosts.length; i++)
         AppCard(
           onTap: () => Navigator.pushNamed(context, Routes.mealReply, arguments: i),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(demo.mealPosts[i].date, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(demo.mealPosts[i].date, style: AppText.bodyStrong),
             Muted(demo.mealPosts[i].note, bottom: 4),
-            Text(demo.mealPosts[i].reply, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
+            Text(demo.mealPosts[i].reply, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.caption),
           ]),
         ),
       AppButton('오늘 식단 올리기', onPressed: () => Navigator.pushNamed(context, Routes.mealPost)),
@@ -67,7 +67,7 @@ class _MealCard extends StatelessWidget {
     return AppCard(
       child: Column(children: [
         Row(children: [
-          Expanded(child: Text(meal.title, style: const TextStyle(fontWeight: FontWeight.w700))),
+          Expanded(child: Text(meal.title, style: AppText.bodyStrong)),
           Muted('${meal.kcal} kcal', bottom: 0),
         ]),
         for (final f in meal.foods)
@@ -79,13 +79,13 @@ class _MealCard extends StatelessWidget {
               Expanded(
                 child: Text.rich(TextSpan(children: [
                   TextSpan(text: '${f.name} '),
-                  TextSpan(text: '${f.grams}g', style: const TextStyle(fontWeight: FontWeight.w700)),
+                  TextSpan(text: '${f.grams}g', style: AppText.bodyStrong),
                 ])),
               ),
               Flexible(
                 child: Text('대체: ${f.altName} ${f.altGrams}g',
                     textAlign: TextAlign.right,
-                    style: const TextStyle(fontSize: 12, color: AppColors.textSub)),
+                    style: AppText.caption.copyWith(color: AppColors.textSub)),
               ),
             ]),
           ),
@@ -161,7 +161,7 @@ class _PhotoBox extends StatelessWidget {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             const Icon(Icons.photo_camera_outlined, color: AppColors.primaryDark),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(color: AppColors.primaryDark, fontSize: 13)),
+            Text(label, style: AppText.caption.copyWith(color: AppColors.primaryDark)),
           ]),
         ),
       ),
@@ -212,7 +212,7 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
     final post = demo.mealPosts[index];
     return AppPage(title: 'AI 답변', children: [
       const _PhotoBox(label: '식단 사진'),
-      Text(post.date, style: const TextStyle(fontWeight: FontWeight.w700)),
+      Text(post.date, style: AppText.bodyStrong),
       Muted(post.note),
       if (waiting)
         const Padding(

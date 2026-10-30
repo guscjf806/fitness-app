@@ -19,7 +19,7 @@ class ProfileTab extends StatelessWidget {
         const Muted('게스트'),
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('로그인하면 이런 걸 쓸 수 있어요', style: TextStyle(fontWeight: FontWeight.w700)),
+            const Text('로그인하면 이런 걸 쓸 수 있어요', style: AppText.bodyStrong),
             const SizedBox(height: 6),
             const Text('· 내 몸에 맞춘 AI 식단·운동 루틴 (월 5회 무료)\n· 식단 사진 올리고 AI 답변 받기\n· 연속 기록, 배지, 운동 달력\n· 매일 알림, PT 운동일지'),
             AppButton('3초 만에 로그인하기', onPressed: () => Navigator.pushNamed(context, Routes.login)),
@@ -39,7 +39,7 @@ class ProfileTab extends StatelessWidget {
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            const Expanded(child: Text('이번 달 AI 사용', style: TextStyle(fontWeight: FontWeight.w700))),
+            const Expanded(child: Text('이번 달 AI 사용', style: AppText.bodyStrong)),
             Muted('${demo.quotaExhausted ? AppConfig.freeMonthlyAiLimit : demo.aiUsed} / ${AppConfig.freeMonthlyAiLimit}회', bottom: 0),
           ]),
           ProgressBar(demo.quotaExhausted ? 1 : demo.aiUsed / AppConfig.freeMonthlyAiLimit),
@@ -152,7 +152,7 @@ class _PtCodeScreenState extends State<PtCodeScreen> {
         maxLength: 6,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 22, letterSpacing: 4),
+        style: AppText.number.copyWith(fontWeight: FontWeight.w400, letterSpacing: 4),
         decoration: const InputDecoration(hintText: '예: 482915', counterText: ''),
         onChanged: (v) => code = v,
       ),

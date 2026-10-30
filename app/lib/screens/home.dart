@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/mock_data.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
+import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/weight_sheet.dart';
 import 'onboarding.dart';
@@ -52,7 +53,7 @@ class HomeTab extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('오늘 먹은 칼로리', bottom: 2),
           Text.rich(TextSpan(children: [
-            TextSpan(text: formatNumber(todayEatenKcal), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+            TextSpan(text: formatNumber(todayEatenKcal), style: AppText.number),
             TextSpan(text: ' / ${formatNumber(target)} kcal'),
           ])),
           ProgressBar(todayEatenKcal / target),
@@ -73,7 +74,7 @@ class HomeTab extends StatelessWidget {
       const GuestBanner('로그인하면 내 몸에 맞춘 식단·운동 루틴을 AI가 만들고, 연속 기록도 쌓을 수 있어요.'),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('내 칼로리', style: TextStyle(fontWeight: FontWeight.w700)),
+          const Text('내 칼로리', style: AppText.bodyStrong),
           const SizedBox(height: 8),
           if (demo.calorieCalculated) ...[
             const Muted('하루에 쓰는 칼로리', bottom: 2),
@@ -109,7 +110,7 @@ class _TodayMealRows extends StatelessWidget {
           LineRow(
             onTap: () => demo.update(() => demo.tab = 1),
             left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(m.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+              Text(m.title, style: AppText.bodyStrong),
               Muted(m.foods.map((f) => '${f.name} ${f.grams}g').join(' · '), bottom: 0),
             ]),
             right: Muted('${m.kcal} kcal', bottom: 0),
@@ -126,7 +127,7 @@ class _TodayWorkoutCard extends StatelessWidget {
   Widget build(BuildContext context) => AppCard(
         onTap: () => demo.update(() => demo.tab = 2),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(today.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+          Text(today.title, style: AppText.bodyStrong),
           Muted('${today.items.length}종목 · ${today.items.take(2).map((e) => e.name).join(', ')} 외', bottom: 8),
           // 좁은 폰에서 줄이 넘어가도 그림끼리 붙지 않게
           Wrap(spacing: 6, runSpacing: 6, children: [for (final e in today.items) ExerciseThumb(e.name)]),
