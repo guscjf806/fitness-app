@@ -58,23 +58,9 @@ class HomeTab extends StatelessWidget {
         ]),
       ),
       const H2('오늘 식단'),
-      for (final m in mealDays[0])
-        LineRow(
-          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(m.title, style: const TextStyle(fontWeight: FontWeight.w700)),
-            Muted(m.foods.map((f) => '${f.name} ${f.grams}g').join(' · '), bottom: 0),
-          ]),
-          right: Muted('${m.kcal} kcal', bottom: 0),
-        ),
+      const _TodayMealRows(),
       const H2('오늘 운동'),
-      AppCard(
-        onTap: () => demo.update(() => demo.tab = 2),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(today.title, style: const TextStyle(fontWeight: FontWeight.w700)),
-          Muted('${today.items.length}종목 · ${today.items.take(2).map((e) => e.name).join(', ')} 외', bottom: 8),
-          Wrap(spacing: 6, children: [for (final e in today.items) ExerciseThumb(e.name)]),
-        ]),
-      ),
+      _TodayWorkoutCard(today),
       const Disclaimer(),
     ]);
   }
@@ -104,24 +90,45 @@ class HomeTab extends StatelessWidget {
       ),
       const H2('예시 식단'),
       const Muted('로그인하면 내 목표 칼로리에 맞춰 새로 만들어요.'),
-      for (final m in mealDays[0])
-        LineRow(
-          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(m.title, style: const TextStyle(fontWeight: FontWeight.w700)),
-            Muted(m.foods.map((f) => '${f.name} ${f.grams}g').join(' · '), bottom: 0),
-          ]),
-          right: Muted('${m.kcal} kcal', bottom: 0),
-        ),
+      const _TodayMealRows(),
       const H2('예시 운동'),
-      AppCard(
+      _TodayWorkoutCard(today),
+      const Disclaimer(text: '예시 식단과 운동 루틴은 의료 조언이 아닙니다.'),
+    ]);
+  }
+}
+
+/// 오늘 식단 줄. 누르면 식단 탭으로 간다 (디자인 리뷰 10/29 #2)
+class _TodayMealRows extends StatelessWidget {
+  const _TodayMealRows();
+
+  @override
+  Widget build(BuildContext context) => Column(children: [
+        for (final m in mealDays[0])
+          LineRow(
+            onTap: () => demo.update(() => demo.tab = 1),
+            left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(m.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+              Muted(m.foods.map((f) => '${f.name} ${f.grams}g').join(' · '), bottom: 0),
+            ]),
+            right: Muted('${m.kcal} kcal', bottom: 0),
+          ),
+      ]);
+}
+
+/// 오늘 운동 카드. 누르면 운동 탭으로 간다
+class _TodayWorkoutCard extends StatelessWidget {
+  const _TodayWorkoutCard(this.today);
+  final WorkoutDay today;
+
+  @override
+  Widget build(BuildContext context) => AppCard(
         onTap: () => demo.update(() => demo.tab = 2),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(today.title, style: const TextStyle(fontWeight: FontWeight.w700)),
           Muted('${today.items.length}종목 · ${today.items.take(2).map((e) => e.name).join(', ')} 외', bottom: 8),
-          Wrap(spacing: 6, children: [for (final e in today.items) ExerciseThumb(e.name)]),
+          // 좁은 폰에서 줄이 넘어가도 그림끼리 붙지 않게
+          Wrap(spacing: 6, runSpacing: 6, children: [for (final e in today.items) ExerciseThumb(e.name)]),
         ]),
-      ),
-      const Disclaimer(text: '예시 식단과 운동 루틴은 의료 조언이 아닙니다.'),
-    ]);
-  }
+      );
 }
