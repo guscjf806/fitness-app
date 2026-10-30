@@ -59,13 +59,16 @@ class ProfileTab extends StatelessWidget {
           onChanged: (v) => demo.update(() => demo.pushOn = v),
         ),
       ),
+      // 알림을 끄면 시간도 고를 수 없게 회색으로 (디자인 리뷰 10/29 #5)
       LineRow(
-        left: const Text('알림 시간'),
+        left: Text('알림 시간', style: TextStyle(color: demo.pushOn ? AppColors.text : AppColors.textSub)),
         right: TextButton(
-          onPressed: () async {
-            final picked = await showTimePicker(context: context, initialTime: demo.pushTime);
-            if (picked != null) demo.update(() => demo.pushTime = picked);
-          },
+          onPressed: !demo.pushOn
+              ? null
+              : () async {
+                  final picked = await showTimePicker(context: context, initialTime: demo.pushTime);
+                  if (picked != null) demo.update(() => demo.pushTime = picked);
+                },
           child: Text(demo.pushTime.format(context)),
         ),
       ),
