@@ -131,6 +131,20 @@ void main() {
     expect(find.textContaining('조심할 부위: 무릎'), findsOneWidget);
   });
 
+  testWidgets('리뷰 10/29 #1: 동의 화면에서 뒤로 가면 로그인이 취소되어 동의를 건너뛸 수 없다', (tester) async {
+    await start(tester);
+    await tapText(tester, '로그인');
+    await tapText(tester, '카카오로 시작하기');
+    expect(find.text('시작하기 전에'), findsOneWidget);
+    await tester.binding.handlePopRoute(); // 휴대폰 뒤로 가기
+    await tester.pumpAndSettle();
+    expect(find.text('동의하지 않으면 로그인이 취소돼요'), findsOneWidget);
+    await tapText(tester, '로그인 취소');
+    expect(demo.isGuest, isTrue);
+    expect(demo.consented, isFalse);
+    expect(find.text('시작하기 전에'), findsNothing);
+  });
+
   testWidgets('1번: 만 14세 미만은 넘어가지 못하고, 청소년 감량은 −10%로 계산한다', (tester) async {
     await start(tester);
     await tapText(tester, '내 칼로리 계산하기');

@@ -171,6 +171,8 @@ class DemoState extends ChangeNotifier {
     role = p.getString('role') ?? role;
     entered = p.getBool('entered') ?? entered;
     consented = p.getBool('consented') ?? consented;
+    // 동의를 마치지 않은 채 앱이 꺼졌으면 로그인하지 않은 상태로 본다 (리뷰 10/29 #1)
+    if (role != 'guest' && !consented) role = 'guest';
     final f = p.getStringList('profile');
     if (f != null && f.length == 18) {
       sex = f[0];

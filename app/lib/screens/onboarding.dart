@@ -295,7 +295,11 @@ class ResultScreen extends StatelessWidget {
 
 /// '식단·운동 루틴 만들기': 로그인했으면 기간 선택(S06)으로, 아니면 로그인 안내 후 S06으로 이어진다.
 void openPlanMaker(BuildContext context) {
-  if (demo.loggedIn && demo.quotaExhausted) {
+  // 로그인만 하고 동의를 안 했으면 동의 화면부터 (리뷰 10/29 #1)
+  if (demo.loggedIn && !demo.consented) {
+    demo.continueToGenerate = true;
+    Navigator.pushNamed(context, Routes.consent);
+  } else if (demo.loggedIn && demo.quotaExhausted) {
     showQuotaExhausted(context);
   } else if (demo.loggedIn) {
     Navigator.pushNamed(context, Routes.generate);
@@ -392,9 +396,35 @@ class _ConsentScreenState extends State<ConsentScreen> {
     );
   }
 
+  /// 동의하지 않고 뒤로 가면 로그인을 취소한다. 건강정보 동의를 건너뛰지 못하게 (리뷰 10/29 #1)
+  Future<void> _leave() async {
+    final cancel = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: const Text('동의하지 않으면 로그인이 취소돼요'),
+        content: const Text('나가면 로그인 없이 둘러보기로 돌아가요.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('계속 동의하기')),
+          TextButton(onPressed: () => Navigator.pop(dialog, true), child: const Text('로그인 취소')),
+        ],
+      ),
+    );
+    if (cancel != true || !mounted) return;
+    demo.update(() {
+      demo.role = 'guest';
+      demo.continueToGenerate = false;
+    });
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AppPage(title: '시작하기 전에', children: [
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _leave();
+      },
+      child: AppPage(title: '시작하기 전에', children: [
       const Muted('서비스를 쓰려면 아래 내용에 동의해 주세요. 몸 정보와 식단 사진은 민감한 건강정보라 따로 동의를 받아요.'),
       AppCard(
         onTap: () => setState(() => agreed.length == items.length
@@ -428,7 +458,8 @@ class _ConsentScreenState extends State<ConsentScreen> {
           padding: EdgeInsets.only(top: 8),
           child: Muted('필수 항목에 모두 동의해야 시작할 수 있어요.', align: TextAlign.center),
         ),
-    ]);
+    ]),
+    );
   }
 }
 
