@@ -224,7 +224,7 @@ void main() {
     expect(find.text('추천 1:15'), findsOneWidget);
     await tester.tap(find.text('+ 10초'));
     await step(tester);
-    await tester.tap(find.text('휴식 중단'));
+    await tester.tap(find.text('휴식 끝내기'));
     await step(tester);
     expect(find.text('휴식 타이머'), findsNothing);
     expect(demo.session!.doneSets, 1);
@@ -258,7 +258,7 @@ void main() {
     await step(tester);
     await tester.tap(find.byTooltip('1세트 완료'));
     await step(tester);
-    await tester.tap(find.text('휴식 중단')); // 세트를 마치면 휴식 타이머가 먼저 뜬다
+    await tester.tap(find.text('휴식 끝내기')); // 세트를 마치면 휴식 타이머가 먼저 뜬다
     await step(tester);
     await tester.tap(find.text('운동 완료'));
     await step(tester);

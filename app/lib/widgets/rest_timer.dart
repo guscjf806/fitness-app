@@ -118,11 +118,8 @@ class _RestTimerState extends State<_RestTimer> {
           Expanded(child: AppButton('+ 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(10))),
         ]),
         const SizedBox(height: 12),
-        FilledButton(
-          style: FilledButton.styleFrom(backgroundColor: AppColors.warning),
-          onPressed: () => Navigator.pop(context),
-          child: const Text('휴식 중단'),
-        ),
+        // 운동을 그만두는 버튼처럼 보이지 않게 기본 색으로 (리뷰 10/28 #4)
+        AppButton('휴식 끝내기', top: 0, onPressed: () => Navigator.pop(context)),
       ]),
     );
   }
