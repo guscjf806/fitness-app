@@ -220,6 +220,8 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         actions: [TextButton(onPressed: _showList, child: const Text('운동 목록'))],
       ),
       body: ListView(padding: const EdgeInsets.fromLTRB(18, 4, 18, 20), children: [
+        // 끝까지 하고 나서야 저장 안 된다는 걸 알지 않게 처음부터 알린다 (리뷰 10/28 #6)
+        if (demo.isGuest) const GuestBanner('체크해 볼 수 있지만 저장되지 않아요. 로그인하면 기록이 쌓여요.'),
         Muted('${index + 1} / ${session.items.length}', bottom: 2),
         Text(ex.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
         const SizedBox(height: 12),
