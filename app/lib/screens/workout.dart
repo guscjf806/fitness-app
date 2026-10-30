@@ -76,7 +76,10 @@ class _WorkoutTabState extends State<WorkoutTab> {
   Widget build(BuildContext context) {
     final day = demo.week[weekday];
     final isToday = weekday == 0;
-    return TabBody(children: [
+    // 운동 직전에 한 손으로 바로 누르게 '운동 시작'은 화면 아래에 고정 (리뷰 10/30 #3)
+    final showStart = isToday && !day.isRest && !demo.workoutDone;
+    return Column(children: [
+      Expanded(child: TabBody(children: [
       H1(demo.isGuest ? '예시 운동' : '운동'),
       if (demo.isGuest)
         const GuestBanner('로그인하면 내 운동 장소·장비·시간에 맞춘 루틴을 AI가 만들어요. 체크는 해 볼 수 있지만 저장되지 않아요.'),
@@ -119,19 +122,25 @@ class _WorkoutTabState extends State<WorkoutTab> {
                 : () => demo.update(() => demo.checkedAdded.contains(name) ? demo.checkedAdded.remove(name) : demo.checkedAdded.add(name)),
             onRemove: demo.workoutDone ? null : () => _removeAdded(name),
           ),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton(
+          onPressed: () async {
+            final picked = await Navigator.pushNamed(context, Routes.exercisePick);
+            if (picked is List<String> && picked.isNotEmpty) {
+              demo.update(() => demo.addedExercises.addAll(picked.where((n) => !demo.addedExercises.contains(n))));
+              if (context.mounted) toast(context, '${picked.length}개 운동을 오늘 루틴에 추가했어요');
+              setState(() => weekday = 0);
+            }
+          },
+          child: const Text('+ 운동 추가'),
+        ),
+      ),
       if (demo.painAreas.isNotEmpty)
         Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Muted('${demo.painAreas.join(', ')} 통증을 고르셨어요. 무리가 가는 운동은 AI가 루틴에서 빼고, 주의 표시를 해 둬요.'),
         ),
-      AppButton('+ 운동 추가', kind: ButtonKind.soft, onPressed: () async {
-        final picked = await Navigator.pushNamed(context, Routes.exercisePick);
-        if (picked is List<String> && picked.isNotEmpty) {
-          demo.update(() => demo.addedExercises.addAll(picked.where((n) => !demo.addedExercises.contains(n))));
-          if (context.mounted) toast(context, '${picked.length}개 운동을 오늘 루틴에 추가했어요');
-          setState(() => weekday = 0);
-        }
-      }),
       if (isToday && !day.isRest)
         demo.workoutDone
             ? Padding(
@@ -148,16 +157,19 @@ class _WorkoutTabState extends State<WorkoutTab> {
                   ]),
                 ),
               )
-            : Column(children: [
-                AppButton(demo.session == null ? '운동 시작' : '이어서 하기', onPressed: () => _start(day)),
-                AppButton('기록 없이 완료 체크만 하기', kind: ButtonKind.soft, onPressed: _finish),
-              ]),
+            : AppButton('기록 없이 완료 체크만 하기', kind: ButtonKind.soft, onPressed: _finish),
       if (!isToday && !day.isRest)
         const Padding(
           padding: EdgeInsets.only(top: 10),
           child: Muted('운동 완료는 오늘(월) 루틴에서만 누를 수 있어요.'),
         ),
       const Disclaimer(),
+      ])),
+      if (showStart)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(18, 8, 18, 12),
+          child: AppButton(demo.session == null ? '운동 시작' : '이어서 하기', top: 0, onPressed: () => _start(day)),
+        ),
     ]);
   }
 }
