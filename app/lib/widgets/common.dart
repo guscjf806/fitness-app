@@ -305,10 +305,13 @@ class DayChips extends StatelessWidget {
 
 /// 아래 구분선이 있는 한 줄
 class LineRow extends StatelessWidget {
-  const LineRow({super.key, required this.left, this.right, this.onTap});
+  const LineRow({super.key, required this.left, this.right, this.onTap, this.showArrow = false});
   final Widget left;
   final Widget? right;
   final VoidCallback? onTap;
+
+  /// 오른쪽 끝에 누를 수 있다는 화살표를 붙인다 (디자인 리뷰 10/29 #3)
+  final bool showArrow;
 
   @override
   Widget build(BuildContext context) {
@@ -322,6 +325,10 @@ class LineRow extends StatelessWidget {
           children: [
             Expanded(child: left),
             if (right != null) ...[const SizedBox(width: 10), right!],
+            if (showArrow) ...[
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
+            ],
           ],
         ),
       ),

@@ -13,7 +13,6 @@ class ProfileTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final role = demo.role;
-    Widget arrow([String text = '›']) => Muted(text, bottom: 0);
     if (demo.isGuest) {
       return TabBody(children: [
         const H1('내 정보'),
@@ -83,14 +82,15 @@ class ProfileTab extends StatelessWidget {
       ),
       LineRow(
         left: const Text('연속 기록 · 배지'),
-        right: arrow('${demo.streak}일 · 프리즈 ${demo.freezesLeft}회 ›'),
+        right: Muted('${demo.streak}일 · 프리즈 ${demo.freezesLeft}회', bottom: 0),
+        showArrow: true,
         onTap: () => Navigator.pushNamed(context, Routes.records),
       ),
       if (role == 'user')
-        LineRow(left: const Text('PT 코드 입력'), right: arrow(), onTap: () => Navigator.pushNamed(context, Routes.ptCode)),
+        LineRow(left: const Text('PT 코드 입력'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.ptCode)),
       if (role == 'trainer')
-        LineRow(left: const Text('회원 관리'), right: arrow(), onTap: () => demo.update(() => demo.tab = 3)),
-      LineRow(left: const Text('구독'), right: arrow(), onTap: () => Navigator.pushNamed(context, Routes.subscribe)),
+        LineRow(left: const Text('회원 관리'), showArrow: true, onTap: () => demo.update(() => demo.tab = 3)),
+      LineRow(left: const Text('구독'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.subscribe)),
       LineRow(left: const Text('로그아웃'), onTap: () => demo.switchRole('guest')),
       LineRow(
         left: const Text('계정 삭제', style: TextStyle(color: AppColors.warning)),
@@ -106,15 +106,14 @@ class _ConditionRows extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget arrow() => const Muted('›', bottom: 0);
     return Column(children: [
-      LineRow(left: const Text('몸 정보 수정'), right: arrow(), onTap: () => Navigator.pushNamed(context, Routes.body)),
+      LineRow(left: const Text('몸 정보 수정'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.body)),
       LineRow(
         left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('운동 장소·장비 수정'),
           Muted(demo.conditionText, bottom: 0),
         ]),
-        right: arrow(),
+        showArrow: true,
         onTap: () => Navigator.pushNamed(context, Routes.condition),
       ),
       LineRow(
@@ -127,7 +126,7 @@ class _ConditionRows extends StatelessWidget {
               ].join(' · '),
               bottom: 0),
         ]),
-        right: arrow(),
+        showArrow: true,
         onTap: () => Navigator.pushNamed(context, Routes.condition2),
       ),
     ]);

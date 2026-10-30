@@ -44,7 +44,8 @@ class HomeTab extends StatelessWidget {
         LineRow(
           onTap: g.$2 ? null : g.$3,
           left: Row(children: [CheckCircle(g.$2), const SizedBox(width: 10), Text(g.$1)]),
-          right: Muted(g.$2 ? '완료' : '›', bottom: 0),
+          right: g.$2 ? const Muted('완료', bottom: 0) : null,
+          showArrow: !g.$2,
         ),
       const SizedBox(height: 14),
       AppCard(
