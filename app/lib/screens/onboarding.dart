@@ -409,7 +409,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
       builder: (_) => Padding(
         padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+          SheetTitle(title), // 다른 시트 제목과 같게 (디자인 리뷰 10/30 #6)
           const SizedBox(height: 10),
           const Muted('이 자리에는 전문가 검토를 마친 약관·동의서 원문이 들어가요. 목업에서는 비워 두었어요.'),
         ]),
