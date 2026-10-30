@@ -94,12 +94,9 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
       NumField(label: '나이 (만)', value: demo.age, error: errors['age'], onChanged: (v) => demo.update(() => demo.age = v)),
       const SizedBox(height: 12),
       NumField(label: '몸무게 (kg)', value: demo.weight, error: errors['weight'], onChanged: (v) => demo.update(() => demo.weight = v)),
+      // 놓치면 안 되는 안내는 큰 경고 상자로 (리뷰 10/29 #6)
       if (errors['age'] == underAgeError)
-        const Padding(
-          padding: EdgeInsets.only(top: 8),
-          child: Text('만 14세 미만은 보호자 동의 절차가 필요해서 지금은 이용할 수 없어요.',
-              style: TextStyle(color: AppColors.warning, fontSize: 13)),
-        ),
+        const WarningBox('만 14세 미만은 보호자 동의 절차가 필요해서 지금은 이용할 수 없어요.'),
       const SizedBox(height: 12),
       _OptionalField(
         label: '근육량 (kg, 선택)',
@@ -250,8 +247,7 @@ class FoodBodyScreen extends StatelessWidget {
       if (demo.painAreas.isNotEmpty)
         const Padding(
           padding: EdgeInsets.only(bottom: 12),
-          child: Text('통증이 심하거나 질환이 있다면 운동 전에 의사와 먼저 상담하세요.',
-              style: TextStyle(color: AppColors.warning, fontSize: 13)),
+          child: WarningBox('통증이 심하거나 질환이 있다면 운동 전에 의사와 먼저 상담하세요.', top: 0),
         ),
       const Text('일주일에 운동할 수 있는 날', style: TextStyle(fontWeight: FontWeight.w700)),
       Seg(options: const ['2일', '3일', '4일', '5일', '6일'], value: demo.daysPerWeek, onChanged: (v) => demo.update(() => demo.daysPerWeek = v)),
@@ -304,9 +300,7 @@ class ResultScreen extends StatelessWidget {
           BigNumber('${formatNumber(r.target)} kcal'),
           if (r.teen && demo.goal == '감량')
             const Muted('성장기라 감량 폭을 줄여서(−10%) 계산했어요.', bottom: 0),
-          if (r.clampedToFloor)
-            Text('너무 낮은 칼로리는 위험해서 최소 ${formatNumber(r.floor)}kcal로 맞췄어요.',
-                style: const TextStyle(color: AppColors.warning, fontSize: 13)),
+          if (r.clampedToFloor) WarningBox('너무 낮은 칼로리는 위험해서 최소 ${formatNumber(r.floor)}kcal로 맞췄어요.', top: 8),
         ]),
       ),
       const Muted('의료 조언이 아닙니다. 건강 상태에 따라 전문가와 상의하세요.'),
