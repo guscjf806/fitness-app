@@ -63,8 +63,15 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
   /// [다음]을 한 번 누른 뒤부터 칸 아래에 안내를 보여 준다
   bool tried = false;
 
+  Map<String, String> _check() => validateBody(
+      height: demo.height,
+      age: demo.age,
+      weight: demo.weight,
+      muscle: demo.muscleUnknown ? '' : demo.muscle,
+      bodyFat: demo.bodyFatUnknown ? '' : demo.bodyFat);
+
   void _next() {
-    final errors = validateBody(height: demo.height, age: demo.age, weight: demo.weight);
+    final errors = _check();
     if (errors.isNotEmpty) {
       setState(() => tried = true);
       toast(context, errors['age'] == underAgeError ? '$underAgeError.' : '입력한 값을 확인해 주세요.');
@@ -76,7 +83,7 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final errors = tried ? validateBody(height: demo.height, age: demo.age, weight: demo.weight) : const <String, String>{};
+    final errors = tried ? _check() : const <String, String>{};
     final teen = (int.tryParse(demo.age) ?? 99) >= minAge && (int.tryParse(demo.age) ?? 99) <= teenMaxAge;
     return AppPage(title: '몸 정보', children: [
       const Muted('성별', bottom: 0),
@@ -98,14 +105,16 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
         label: '근육량 (kg, 선택)',
         value: demo.muscle,
         unknown: demo.muscleUnknown,
-        onChanged: (v) => demo.muscle = v,
+        error: errors['muscle'],
+        onChanged: (v) => demo.update(() => demo.muscle = v),
         onUnknown: () => demo.update(() => demo.muscleUnknown = !demo.muscleUnknown),
       ),
       _OptionalField(
         label: '체지방량 (kg, 선택)',
         value: demo.bodyFat,
         unknown: demo.bodyFatUnknown,
-        onChanged: (v) => demo.bodyFat = v,
+        error: errors['bodyFat'],
+        onChanged: (v) => demo.update(() => demo.bodyFat = v),
         onUnknown: () => demo.update(() => demo.bodyFatUnknown = !demo.bodyFatUnknown),
       ),
       const Muted("체지방량을 알면 더 정확한 공식으로 계산해요. 모르면 '잘 모르겠음'을 눌러 주세요."),
@@ -123,8 +132,9 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
 }
 
 class _OptionalField extends StatelessWidget {
-  const _OptionalField({required this.label, required this.value, required this.unknown, required this.onChanged, required this.onUnknown});
+  const _OptionalField({required this.label, required this.value, required this.unknown, required this.onChanged, required this.onUnknown, this.error});
   final String label;
+  final String? error;
   final String value;
   final bool unknown;
   final ValueChanged<String> onChanged;
@@ -134,13 +144,14 @@ class _OptionalField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Row(children: [
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(
           child: NumField(
               key: ValueKey('$label$unknown'),
               label: label,
               value: unknown ? '' : value,
               enabled: !unknown,
+              error: unknown ? null : error,
               onChanged: onChanged),
         ),
         const SizedBox(width: 8),

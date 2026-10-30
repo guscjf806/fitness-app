@@ -45,4 +45,15 @@ void main() {
     expect(validateBody(height: '175', age: '13', weight: '72')['age'], underAgeError);
     expect(validateBody(height: '0', age: '30', weight: '500').keys, containsAll(['height', 'weight']));
   });
+
+  test('근육량·체지방량은 0보다 크고 몸무게보다 작아야 한다 (리뷰 10/29 #3)', () {
+    Map<String, String> v(String muscle, String fat) =>
+        validateBody(height: '175', age: '30', weight: '72', muscle: muscle, bodyFat: fat);
+    expect(v('', ''), isEmpty, reason: '선택 칸이라 비워도 된다');
+    expect(v('30', '15'), isEmpty);
+    expect(v('80', '15').keys, ['muscle']);
+    expect(v('0', '15').keys, ['muscle']);
+    expect(v('30', '50').keys, ['bodyFat'], reason: '몸무게의 60% 이상은 입력 실수');
+    expect(v('30', '0').keys, ['bodyFat']);
+  });
 }

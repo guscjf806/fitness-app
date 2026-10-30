@@ -74,7 +74,9 @@ const underAgeError = '만 14세 이상만 이용할 수 있어요';
 
 /// 몸 정보 입력 확인. 문제가 있으면 칸별 안내 문구를 돌려준다.
 /// 무엇이 틀렸는지 알 수 있게 문장으로 쓴다 (리뷰 10/29 #2)
-Map<String, String> validateBody({required String height, required String age, required String weight}) {
+/// [muscle]·[bodyFat]은 선택 칸이라 비어 있으면 검사하지 않는다 (리뷰 10/29 #3)
+Map<String, String> validateBody(
+    {required String height, required String age, required String weight, String muscle = '', String bodyFat = ''}) {
   final errors = <String, String>{};
   final h = double.tryParse(height), a = int.tryParse(age), w = double.tryParse(weight);
   if (h == null || h < minHeight || h > maxHeight) errors['height'] = '키는 ${minHeight.toInt()}~${maxHeight.toInt()}cm 사이로 적어 주세요';
@@ -86,5 +88,13 @@ Map<String, String> validateBody({required String height, required String age, r
     errors['age'] = '나이는 $maxAge세 이하로 적어 주세요';
   }
   if (w == null || w < minWeight || w > maxWeight) errors['weight'] = '몸무게는 ${minWeight.toInt()}~${maxWeight.toInt()}kg 사이로 적어 주세요';
+  final m = double.tryParse(muscle), f = double.tryParse(bodyFat), wt = w ?? 0;
+  if (muscle.isNotEmpty && (m == null || m <= 0 || m >= wt)) {
+    errors['muscle'] = '근육량은 0보다 크고 몸무게보다 작게 kg으로 적어 주세요';
+  }
+  // 계산 공식이 받아들이는 범위(몸무게의 60% 미만)와 같게 맞춘다
+  if (bodyFat.isNotEmpty && (f == null || f <= 0 || f >= wt * 0.6)) {
+    errors['bodyFat'] = '체지방량은 0보다 크고 몸무게의 60%보다 작게 kg으로 적어 주세요';
+  }
   return errors;
 }
