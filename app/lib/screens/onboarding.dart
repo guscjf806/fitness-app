@@ -180,11 +180,15 @@ class ConditionScreen extends StatelessWidget {
           ]),
         );
     return AppPage(title: '운동 강도와 조건', children: [
+      // 고르기 전에 기준을 먼저 보게 맨 위에, 본문 글씨로 (리뷰 10/29 #5)
+      const AppCard(
+        child: Text('하: 주 1~3회 가볍게 · 중: 주 3~5회 · 상: 주 6회 이상 또는 고강도',
+            style: TextStyle(fontSize: 14, color: AppColors.text)),
+      ),
       title('지금 하고 있는 강도', '칼로리 계산에 쓰여요'),
       Seg(options: const ['하', '중', '상'], value: demo.currentIntensity, onChanged: (v) => demo.update(() => demo.currentIntensity = v)),
       title('앞으로 원하는 강도', '운동 루틴의 세기에 쓰여요'),
       Seg(options: const ['하', '중', '상'], value: demo.desiredIntensity, onChanged: (v) => demo.update(() => demo.desiredIntensity = v)),
-      const AppCard(child: Muted('하: 주 1~3회 가볍게 · 중: 주 3~5회 · 상: 주 6회 이상 또는 고강도', bottom: 0)),
       title('운동 장소'),
       Seg(options: const ['헬스장', '집', '둘 다'], value: demo.place, onChanged: (v) => demo.update(() => demo.place = v)),
       if (demo.place != '헬스장') ...[
