@@ -29,8 +29,16 @@ class _WorkoutTabState extends State<WorkoutTab> {
       return;
     }
     demo.update(() => demo.workoutDone = true);
-    toast(context, '오늘 운동 완료! 연속 ${demo.streak}일째예요 · 7일 연속 배지를 얻었어요');
+    // 실수로 눌렀으면 바로 되돌릴 수 있게 (리뷰 10/30 #1). 배지 문구는 실제로 7일째일 때만 (리뷰 10/30 #5)
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text('오늘 운동 완료! 연속 ${demo.streak}일째예요${demo.streak == 7 ? ' · 7일 연속 배지를 얻었어요' : ''}'),
+        action: SnackBarAction(label: '되돌리기', onPressed: _undoFinish),
+      ));
   }
+
+  void _undoFinish() => demo.update(() => demo.workoutDone = false);
 
   /// 운동 진행(S23)을 시작한다. 진행 중이던 운동이 있으면 이어서 한다.
   void _start(WorkoutDay day) {
@@ -102,6 +110,10 @@ class _WorkoutTabState extends State<WorkoutTab> {
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     const Text('오늘 운동 완료', style: TextStyle(fontWeight: FontWeight.w700)),
                     Muted('연속 ${demo.streak}일째예요 · 연속 기록 보기 ›', bottom: 0),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(onPressed: _undoFinish, child: const Text('완료 취소')),
+                    ),
                   ]),
                 ),
               )
