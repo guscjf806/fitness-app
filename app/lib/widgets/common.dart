@@ -9,10 +9,14 @@ import 'exercise_figure.dart';
 Widget watch(Widget Function() build) =>
     ListenableBuilder(listenable: demo, builder: (_, _) => build());
 
-void toast(BuildContext context, String message) {
+/// 아래에 잠깐 뜨는 알림. [actionLabel]을 주면 '되돌리기' 같은 버튼이 붙는다 (디자인 리뷰 10/31 #3)
+void toast(BuildContext context, String message, {String? actionLabel, VoidCallback? onAction}) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text(message)));
+    ..showSnackBar(SnackBar(
+      content: Text(message),
+      action: actionLabel == null ? null : SnackBarAction(label: actionLabel, onPressed: onAction ?? () {}),
+    ));
 }
 
 /// 게스트가 로그인이 필요한 기능을 누르면 이유를 알려 주고 로그인으로 안내한다.

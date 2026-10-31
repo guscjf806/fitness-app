@@ -105,17 +105,9 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                   setState(() => session.items[at] = SessionExercise(e.name, amount, sets));
                   Navigator.pop(sheet);
                   if (!mounted) return;
-                  ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(SnackBar(
-                      content: Text('${e.name}(으)로 바꿨어요'),
-                      action: SnackBarAction(
-                        label: '되돌리기',
-                        onPressed: () {
-                          if (mounted) setState(() => session.items[at] = before);
-                        },
-                      ),
-                    ));
+                  toast(context, '${e.name}(으)로 바꿨어요', actionLabel: '되돌리기', onAction: () {
+                    if (mounted) setState(() => session.items[at] = before);
+                  });
                 },
                 left: Row(children: [
                   ExerciseFigureView(e.id, size: 44, radius: 10),

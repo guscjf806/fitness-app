@@ -31,12 +31,8 @@ class _WorkoutTabState extends State<WorkoutTab> {
     }
     demo.update(() => demo.workoutDone = true);
     // 실수로 눌렀으면 바로 되돌릴 수 있게 (리뷰 10/30 #1). 배지 문구는 실제로 7일째일 때만 (리뷰 10/30 #5)
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(
-        content: Text('오늘 운동 완료! 연속 ${demo.streak}일째예요${demo.streak == 7 ? ' · 7일 연속 배지를 얻었어요' : ''}'),
-        action: SnackBarAction(label: '되돌리기', onPressed: _undoFinish),
-      ));
+    toast(context, '오늘 운동 완료! 연속 ${demo.streak}일째예요${demo.streak == 7 ? ' · 7일 연속 배지를 얻었어요' : ''}',
+        actionLabel: '되돌리기', onAction: _undoFinish);
   }
 
   void _undoFinish() => demo.update(() => demo.workoutDone = false);
@@ -49,18 +45,12 @@ class _WorkoutTabState extends State<WorkoutTab> {
       demo.addedExercises.remove(name);
       demo.checkedAdded.remove(name);
     });
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(
-        content: Text('$name을(를) 오늘 루틴에서 뺐어요'),
-        action: SnackBarAction(
-          label: '되돌리기',
-          onPressed: () => demo.update(() {
-            demo.addedExercises.insert(at.clamp(0, demo.addedExercises.length), name);
-            if (wasChecked) demo.checkedAdded.add(name);
-          }),
-        ),
-      ));
+    toast(context, '$name을(를) 오늘 루틴에서 뺐어요',
+        actionLabel: '되돌리기',
+        onAction: () => demo.update(() {
+              demo.addedExercises.insert(at.clamp(0, demo.addedExercises.length), name);
+              if (wasChecked) demo.checkedAdded.add(name);
+            }));
   }
 
   /// 운동 진행(S23)을 시작한다. 진행 중이던 운동이 있으면 이어서 한다.
