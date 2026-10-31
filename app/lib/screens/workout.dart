@@ -55,7 +55,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
 
   /// 운동 진행(S23)을 시작한다. 진행 중이던 운동이 있으면 이어서 한다.
   void _start(WorkoutDay day) {
-    final rule = intensityRules[effectiveIntensity(desired: demo.desiredIntensity, current: demo.currentIntensity)]!;
+    final rule = demo.intensityRule;
     demo.session ??= WorkoutSession([
       for (final x in [...day.items, ..._addedAsExercises(rule)]) SessionExercise(x.name, x.amount, x.sets),
     ], atHome: day.atHome);
@@ -86,7 +86,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
       H2(demo.place == '둘 다' && !day.isRest ? '${day.title} (${day.atHome ? '집' : '헬스장'})' : day.title, top: 0),
       if (!day.isRest)
         Builder(builder: (_) {
-          final rule = intensityRules[effectiveIntensity(desired: demo.desiredIntensity, current: demo.currentIntensity)]!;
+          final rule = demo.intensityRule;
           final items = [...day.items, if (isToday) ..._addedAsExercises(rule)];
           return Muted('총 ${items.length}개 · 약 ${estimateMinutes(items, rule)}분');
         }),
@@ -240,7 +240,7 @@ List<Exercise> _addedAsExercises(IntensityRule rule) => [
     ];
 
 String _addedAmount(String name) {
-  final rule = intensityRules[effectiveIntensity(desired: demo.desiredIntensity, current: demo.currentIntensity)]!;
+  final rule = demo.intensityRule;
   final info = exerciseByName(name);
   if (info == null) return '';
   final (amount, sets) = targetFor(info, rule);

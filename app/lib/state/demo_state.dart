@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/mock_data.dart';
+import '../logic/intensity.dart';
 import '../logic/routine.dart';
 import '../logic/tdee.dart';
 import '../routes.dart';
@@ -118,6 +119,9 @@ class DemoState extends ChangeNotifier {
         currentIntensity: currentIntensity,
         goal: goal,
       );
+
+  /// 지금 적용되는 강도 규칙 (처음 몇 주는 낮춰서 시작할 수 있다). 여러 화면이 같이 쓴다 (디자인 리뷰 10/31 #7)
+  IntensityRule get intensityRule => intensityRules[effectiveIntensity(desired: desiredIntensity, current: currentIntensity)]!;
 
   /// 조건(장소·장비·소음·시간·통증)을 반영한 이번 주 루틴
   List<WorkoutDay> get week => demoWeek(

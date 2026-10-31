@@ -13,8 +13,7 @@ import '../widgets/common.dart';
 import '../widgets/exercise_figure.dart';
 import '../widgets/rest_timer.dart';
 
-IntensityRule get _rule =>
-    intensityRules[effectiveIntensity(desired: demo.desiredIntensity, current: demo.currentIntensity)]!;
+IntensityRule get _rule => demo.intensityRule;
 
 /// S23 운동 진행: 종목별로 세트를 기록하고, 세트를 마치면 휴식 타이머가 뜬다.
 class WorkoutSessionScreen extends StatefulWidget {
