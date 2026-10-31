@@ -51,7 +51,7 @@ class GuestBanner extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const Text('게스트로 둘러보는 중', style: TextStyle(fontWeight: FontWeight.w700)),
         Muted(text, bottom: 4),
-        const Text('로그인하기 ›', style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
+        const MoreLink('로그인하기'),
       ]),
     );
   }
@@ -73,6 +73,19 @@ class BottomActionBar extends StatelessWidget {
           child: Padding(padding: const EdgeInsets.fromLTRB(18, 8, 18, 12), child: child),
         ),
       );
+}
+
+/// '더 보기' 글자 링크: 글자 + 화살표 아이콘. 목록 줄의 화살표와 같은 모양 (디자인 리뷰 10/31 #2)
+class MoreLink extends StatelessWidget {
+  const MoreLink(this.text, {super.key, this.color = AppColors.primaryDark});
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
+        Text(text, style: TextStyle(color: color, fontWeight: FontWeight.w700)),
+        Icon(Icons.chevron_right, size: 18, color: color),
+      ]);
 }
 
 /// 탭 밖의 화면 (뒤로가기 있는 화면)

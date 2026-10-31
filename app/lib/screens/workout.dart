@@ -152,7 +152,8 @@ class _WorkoutTabState extends State<WorkoutTab> {
                   onTap: () => Navigator.pushNamed(context, Routes.records),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     const Text('오늘 운동 완료', style: TextStyle(fontWeight: FontWeight.w700)),
-                    Muted('연속 ${demo.streak}일째예요 · 연속 기록 보기 ›', bottom: 0),
+                    Muted('연속 ${demo.streak}일째예요', bottom: 2),
+                    const MoreLink('연속 기록 보기'),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(onPressed: _undoFinish, child: const Text('완료 취소')),

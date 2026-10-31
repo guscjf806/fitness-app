@@ -234,7 +234,8 @@ class ExerciseDetailScreen extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(child: Text(r.name)),
         ]),
-        right: Muted('$label ›', bottom: 0),
+        right: Muted(label, bottom: 0),
+        showArrow: true,
       );
     }
 
