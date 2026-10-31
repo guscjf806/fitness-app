@@ -38,6 +38,18 @@ class AppColors {
   static const kakaoText = Color(0xFF191600);
 }
 
+/// 모서리 둥글기는 여기서만 정한다 (디자인 리뷰 10/31 #5)
+class AppRadius {
+  /// 카드·큰 상자
+  static const double card = 14;
+
+  /// 버튼·경고 상자·세트 줄
+  static const double box = 12;
+
+  /// 입력칸·작은 칩·썸네일·진행 막대
+  static const double small = 10;
+}
+
 /// 글자 크기는 여기서만 정한다 (디자인 리뷰 10/29 #4, 10/31 #4)
 class AppText {
   /// 데모 바·작은 안내처럼 가장 작은 글씨
@@ -73,7 +85,7 @@ class AppTheme {
       error: AppColors.warning,
     );
     final roundedBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppRadius.small),
       borderSide: const BorderSide(color: AppColors.line),
     );
     return ThemeData(
@@ -98,7 +110,7 @@ class AppTheme {
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(50),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.box)),
           textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
         ),
       ),
@@ -108,7 +120,7 @@ class AppTheme {
           foregroundColor: AppColors.primaryDark,
           minimumSize: const Size(0, 48),
           side: const BorderSide(color: AppColors.line),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.box)),
         ),
       ),
       textButtonTheme: TextButtonThemeData(

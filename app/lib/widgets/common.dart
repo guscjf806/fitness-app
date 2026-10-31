@@ -194,7 +194,7 @@ class AppCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
@@ -279,11 +279,11 @@ class _SegButton extends StatelessWidget {
     return Material(
       color: selected ? AppColors.primarySoft : AppColors.background,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.small),
         side: BorderSide(color: selected ? AppColors.primary : AppColors.line),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.small),
         onTap: onTap,
         // 손가락으로 누르기 쉽게 높이 48px 이상 (디자인 리뷰 10/30 #1)
         child: ConstrainedBox(
@@ -398,7 +398,7 @@ class ProgressBar extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(9),
+          borderRadius: BorderRadius.circular(AppRadius.small),
           child: LinearProgressIndicator(
             value: value.clamp(0, 1),
             minHeight: 8,
@@ -446,7 +446,7 @@ class ExerciseThumb extends StatelessWidget {
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-          color: AppColors.primaryDark, borderRadius: BorderRadius.circular(10)),
+          color: AppColors.primaryDark, borderRadius: BorderRadius.circular(AppRadius.small)),
       child: Text(name.characters.first,
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
     );
@@ -503,7 +503,7 @@ class WarningBox extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.warningSoft,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.box),
         border: Border.all(color: AppColors.warning),
       ),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [

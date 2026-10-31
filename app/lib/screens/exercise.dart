@@ -155,11 +155,11 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
           Material(
             color: selected.contains(e.id) ? AppColors.primarySoft : Colors.transparent,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.card),
               side: BorderSide(color: selected.contains(e.id) ? AppColors.primary : Colors.transparent, width: 2),
             ),
             child: InkWell(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.card),
               onTap: () => _toggle(e),
               child: Padding(
                 padding: const EdgeInsets.all(8),

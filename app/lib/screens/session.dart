@@ -311,7 +311,7 @@ class _SetRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: entry.done ? AppColors.primarySoft : AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.box),
         border: Border.all(color: entry.done ? AppColors.primary : Colors.transparent),
       ),
       child: Row(children: [

@@ -151,13 +151,13 @@ class _PhotoBox extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         child: Container(
           height: 150,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: tappable ? AppColors.primarySoft : AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.card),
             border: tappable ? Border.all(color: AppColors.primary) : null,
           ),
           child: Column(mainAxisSize: MainAxisSize.min, children: [

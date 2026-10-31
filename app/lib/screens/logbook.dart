@@ -96,7 +96,7 @@ class LogDetailScreen extends StatelessWidget {
             onTap: () => toast(context, '영상 재생 (데모)'),
             child: Container(
               height: 130,
-              decoration: BoxDecoration(color: AppColors.text, borderRadius: BorderRadius.circular(14)),
+              decoration: BoxDecoration(color: AppColors.text, borderRadius: BorderRadius.circular(AppRadius.card)),
               child: Stack(children: [
                 const Center(child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 44)),
                 Positioned(
@@ -256,7 +256,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
           child: customExercise
               ? const TextField(decoration: InputDecoration(labelText: '종목 이름', hintText: '예: TRX 로우'))
               : InkWell(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.small),
                   // 운동 추가하기(S21)에서 1개를 고른다
                   onTap: () async {
                     final picked = await Navigator.pushNamed(context, Routes.exercisePick, arguments: 1);

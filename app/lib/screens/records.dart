@@ -195,7 +195,7 @@ class _BadgeCell extends StatelessWidget {
     final (name, earned, how) = badge;
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(AppRadius.card)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(name, style: TextStyle(fontWeight: FontWeight.w700, color: earned ? AppColors.text : AppColors.textSub)),
         Muted(earned ? '획득했어요' : how, bottom: 0),
