@@ -216,7 +216,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         // 끝까지 하고 나서야 저장 안 된다는 걸 알지 않게 처음부터 알린다 (리뷰 10/28 #6)
         if (demo.isGuest) const GuestBanner('체크해 볼 수 있지만 저장되지 않아요. 로그인하면 기록이 쌓여요.'),
         Muted('${index + 1} / ${session.items.length}', bottom: 2),
-        Text(ex.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+        Text(ex.name, style: AppText.h1),
         const SizedBox(height: 12),
         if (info != null) Center(child: ExerciseFigureView(info.id, size: 120, radius: 16)),
         // 아픈 부위와 겹치면 운동 상세와 같은 경고 상자를 그림 바로 아래에 (리뷰 10/28 #3)
@@ -240,7 +240,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Text('목표 ${ex.target}${ex.bodyweight ? '' : '\n무게: 마지막 세트를 끝냈을 때 ${_rule.repsInReserve}쯤 더 할 수 있는 무게'}',
-              style: const TextStyle(fontSize: 14, color: AppColors.text)),
+              style: AppText.body),
         ),
         for (var i = 0; i < ex.sets.length; i++)
           _SetRow(

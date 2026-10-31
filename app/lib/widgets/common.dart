@@ -131,8 +131,7 @@ class H1 extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(top: 6, bottom: 8),
         child: Text(text,
-            style: const TextStyle(
-                fontSize: 24, fontWeight: FontWeight.w700, height: 1.3)),
+            style: AppText.h1),
       );
 }
 
@@ -143,7 +142,7 @@ class SheetTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      Text(text, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700));
+      Text(text, style: AppText.title);
 }
 
 class H2 extends StatelessWidget {
@@ -155,7 +154,7 @@ class H2 extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: EdgeInsets.only(top: top, bottom: 8),
         child: Text(text,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            style: AppText.title),
       );
 }
 
@@ -170,7 +169,7 @@ class Muted extends StatelessWidget {
         padding: EdgeInsets.only(bottom: bottom),
         child: Text(text,
             textAlign: align,
-            style: const TextStyle(fontSize: 13, color: AppColors.textSub)),
+            style: AppText.caption.copyWith(color: AppColors.textSub)),
       );
 }
 
@@ -180,10 +179,7 @@ class BigNumber extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(text,
-      style: const TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.w700,
-          color: AppColors.primaryDark));
+      style: AppText.bigNumber.copyWith(color: AppColors.primaryDark));
 }
 
 class AppCard extends StatelessWidget {
@@ -473,7 +469,7 @@ class PainTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text('${areas.join('·')} 주의',
-      style: const TextStyle(color: AppColors.warning, fontSize: 13, fontWeight: FontWeight.w700));
+      style: AppText.caption.copyWith(color: AppColors.warning, fontWeight: FontWeight.w700));
 }
 
 /// '만드는 중' 로딩 표시: 빙글빙글 + 굵은 문구 + 회색 보조 문구 (디자인 리뷰 10/30 #5)
@@ -515,7 +511,7 @@ class WarningBox extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: Text(text,
-              style: const TextStyle(color: AppColors.warning, fontSize: 16, fontWeight: FontWeight.w700, height: 1.4)),
+              style: AppText.warning.copyWith(color: AppColors.warning)),
         ),
       ]),
     );

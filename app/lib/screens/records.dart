@@ -110,7 +110,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
             mainAxisSpacing: 6,
             children: [
               for (final d in dayLabels)
-                Center(child: Text(d, style: const TextStyle(fontSize: 12, color: AppColors.textSub))),
+                Center(child: Text(d, style: AppText.small.copyWith(color: AppColors.textSub))),
               for (final d in cells) d == null ? const SizedBox() : _CalendarDay(d),
             ],
           ),
@@ -121,7 +121,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('이번 주 운동 완료율', bottom: 2),
           Text.rich(TextSpan(children: [
-            TextSpan(text: '$done', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+            TextSpan(text: '$done', style: AppText.number),
             TextSpan(text: ' / ${demo.workoutDaysThisWeek}일 완료'),
           ])),
           ProgressBar(done / demo.workoutDaysThisWeek),
@@ -169,8 +169,7 @@ class _CalendarDay extends StatelessWidget {
         child: Stack(alignment: Alignment.center, children: [
           if (done) const Icon(Icons.local_fire_department, color: AppColors.streakFire, size: 30),
           Text('$day',
-            style: TextStyle(
-              fontSize: 13,
+            style: AppText.caption.copyWith(
               fontWeight: done ? FontWeight.w700 : FontWeight.w400,
               color: done
                   ? Colors.white

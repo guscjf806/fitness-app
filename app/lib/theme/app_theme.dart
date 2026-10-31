@@ -38,13 +38,30 @@ class AppColors {
   static const kakaoText = Color(0xFF191600);
 }
 
-/// 글자 크기는 여기서만 정한다 (디자인 리뷰 10/29 #4). 화면은 차례로 옮기는 중: 홈·식단·내 정보 먼저
+/// 글자 크기는 여기서만 정한다 (디자인 리뷰 10/29 #4, 10/31 #4)
 class AppText {
+  /// 데모 바·작은 안내처럼 가장 작은 글씨
+  static const small = TextStyle(fontSize: 12);
   static const caption = TextStyle(fontSize: 13);
   static const body = TextStyle(fontSize: 14);
   static const bodyStrong = TextStyle(fontSize: 14, fontWeight: FontWeight.w700);
   static const title = TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
   static const number = TextStyle(fontSize: 22, fontWeight: FontWeight.w700);
+
+  /// 큰 경고 상자 글씨
+  static const warning = TextStyle(fontSize: 16, fontWeight: FontWeight.w700, height: 1.4);
+
+  /// 화면 제목(H1), 운동 진행의 운동 이름
+  static const h1 = TextStyle(fontSize: 24, fontWeight: FontWeight.w700, height: 1.3);
+
+  /// 큰 숫자(BigNumber)
+  static const bigNumber = TextStyle(fontSize: 28, fontWeight: FontWeight.w700);
+
+  /// 시작 화면의 큰 문구
+  static const display = TextStyle(fontSize: 28, fontWeight: FontWeight.w700, height: 1.3);
+
+  /// 휴식 타이머 숫자
+  static const timer = TextStyle(fontSize: 38, fontWeight: FontWeight.w700);
 }
 
 class AppTheme {

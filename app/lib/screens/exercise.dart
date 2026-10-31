@@ -130,7 +130,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text('${demo.conditionText}${demo.painAreas.isEmpty ? '' : ' · ${demo.painAreas.join(', ')} 주의'} 기준이에요.',
-                style: const TextStyle(fontSize: 14, color: AppColors.text)),
+                style: AppText.body),
           ),
         const SizedBox(height: 8),
         TextField(
@@ -255,7 +255,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       if (e.gearOptional.isNotEmpty)
         Padding(
           padding: const EdgeInsets.only(top: 4),
-          child: Text('있으면 좋은 것: ${e.gearOptional.join(', ')}', style: const TextStyle(fontSize: 14, color: AppColors.text)),
+          child: Text('있으면 좋은 것: ${e.gearOptional.join(', ')}', style: AppText.body),
         ),
       const H2('하는 방법'),
       for (var i = 0; i < e.howTo.length; i++)
@@ -268,7 +268,7 @@ class ExerciseDetailScreen extends StatelessWidget {
               alignment: Alignment.center,
               decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
               child: Text('${i + 1}',
-                  style: const TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.w700, fontSize: 13)),
+                  style: AppText.caption.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
             ),
             const SizedBox(width: 10),
             Expanded(child: Text(e.howTo[i])),

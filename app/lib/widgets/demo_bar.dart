@@ -30,8 +30,8 @@ class DemoBar extends StatelessWidget {
             alignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const Text('데모 보기 모드',
-                  style: TextStyle(fontSize: 12, color: AppColors.textSub)),
+              Text('데모 보기 모드',
+                  style: AppText.small.copyWith(color: AppColors.textSub)),
               for (final e in roles.entries)
                 ChoiceChip(
                   label: Text(e.value),
@@ -39,8 +39,7 @@ class DemoBar extends StatelessWidget {
                   showCheckmark: false,
                   visualDensity: VisualDensity.compact,
                   selectedColor: AppColors.primary,
-                  labelStyle: TextStyle(
-                      fontSize: 12,
+                  labelStyle: AppText.small.copyWith(
                       color: demo.role == e.key ? Colors.white : AppColors.text),
                   shape: const StadiumBorder(),
                   onSelected: (_) => demo.switchRole(e.key),
@@ -50,8 +49,7 @@ class DemoBar extends StatelessWidget {
                 avatar: const Icon(Icons.bug_report_outlined, size: 16),
                 label: Text('상황: ${demo.failMode}'),
                 visualDensity: VisualDensity.compact,
-                labelStyle: TextStyle(
-                    fontSize: 12,
+                labelStyle: AppText.small.copyWith(
                     color: demo.failMode == '정상' ? AppColors.text : AppColors.warning),
                 shape: const StadiumBorder(),
                 onPressed: () {

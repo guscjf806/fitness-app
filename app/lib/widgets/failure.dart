@@ -16,16 +16,16 @@ class OfflineBanner extends StatelessWidget {
       listenable: demo,
       builder: (context, _) => demo.failMode != '오프라인'
           ? const SizedBox.shrink()
-          : const Material(
+          : Material(
               color: AppColors.text,
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
                 child: Row(children: [
-                  Icon(Icons.wifi_off, size: 16, color: Colors.white),
-                  SizedBox(width: 8),
+                  const Icon(Icons.wifi_off, size: 16, color: Colors.white),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text('인터넷 연결을 확인해 주세요. 연결되면 자동으로 다시 불러와요.',
-                        style: TextStyle(color: Colors.white, fontSize: 12)),
+                        style: AppText.small.copyWith(color: Colors.white)),
                   ),
                 ]),
               ),
@@ -48,7 +48,7 @@ class FailureView extends StatelessWidget {
       child: Column(children: [
         const Icon(Icons.error_outline, size: 44, color: AppColors.warning),
         const SizedBox(height: 10),
-        Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        Text(title, textAlign: TextAlign.center, style: AppText.title),
         const SizedBox(height: 6),
         const Muted('잠시 후 다시 시도해 주세요. 이번 시도는 사용 횟수에서 빠지지 않았어요.', align: TextAlign.center),
         AppButton('다시 시도', onPressed: onRetry),

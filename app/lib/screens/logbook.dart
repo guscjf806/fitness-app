@@ -102,7 +102,7 @@ class LogDetailScreen extends StatelessWidget {
                 Positioned(
                   left: 12,
                   bottom: 10,
-                  child: Text(log.videos[j].name, style: const TextStyle(color: Colors.white, fontSize: 12)),
+                  child: Text(log.videos[j].name, style: AppText.small.copyWith(color: Colors.white)),
                 ),
               ]),
             ),

@@ -107,7 +107,7 @@ class _RestTimerState extends State<_RestTimer> {
             ),
             Center(
               child: Text(_mmss(remaining),
-                  style: const TextStyle(fontSize: 38, fontWeight: FontWeight.w700, color: AppColors.text)),
+                  style: AppText.timer),
             ),
           ]),
         ),

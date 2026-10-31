@@ -16,7 +16,7 @@ class StartScreen extends StatelessWidget {
     return AppPage(children: [
       const SizedBox(height: 28),
       const Text('내 몸에 맞춘 식단과 운동, AI가 짜드려요',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, height: 1.3)),
+          style: AppText.display),
       const SizedBox(height: 8),
       const Muted('몸 정보로 하루에 쓰는 칼로리를 계산하고, 일주일 또는 한 달치 식단과 운동 루틴을 만들어요.'),
       const SizedBox(height: 10),
@@ -180,7 +180,7 @@ class ConditionScreen extends StatelessWidget {
       // 고르기 전에 기준을 먼저 보게 맨 위에, 본문 글씨로 (리뷰 10/29 #5)
       const AppCard(
         child: Text('하: 주 1~3회 가볍게 · 중: 주 3~5회 · 상: 주 6회 이상 또는 고강도',
-            style: TextStyle(fontSize: 14, color: AppColors.text)),
+            style: AppText.body),
       ),
       title('지금 하고 있는 강도', '칼로리 계산에 쓰여요'),
       Seg(options: const ['하', '중', '상'], value: demo.currentIntensity, onChanged: (v) => demo.update(() => demo.currentIntensity = v)),
@@ -278,7 +278,7 @@ class ResultScreen extends StatelessWidget {
           Theme(
             data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(
-              title: const Text('어떻게 계산했나요?', style: TextStyle(fontSize: 14, color: AppColors.primaryDark)),
+              title: Text('어떻게 계산했나요?', style: AppText.body.copyWith(color: AppColors.primaryDark)),
               tilePadding: EdgeInsets.zero,
               childrenPadding: EdgeInsets.zero,
               expandedCrossAxisAlignment: CrossAxisAlignment.start,
@@ -308,7 +308,7 @@ class ResultScreen extends StatelessWidget {
       if (!demo.loggedIn)
         const Padding(
           padding: EdgeInsets.only(top: 8),
-          child: Text('만들려면 로그인이 필요해요.', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColors.text)),
+          child: Text('만들려면 로그인이 필요해요.', textAlign: TextAlign.center, style: AppText.body),
         ),
     ]);
   }
@@ -477,7 +477,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
       if (!requiredDone)
         const Padding(
           padding: EdgeInsets.only(top: 8),
-          child: Text('필수 항목에 모두 동의해야 시작할 수 있어요.', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColors.text)),
+          child: Text('필수 항목에 모두 동의해야 시작할 수 있어요.', textAlign: TextAlign.center, style: AppText.body),
         ),
     ]),
     );
