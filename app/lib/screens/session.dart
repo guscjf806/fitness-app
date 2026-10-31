@@ -275,9 +275,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
           ),
         ]),
       ]),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 8, 18, 12),
+      bottomNavigationBar: BottomActionBar(
           child: Row(children: [
             if (index > 0) ...[
               Expanded(child: AppButton('이전', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => index--))),
@@ -288,7 +286,6 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
               child: AppButton(last ? '운동 완료' : '다음 운동', top: 0, onPressed: last ? _finish : () => setState(() => index++)),
             ),
           ]),
-        ),
       ),
     );
   }

@@ -57,6 +57,24 @@ class GuestBanner extends StatelessWidget {
   }
 }
 
+/// 화면 아래에 붙는 버튼 띠. 위에 선을 그어 목록이 버튼 뒤에서 잘려 보이지 않게 한다 (디자인 리뷰 10/31 #1)
+class BottomActionBar extends StatelessWidget {
+  const BottomActionBar({super.key, required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        decoration: const BoxDecoration(
+          color: AppColors.background,
+          border: Border(top: BorderSide(color: AppColors.line)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(padding: const EdgeInsets.fromLTRB(18, 8, 18, 12), child: child),
+        ),
+      );
+}
+
 /// 탭 밖의 화면 (뒤로가기 있는 화면)
 class AppPage extends StatelessWidget {
   const AppPage({super.key, this.title, required this.children});

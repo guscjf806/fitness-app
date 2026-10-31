@@ -193,12 +193,10 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
             ),
           ),
       ]),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 0, 18, 12),
+      bottomNavigationBar: BottomActionBar(
           child: AppButton(
             selected.isEmpty ? '추가 완료' : '추가 완료 (${selected.length})',
-            top: 8,
+            top: 0,
             onPressed: () {
               if (selected.isEmpty) {
                 toast(context, '운동을 하나 이상 골라 주세요');
@@ -207,7 +205,6 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
               Navigator.pop(context, [for (final id in selected) exerciseById(id)!.name]);
             },
           ),
-        ),
       ),
     ),
     );

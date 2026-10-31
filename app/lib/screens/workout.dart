@@ -169,8 +169,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
       const Disclaimer(),
       ])),
       if (showStart)
-        Padding(
-          padding: const EdgeInsets.fromLTRB(18, 8, 18, 12),
+        BottomActionBar(
           child: AppButton(demo.session == null ? '운동 시작' : '이어서 하기', top: 0, onPressed: () => _start(day)),
         ),
     ]);
