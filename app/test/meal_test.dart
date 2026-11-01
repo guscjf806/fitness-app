@@ -1,5 +1,6 @@
 import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
+import 'package:fitness_app/screens/meal.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -72,6 +73,22 @@ void main() {
     await tester.pumpAndSettle();
     await tap(tester, find.text('지우고 나가기'));
     expect(find.text('식단 올리기'), findsNothing);
+  });
+
+  test('#4 지금 시각으로 끼니 처음 값을 정한다', () {
+    expect(mealSlotFor(DateTime(2026, 11, 1, 8)), '아침');
+    expect(mealSlotFor(DateTime(2026, 11, 1, 12, 30)), '점심');
+    expect(mealSlotFor(DateTime(2026, 11, 1, 16)), '간식');
+    expect(mealSlotFor(DateTime(2026, 11, 1, 19)), '저녁');
+    expect(mealSlotFor(DateTime(2026, 11, 1, 23)), '간식');
+  });
+
+  testWidgets('#4 고른 끼니로 저장된다', (tester) async {
+    await openPost(tester);
+    await tap(tester, find.text('저녁'));
+    await tap(tester, find.text('눌러서 사진 선택'));
+    await tap(tester, find.text('올리기'));
+    expect(demo.mealPosts.first.date, '오늘 저녁');
   });
 
   testWidgets('#1 다 썼으면 올리기 전에 알린다', (tester) async {

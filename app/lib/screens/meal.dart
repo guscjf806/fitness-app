@@ -95,6 +95,14 @@ class _MealCard extends StatelessWidget {
   }
 }
 
+/// 지금 시각에 맞는 끼니 (식단 올리기의 처음 값)
+String mealSlotFor(DateTime t) => switch (t.hour) {
+      >= 5 && < 10 => '아침',
+      >= 10 && < 15 => '점심',
+      >= 17 && < 21 => '저녁',
+      _ => '간식',
+    };
+
 /// S09 식단 올리기
 class MealPostScreen extends StatefulWidget {
   const MealPostScreen({super.key});
@@ -107,6 +115,9 @@ class _MealPostScreenState extends State<MealPostScreen> {
   bool photoPicked = false;
   String note = '';
 
+  /// 어느 끼니인지. 늘 '점심'으로 저장되지 않게 고른다 (리뷰 11/01 #4)
+  String slot = mealSlotFor(DateTime.now());
+
   void _post() {
     if (demo.quotaExhausted) {
       showQuotaExhausted(context);
@@ -117,7 +128,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
       return;
     }
     demo.update(() => demo.mealPosts.insert(
-        0, MealPost('오늘 점심', note.isEmpty ? '(설명 없음)' : note, sampleMealReply, isToday: true)));
+        0, MealPost('오늘 $slot', note.isEmpty ? '(설명 없음)' : note, sampleMealReply, isToday: true)));
     Navigator.pushReplacementNamed(context, Routes.mealReply, arguments: const MealReplyArgs(0, fresh: true));
   }
 
@@ -148,6 +159,8 @@ class _MealPostScreenState extends State<MealPostScreen> {
         if (discard == true && context.mounted) Navigator.pop(context);
       },
       child: AppPage(title: '식단 올리기', children: [
+      const Muted('어느 끼니인가요?', bottom: 0),
+      Seg(options: const ['아침', '점심', '저녁', '간식'], value: slot, onChanged: (v) => setState(() => slot = v)),
       // 다시 눌러도 사진이 말없이 빠지지 않게: 누르면 바꾸기, 빼기는 따로 (리뷰 11/01 #2)
       _PhotoBox(
         label: photoPicked ? '사진이 선택됐어요 · 눌러서 바꾸기' : '눌러서 사진 선택',
