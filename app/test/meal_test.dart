@@ -51,6 +51,15 @@ void main() {
     expect(demo.aiUsed, 3);
   });
 
+  testWidgets('#2 사진을 다시 눌러도 빠지지 않고, 사진 빼기로만 뺀다', (tester) async {
+    await openPost(tester);
+    await tap(tester, find.text('눌러서 사진 선택'));
+    await tap(tester, find.text('사진이 선택됐어요 · 눌러서 바꾸기'));
+    expect(find.text('사진이 선택됐어요 · 눌러서 바꾸기'), findsOneWidget, reason: '다시 눌러도 그대로 선택됨');
+    await tap(tester, find.text('사진 빼기'));
+    expect(find.text('눌러서 사진 선택'), findsOneWidget);
+  });
+
   testWidgets('#1 다 썼으면 올리기 전에 알린다', (tester) async {
     demo.aiUsed = 5;
     await openPost(tester);

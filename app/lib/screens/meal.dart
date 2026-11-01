@@ -124,10 +124,20 @@ class _MealPostScreenState extends State<MealPostScreen> {
   @override
   Widget build(BuildContext context) {
     return AppPage(title: '식단 올리기', children: [
+      // 다시 눌러도 사진이 말없이 빠지지 않게: 누르면 바꾸기, 빼기는 따로 (리뷰 11/01 #2)
       _PhotoBox(
-        label: photoPicked ? '사진이 선택됐어요' : '눌러서 사진 선택',
-        onTap: () => setState(() => photoPicked = !photoPicked),
+        label: photoPicked ? '사진이 선택됐어요 · 눌러서 바꾸기' : '눌러서 사진 선택',
+        picked: photoPicked,
+        onTap: () {
+          if (photoPicked) toast(context, '사진을 바꿨어요');
+          setState(() => photoPicked = true);
+        },
       ),
+      if (photoPicked)
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(onPressed: () => setState(() => photoPicked = false), child: const Text('사진 빼기')),
+        ),
       TextFormField(
         decoration: const InputDecoration(labelText: '한 줄 설명', hintText: '예: 닭가슴살 150g, 현미밥 1공기'),
         onChanged: (v) => note = v,
@@ -144,9 +154,12 @@ class _MealPostScreenState extends State<MealPostScreen> {
 }
 
 class _PhotoBox extends StatelessWidget {
-  const _PhotoBox({required this.label, this.onTap});
+  const _PhotoBox({required this.label, this.onTap, this.picked = false});
   final String label;
   final VoidCallback? onTap;
+
+  /// 사진을 고른 뒤에는 체크 표시를 남긴다
+  final bool picked;
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +179,12 @@ class _PhotoBox extends StatelessWidget {
             border: tappable ? Border.all(color: AppColors.primary) : null,
           ),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Icon(tappable ? Icons.photo_camera_outlined : Icons.image_outlined,
+            Icon(
+                picked
+                    ? Icons.check_circle
+                    : tappable
+                        ? Icons.photo_camera_outlined
+                        : Icons.image_outlined,
                 color: tappable ? AppColors.primaryDark : AppColors.textSub),
             const SizedBox(height: 4),
             Text(label, style: AppText.caption.copyWith(color: tappable ? AppColors.primaryDark : AppColors.textSub)),
