@@ -92,9 +92,11 @@ class LogDetailScreen extends StatelessWidget {
       if (log.videos.isNotEmpty) ...[
         const H2('운동 영상'),
         for (var j = 0; j < log.videos.length; j++) ...[
+          // Container 대신 Ink로 그려야 누를 때 물결이 색 위로 보인다 (디자인 리뷰 11/01 #1)
           InkWell(
             onTap: () => toast(context, '영상 재생 (데모)'),
-            child: Container(
+            borderRadius: BorderRadius.circular(AppRadius.card),
+            child: Ink(
               height: 130,
               decoration: BoxDecoration(color: AppColors.text, borderRadius: BorderRadius.circular(AppRadius.card)),
               child: Stack(children: [

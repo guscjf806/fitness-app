@@ -211,15 +211,16 @@ class _PhotoBox extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.card),
-        child: Container(
+        // Container 대신 Ink로 그려야 누를 때 물결이 색 위로 보인다 (디자인 리뷰 11/01 #1)
+        child: Ink(
           height: 150,
-          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: tappable ? AppColors.primarySoft : AppColors.surface,
             borderRadius: BorderRadius.circular(AppRadius.card),
             border: tappable ? Border.all(color: AppColors.primary) : null,
           ),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
+          child: Center(
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
             Icon(
                 picked
                     ? Icons.check_circle
@@ -230,6 +231,7 @@ class _PhotoBox extends StatelessWidget {
             const SizedBox(height: 4),
             Text(label, style: AppText.caption.copyWith(color: tappable ? AppColors.primaryDark : AppColors.textSub)),
           ]),
+          ),
         ),
       ),
     );
