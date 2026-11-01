@@ -303,10 +303,21 @@ class _SegButton extends StatelessWidget {
 
 /// 가로로 스크롤되는 날짜·요일 칩
 class DayChips extends StatelessWidget {
-  const DayChips({super.key, required this.labels, required this.selected, required this.onSelect});
+  /// '화 휴식' 같은 뒷말은 그대로 두고 요일 바로 뒤에 '·오늘'을 넣는다
+  String _label(int i) {
+    final l = labels[i];
+    if (i != today) return l;
+    final space = l.indexOf(' ');
+    return space < 0 ? '$l·오늘' : '${l.substring(0, space)}·오늘${l.substring(space)}';
+  }
+
+  const DayChips({super.key, required this.labels, required this.selected, required this.onSelect, this.today});
   final List<String> labels;
   final int selected;
   final ValueChanged<int> onSelect;
+
+  /// 오늘인 칸. 주면 그 칩에 '·오늘'을 붙여 식단·운동 탭이 같은 모양이 된다 (리뷰 11/01 #6)
+  final int? today;
 
   @override
   Widget build(BuildContext context) {
@@ -320,7 +331,7 @@ class DayChips extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 6),
                 child: ChoiceChip(
-                  label: Text(labels[i]),
+                  label: Text(_label(i)),
                   selected: i == selected,
                   showCheckmark: false,
                   selectedColor: AppColors.primary,

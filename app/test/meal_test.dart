@@ -101,6 +101,17 @@ void main() {
     expect(find.text(demo.mealPosts.first.reply), findsOneWidget);
   });
 
+  testWidgets('#6 식단 탭 요일 칩에도 운동 탭처럼 오늘 표시', (tester) async {
+    await openPost(tester);
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 1);
+    await tester.pumpAndSettle();
+    expect(find.text('월·오늘'), findsOneWidget);
+    demo.update(() => demo.tab = 2);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('월·오늘'), findsOneWidget);
+  });
+
   testWidgets('#1 다 썼으면 올리기 전에 알린다', (tester) async {
     demo.aiUsed = 5;
     await openPost(tester);

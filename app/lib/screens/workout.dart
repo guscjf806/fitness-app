@@ -79,9 +79,10 @@ class _WorkoutTabState extends State<WorkoutTab> {
       DayChips(
           // 오늘 칩에는 '오늘'을 붙인다 (리뷰 10/30 #6). 목업에서는 늘 첫 칸이 오늘이다
           labels: [
-            for (var i = 0; i < 7; i++) '${dayLabels[i]}${i == 0 ? '·오늘' : ''}${demo.week[i].isRest ? ' 휴식' : ''}',
+            for (var i = 0; i < 7; i++) '${dayLabels[i]}${demo.week[i].isRest ? ' 휴식' : ''}',
           ],
           selected: weekday,
+          today: 0,
           onSelect: (i) => setState(() => weekday = i)),
       H2(demo.place == '둘 다' && !day.isRest ? '${day.title} (${day.atHome ? '집' : '헬스장'})' : day.title, top: 0),
       if (!day.isRest)
