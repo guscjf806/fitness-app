@@ -121,9 +121,33 @@ class _MealPostScreenState extends State<MealPostScreen> {
     Navigator.pushReplacementNamed(context, Routes.mealReply, arguments: const MealReplyArgs(0, fresh: true));
   }
 
+  /// 쓰던 내용(사진·설명)이 있는지
+  bool get dirty => photoPicked || note.isNotEmpty;
+
   @override
   Widget build(BuildContext context) {
-    return AppPage(title: '식단 올리기', children: [
+    // 쓰던 내용이 있는데 뒤로 가면 지울지 먼저 묻는다 (리뷰 11/01 #3)
+    return PopScope(
+      canPop: !dirty,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        final discard = await showDialog<bool>(
+          context: context,
+          builder: (dialog) => AlertDialog(
+            title: const Text('쓰던 내용을 지울까요?'),
+            content: const Text('나가면 고른 사진과 설명이 사라져요.'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('계속 쓰기')),
+              TextButton(
+                onPressed: () => Navigator.pop(dialog, true),
+                child: const Text('지우고 나가기', style: TextStyle(color: AppColors.warning)),
+              ),
+            ],
+          ),
+        );
+        if (discard == true && context.mounted) Navigator.pop(context);
+      },
+      child: AppPage(title: '식단 올리기', children: [
       // 다시 눌러도 사진이 말없이 빠지지 않게: 누르면 바꾸기, 빼기는 따로 (리뷰 11/01 #2)
       _PhotoBox(
         label: photoPicked ? '사진이 선택됐어요 · 눌러서 바꾸기' : '눌러서 사진 선택',
@@ -140,7 +164,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
         ),
       TextFormField(
         decoration: const InputDecoration(labelText: '한 줄 설명', hintText: '예: 닭가슴살 150g, 현미밥 1공기'),
-        onChanged: (v) => note = v,
+        onChanged: (v) => setState(() => note = v),
       ),
       const SizedBox(height: 10),
       // 실제 사용 횟수를 보여 주고, 다 썼으면 누르기 전에 알린다 (리뷰 11/01 #1)
@@ -149,7 +173,8 @@ class _MealPostScreenState extends State<MealPostScreen> {
       else
         Muted('올리면 AI가 확인해서 답변해요 · 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 사용'),
       AppButton('올리기', onPressed: _post),
-    ]);
+    ]),
+    );
   }
 }
 

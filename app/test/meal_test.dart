@@ -60,6 +60,20 @@ void main() {
     expect(find.text('눌러서 사진 선택'), findsOneWidget);
   });
 
+  testWidgets('#3 쓰던 내용이 있으면 뒤로 갈 때 지울지 묻는다', (tester) async {
+    await openPost(tester);
+    await tap(tester, find.text('눌러서 사진 선택'));
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('쓰던 내용을 지울까요?'), findsOneWidget);
+    await tap(tester, find.text('계속 쓰기'));
+    expect(find.text('식단 올리기'), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    await tap(tester, find.text('지우고 나가기'));
+    expect(find.text('식단 올리기'), findsNothing);
+  });
+
   testWidgets('#1 다 썼으면 올리기 전에 알린다', (tester) async {
     demo.aiUsed = 5;
     await openPost(tester);
