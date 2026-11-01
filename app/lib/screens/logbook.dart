@@ -301,7 +301,10 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         Expanded(child: NumField(label: '세트', hint: '4', value: '', onChanged: (_) {})),
       ]),
       const SizedBox(height: 10),
-      Muted('운동 영상 ${videos.length}/5 (영상당 15초 이내 · 회원님 촬영 동의 후 올려 주세요 · 회원님 본인에게만 보여요)'),
+      // 촬영 동의 안내가 묻히지 않게 제목·규칙·동의를 나눈다. 문구는 그대로 (디자인 리뷰 11/01 #4)
+      H2('운동 영상 ${videos.length}/5', top: 0),
+      const Text('회원님 촬영 동의 후 올려 주세요', style: AppText.bodyStrong),
+      const Muted('영상당 15초 이내 · 회원님 본인에게만 보여요'),
       for (var i = 0; i < videos.length; i++)
         LineRow(
           left: Text(videos[i]),
