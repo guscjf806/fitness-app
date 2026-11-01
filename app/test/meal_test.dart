@@ -91,6 +91,16 @@ void main() {
     expect(demo.mealPosts.first.date, '오늘 저녁');
   });
 
+  testWidgets('#5 지난 식단은 기다림·실패 없이 받은 답변을 바로 보여 준다', (tester) async {
+    demo.failMode = 'AI 실패';
+    await openPost(tester);
+    demoNavigatorKey.currentState!.pushReplacementNamed(Routes.mealReply, arguments: 0);
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+    expect(find.text('AI가 식단을 확인하는 중이에요'), findsNothing);
+    expect(find.text('AI 답변을 받지 못했어요'), findsNothing);
+    expect(find.text(demo.mealPosts.first.reply), findsOneWidget);
+  });
+
   testWidgets('#1 다 썼으면 올리기 전에 알린다', (tester) async {
     demo.aiUsed = 5;
     await openPost(tester);

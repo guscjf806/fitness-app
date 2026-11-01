@@ -261,10 +261,19 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
         _ => const MealReplyArgs(0),
       };
 
+  bool started = false;
+
+  /// 방금 올린 글만 AI 답변을 기다린다. 이미 받은 지난 답변은 바로 보여 준다 (리뷰 11/01 #5)
   @override
-  void initState() {
-    super.initState();
-    _wait();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (started) return;
+    started = true;
+    if (args.fresh) {
+      _wait();
+    } else {
+      waiting = false;
+    }
   }
 
   void _ask() {
