@@ -242,6 +242,15 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
     toast(context, source == '촬영' ? '15초가 되면 촬영이 자동으로 끝나요' : '15초보다 긴 영상은 앞 15초만 올라가요');
   }
 
+  /// 영상을 빼고, 지운 자리에 되돌릴 수 있게 한다 (디자인 리뷰 11/01 #3)
+  void _removeVideo(int i) {
+    final removed = videos[i];
+    setState(() => videos.removeAt(i));
+    toast(context, '영상을 뺐어요', actionLabel: '되돌리기', onAction: () {
+      if (mounted) setState(() => videos.insert(i.clamp(0, videos.length), removed));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     member ??= (ModalRoute.of(context)?.settings.arguments as String?) ?? members.first;
@@ -296,7 +305,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       for (var i = 0; i < videos.length; i++)
         LineRow(
           left: Text(videos[i]),
-          right: TextButton(onPressed: () => setState(() => videos.removeAt(i)), child: const Text('삭제', style: TextStyle(color: AppColors.warning))),
+          right: TextButton(onPressed: () => _removeVideo(i), child: const Text('삭제', style: TextStyle(color: AppColors.warning))),
         ),
       Row(children: [
         Expanded(child: AppButton('촬영하기', kind: ButtonKind.soft, onPressed: () => _addVideo('촬영'))),
