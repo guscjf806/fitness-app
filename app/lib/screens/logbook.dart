@@ -283,12 +283,13 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         ),
       ]),
       const SizedBox(height: 12),
-      const Row(children: [
-        Expanded(child: TextField(decoration: InputDecoration(labelText: '무게', hintText: '60kg'))),
-        SizedBox(width: 8),
-        Expanded(child: TextField(decoration: InputDecoration(labelText: '횟수', hintText: '8'))),
-        SizedBox(width: 8),
-        Expanded(child: TextField(decoration: InputDecoration(labelText: '세트', hintText: '4'))),
+      // 휴대폰에서 숫자 자판이 뜨게 공용 숫자 칸으로 (디자인 리뷰 11/01 #2)
+      Row(children: [
+        Expanded(child: NumField(label: '무게 (kg)', hint: '60', value: '', onChanged: (_) {})),
+        const SizedBox(width: 8),
+        Expanded(child: NumField(label: '횟수', hint: '8', value: '', onChanged: (_) {})),
+        const SizedBox(width: 8),
+        Expanded(child: NumField(label: '세트', hint: '4', value: '', onChanged: (_) {})),
       ]),
       const SizedBox(height: 10),
       Muted('운동 영상 ${videos.length}/5 (영상당 15초 이내 · 회원님 촬영 동의 후 올려 주세요 · 회원님 본인에게만 보여요)'),
