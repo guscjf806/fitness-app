@@ -41,9 +41,11 @@ class _MealTabState extends State<MealTab> {
       for (final m in meals) _MealCard(m),
       LineRow(
         left: const Text('합계', style: AppText.bodyStrong),
-        right: Text('${formatNumber(total)} kcal', style: AppText.bodyStrong),
+        // 목표와 비교할 수 있게 (리뷰 11/01 #7)
+        right: Text('${formatNumber(total)} / 목표 ${formatNumber(demo.tdee.target)} kcal', style: AppText.bodyStrong),
       ),
       const H2('내가 올린 식단'),
+      if (demo.mealPosts.isEmpty) const Muted('아직 올린 식단이 없어요. 아래 버튼으로 첫 끼니를 올려 보세요.'),
       for (var i = 0; i < demo.mealPosts.length; i++)
         AppCard(
           onTap: () => Navigator.pushNamed(context, Routes.mealReply, arguments: i),
@@ -86,7 +88,8 @@ class _MealCard extends StatelessWidget {
               Flexible(
                 child: Text('대체: ${f.altName} ${f.altGrams}g',
                     textAlign: TextAlign.right,
-                    style: AppText.caption.copyWith(color: AppColors.textSub)),
+                    // 50대 이상도 읽기 쉽게 본문 크기로
+                    style: AppText.body.copyWith(color: AppColors.textSub)),
               ),
             ]),
           ),

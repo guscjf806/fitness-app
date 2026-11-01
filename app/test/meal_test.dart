@@ -112,6 +112,21 @@ void main() {
     expect(find.textContaining('월·오늘'), findsOneWidget);
   });
 
+  testWidgets('#7 합계는 목표와 함께, 올린 식단이 없으면 안내', (tester) async {
+    final saved = [...demo.mealPosts];
+    addTearDown(() => demo.mealPosts..clear()..addAll(saved));
+    demo.mealPosts.clear();
+    await openPost(tester);
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 1);
+    await tester.pumpAndSettle();
+    final page = find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first;
+    await tester.scrollUntilVisible(find.textContaining('/ 목표 '), 200, scrollable: page);
+    expect(find.textContaining('/ 목표 '), findsOneWidget);
+    await tester.scrollUntilVisible(find.textContaining('아직 올린 식단이 없어요'), 200, scrollable: page);
+    expect(find.textContaining('아직 올린 식단이 없어요'), findsOneWidget);
+  });
+
   testWidgets('#1 다 썼으면 올리기 전에 알린다', (tester) async {
     demo.aiUsed = 5;
     await openPost(tester);
