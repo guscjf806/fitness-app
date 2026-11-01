@@ -40,9 +40,9 @@ class ProfileTab extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             const Expanded(child: Text('이번 달 AI 사용', style: AppText.bodyStrong)),
-            Muted('${demo.quotaExhausted ? AppConfig.freeMonthlyAiLimit : demo.aiUsed} / ${AppConfig.freeMonthlyAiLimit}회', bottom: 0),
+            Muted('${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회', bottom: 0),
           ]),
-          ProgressBar(demo.quotaExhausted ? 1 : demo.aiUsed / AppConfig.freeMonthlyAiLimit),
+          ProgressBar(demo.aiUsedShown / AppConfig.freeMonthlyAiLimit),
           AppButton('더 많이 쓰기',
               kind: ButtonKind.soft, top: 4, onPressed: () => Navigator.pushNamed(context, Routes.subscribe)),
         ]),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../config.dart';
 import '../data/mock_data.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
@@ -117,7 +118,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
     }
     demo.update(() => demo.mealPosts.insert(
         0, MealPost('오늘 점심', note.isEmpty ? '(설명 없음)' : note, sampleMealReply, isToday: true)));
-    Navigator.pushReplacementNamed(context, Routes.mealReply, arguments: 0);
+    Navigator.pushReplacementNamed(context, Routes.mealReply, arguments: const MealReplyArgs(0, fresh: true));
   }
 
   @override
@@ -132,7 +133,11 @@ class _MealPostScreenState extends State<MealPostScreen> {
         onChanged: (v) => note = v,
       ),
       const SizedBox(height: 10),
-      const Muted('올리면 AI가 확인해서 답변해요 · 이번 달 2 / 5회 사용'),
+      // 실제 사용 횟수를 보여 주고, 다 썼으면 누르기 전에 알린다 (리뷰 11/01 #1)
+      if (demo.quotaExhausted)
+        const WarningBox('이번 달 무료 횟수를 다 썼어요', top: 0)
+      else
+        Muted('올리면 AI가 확인해서 답변해요 · 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 사용'),
       AppButton('올리기', onPressed: _post),
     ]);
   }
@@ -172,6 +177,13 @@ class _PhotoBox extends StatelessWidget {
   }
 }
 
+/// AI 답변 화면에 넘기는 값. [fresh]는 방금 올린 글이라 AI 답변을 새로 받는다는 뜻
+class MealReplyArgs {
+  const MealReplyArgs(this.index, {this.fresh = false});
+  final int index;
+  final bool fresh;
+}
+
 /// S10 AI 답변
 class MealReplyScreen extends StatefulWidget {
   const MealReplyScreen({super.key});
@@ -183,6 +195,15 @@ class MealReplyScreen extends StatefulWidget {
 class _MealReplyScreenState extends State<MealReplyScreen> {
   bool waiting = true;
   bool failed = false;
+
+  /// 이번 답변을 횟수에 이미 셌는지 (다시 시도해도 한 번만 센다)
+  bool counted = false;
+
+  MealReplyArgs get args => switch (ModalRoute.of(context)?.settings.arguments) {
+        final MealReplyArgs a => a,
+        final int i => MealReplyArgs(i),
+        _ => const MealReplyArgs(0),
+      };
 
   @override
   void initState() {
@@ -205,13 +226,18 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
           waiting = false;
           failed = demo.failMode == 'AI 실패';
         });
+        // 답변을 받았을 때만 이번 달 횟수를 1회 올린다. 실패하면 세지 않는다 (리뷰 11/01 #1)
+        if (!failed && args.fresh && !counted) {
+          counted = true;
+          demo.update(() => demo.aiUsed++);
+        }
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final index = (ModalRoute.of(context)?.settings.arguments as int?) ?? 0;
+    final index = args.index;
     final post = demo.mealPosts[index];
     return AppPage(title: 'AI 답변', children: [
       const _PhotoBox(label: '식단 사진'),

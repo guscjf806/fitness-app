@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../config.dart';
 import '../data/mock_data.dart';
 import '../logic/intensity.dart';
 import '../logic/routine.dart';
@@ -144,7 +145,11 @@ class DemoState extends ChangeNotifier {
   bool get mealPostedToday => mealPosts.any((p) => p.isToday);
   bool get recordedToday => mealPostedToday || workoutDone;
   int get streak => 6 + (recordedToday ? 1 : 0);
-  bool get quotaExhausted => failMode == '횟수 소진';
+  /// 이번 달 무료 횟수를 다 썼는지 (실제로 다 쓴 경우와 목업의 '횟수 소진' 미리 보기)
+  bool get quotaExhausted => failMode == '횟수 소진' || aiUsed >= AppConfig.freeMonthlyAiLimit;
+
+  /// 화면에 보여 줄 이번 달 사용 횟수 (식단 올리기·내 정보가 같은 숫자를 쓴다, 리뷰 11/01 #1)
+  int get aiUsedShown => quotaExhausted ? AppConfig.freeMonthlyAiLimit : aiUsed;
 
   void switchRole(String newRole) {
     role = newRole;

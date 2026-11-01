@@ -14,6 +14,8 @@ void main() {
       ..calorieCalculated = false
       ..consented = false
       ..failMode = '정상'
+      ..aiUsed = 2
+      ..mealPosts.removeWhere((p) => p.isToday)
       ..age = '30'
       ..goal = '감량'
       ..painAreas = []
