@@ -47,7 +47,7 @@ class _RestTimerState extends State<_RestTimer> {
       HapticFeedback.heavyImpact();
       final messenger = ScaffoldMessenger.of(context);
       Navigator.pop(context);
-      messenger.showSnackBar(const SnackBar(content: Text('휴식 끝! 다음 세트를 시작하세요')));
+      toastOn(messenger, '휴식 끝! 다음 세트를 시작하세요');
       return;
     }
     setState(() => remaining--);

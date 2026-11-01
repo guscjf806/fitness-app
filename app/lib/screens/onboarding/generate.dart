@@ -36,7 +36,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
     }
     demo.update(() => demo.tab = 0);
     navigator.pushNamedAndRemoveUntil(Routes.main, (_) => false);
-    messenger.showSnackBar(SnackBar(content: Text('${demo.period}치 식단과 운동 루틴을 만들었어요')));
+    toastOn(messenger, '${demo.period}치 식단과 운동 루틴을 만들었어요');
   }
 
   @override

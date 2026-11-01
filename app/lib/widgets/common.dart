@@ -10,8 +10,13 @@ Widget watch(Widget Function() build) =>
     ListenableBuilder(listenable: demo, builder: (_, _) => build());
 
 /// 아래에 잠깐 뜨는 알림. [actionLabel]을 주면 '되돌리기' 같은 버튼이 붙는다 (디자인 리뷰 10/31 #3)
-void toast(BuildContext context, String message, {String? actionLabel, VoidCallback? onAction}) {
-  ScaffoldMessenger.of(context)
+void toast(BuildContext context, String message, {String? actionLabel, VoidCallback? onAction}) =>
+    toastOn(ScaffoldMessenger.of(context), message, actionLabel: actionLabel, onAction: onAction);
+
+/// 화면을 닫은 뒤에 띄우는 알림. 닫기 전에 잡아 둔 [messenger]로 띄운다.
+/// 알림 띠는 이 함수 한 곳에서만 만든다 (디자인 리뷰 11/01 #6)
+void toastOn(ScaffoldMessengerState messenger, String message, {String? actionLabel, VoidCallback? onAction}) {
+  messenger
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(
       content: Text(message),

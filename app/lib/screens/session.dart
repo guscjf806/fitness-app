@@ -193,7 +193,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
     });
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
-    messenger.showSnackBar(SnackBar(content: Text('오늘 운동 완료! 총 $sets세트 · $minutes분 · 연속 ${demo.streak}일째예요')));
+    toastOn(messenger, '오늘 운동 완료! 총 $sets세트 · $minutes분 · 연속 ${demo.streak}일째예요');
   }
 
   @override
