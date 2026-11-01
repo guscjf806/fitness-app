@@ -9,7 +9,7 @@ export '../data/exercise_lookup.dart';
 
 /// 움직이는 동작 그림. '동작 줄이기' 설정이 켜져 있으면 멈춘 그림을 보여 준다.
 class ExerciseFigureView extends StatefulWidget {
-  const ExerciseFigureView(this.id, {super.key, this.size = 64, this.radius = 14});
+  const ExerciseFigureView(this.id, {super.key, this.size = 64, this.radius = AppRadius.card});
   final String id;
   final double size;
   final double radius;

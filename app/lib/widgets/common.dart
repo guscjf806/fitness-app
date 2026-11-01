@@ -58,7 +58,7 @@ class GuestBanner extends StatelessWidget {
       accent: true,
       onTap: () => Navigator.pushNamed(context, Routes.login),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('게스트로 둘러보는 중', style: TextStyle(fontWeight: FontWeight.w700)),
+        const Text('게스트로 둘러보는 중', style: AppText.bodyStrong),
         Muted(text, bottom: 4),
         const MoreLink('로그인하기'),
       ]),
@@ -92,7 +92,7 @@ class MoreLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
-        Text(text, style: TextStyle(color: color, fontWeight: FontWeight.w700)),
+        Text(text, style: AppText.bodyStrong.copyWith(color: color)),
         Icon(Icons.chevron_right, size: 18, color: color),
       ]);
 }
@@ -456,7 +456,7 @@ class ExerciseThumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final info = exerciseByName(name);
-    if (info != null) return ExerciseFigureView(info.id, size: size, radius: 10);
+    if (info != null) return ExerciseFigureView(info.id, size: size, radius: AppRadius.small);
     return Container(
       width: size,
       height: size,
@@ -464,7 +464,7 @@ class ExerciseThumb extends StatelessWidget {
       decoration: BoxDecoration(
           color: AppColors.primaryDark, borderRadius: BorderRadius.circular(AppRadius.small)),
       child: Text(name.characters.first,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+          style: AppText.bodyStrong.copyWith(color: Colors.white)),
     );
   }
 }
@@ -498,7 +498,7 @@ class LoadingView extends StatelessWidget {
   Widget build(BuildContext context) => Column(mainAxisSize: MainAxisSize.min, children: [
         const CircularProgressIndicator(color: AppColors.primary),
         const SizedBox(height: 16),
-        Text(message, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700)),
+        Text(message, textAlign: TextAlign.center, style: AppText.bodyStrong),
         if (sub != null) Muted(sub!, align: TextAlign.center),
       ]);
 }

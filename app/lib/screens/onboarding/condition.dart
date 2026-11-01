@@ -14,7 +14,7 @@ class ConditionScreen extends StatelessWidget {
     Widget title(String t, [String? sub]) => Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(t, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(t, style: AppText.bodyStrong),
             if (sub != null) Muted(sub, bottom: 0),
           ]),
         );

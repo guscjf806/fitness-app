@@ -48,6 +48,12 @@ class AppRadius {
 
   /// 입력칸·작은 칩·썸네일·진행 막대
   static const double small = 10;
+
+  /// 확인 창·운동 진행의 동작 그림 (디자인 리뷰 11/01 #7)
+  static const double medium = 16;
+
+  /// 운동 상세의 큰 동작 그림
+  static const double large = 20;
 }
 
 /// 글자 크기는 여기서만 정한다 (디자인 리뷰 10/29 #4, 10/31 #4)
@@ -95,14 +101,13 @@ class AppTheme {
       textTheme: const TextTheme(
         bodyMedium: TextStyle(fontSize: 14, height: 1.5, color: AppColors.text),
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.text,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: TextStyle(
-            fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.text),
+        titleTextStyle: AppText.title.copyWith(color: AppColors.text),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -128,7 +133,7 @@ class AppTheme {
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.background,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.medium)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         isDense: true,
@@ -144,7 +149,7 @@ class AppTheme {
         backgroundColor: AppColors.background,
         indicatorColor: AppColors.primarySoft,
         labelTextStyle: WidgetStateProperty.all(
-            const TextStyle(fontSize: 12, color: AppColors.text)),
+            AppText.small.copyWith(color: AppColors.text)),
       ),
       snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,

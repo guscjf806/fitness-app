@@ -77,7 +77,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
         child: Row(children: [
           CheckCircle(agreed.length == items.length),
           const SizedBox(width: 10),
-          const Expanded(child: Text('전체 동의', style: TextStyle(fontWeight: FontWeight.w700))),
+          const Expanded(child: Text('전체 동의', style: AppText.bodyStrong)),
         ]),
       ),
       for (var i = 0; i < items.length; i++)

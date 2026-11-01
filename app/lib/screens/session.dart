@@ -109,7 +109,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                   });
                 },
                 left: Row(children: [
-                  ExerciseFigureView(e.id, size: 44, radius: 10),
+                  ExerciseFigureView(e.id, size: 44, radius: AppRadius.small),
                   const SizedBox(width: 10),
                   Expanded(child: Text(e.name)),
                 ]),
@@ -217,7 +217,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         Muted('${index + 1} / ${session.items.length}', bottom: 2),
         Text(ex.name, style: AppText.h1),
         const SizedBox(height: 12),
-        if (info != null) Center(child: ExerciseFigureView(info.id, size: 120, radius: 16)),
+        if (info != null) Center(child: ExerciseFigureView(info.id, size: 120, radius: AppRadius.medium)),
         // 아픈 부위와 겹치면 운동 상세와 같은 경고 상자를 그림 바로 아래에 (리뷰 10/28 #3)
         if (info != null && info.avoidFor.any(demo.painAreas.contains))
           WarningBox(painPhrase(info.avoidFor.where(demo.painAreas.contains).toList())),
@@ -316,7 +316,7 @@ class _SetRow extends StatelessWidget {
       child: Row(children: [
         ConstrainedBox(
           constraints: const BoxConstraints(minWidth: 44),
-          child: Text('$number세트', softWrap: false, style: const TextStyle(fontWeight: FontWeight.w700)),
+          child: Text('$number세트', softWrap: false, style: AppText.bodyStrong),
         ),
         const SizedBox(width: 8),
         if (bodyweight)

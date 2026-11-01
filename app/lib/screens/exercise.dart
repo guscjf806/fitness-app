@@ -168,7 +168,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(e.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+                      Text(e.name, style: AppText.bodyStrong),
                       Muted('${e.part} · ${e.equipment}', bottom: 0),
                       // '내 조건 맞춤'을 꺼도 아픈 부위와 겹치면 표시한다 (리뷰 10/27 #2)
                       if (e.avoidFor.any(demo.painAreas.contains))
@@ -230,7 +230,7 @@ class ExerciseDetailScreen extends StatelessWidget {
         // 바꿔치기 대신 위에 쌓아서, 뒤로 가면 원래 보던 운동으로 돌아온다 (리뷰 10/27 #7)
         onTap: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: r.id),
         left: Row(children: [
-          ExerciseFigureView(r.id, size: 40, radius: 10),
+          ExerciseFigureView(r.id, size: 40, radius: AppRadius.small),
           const SizedBox(width: 10),
           Expanded(child: Text(r.name)),
         ]),
@@ -240,7 +240,7 @@ class ExerciseDetailScreen extends StatelessWidget {
     }
 
     return AppPage(title: e.name, children: [
-      Center(child: ExerciseFigureView(e.id, size: 200, radius: 20)),
+      Center(child: ExerciseFigureView(e.id, size: 200, radius: AppRadius.large)),
       // 내 아픈 부위와 겹치면 그림 바로 아래에 크게 경고한다 (리뷰 10/27 #1)
       if (painHit.isNotEmpty) WarningBox(painPhrase(painHit)),
       const SizedBox(height: 14),

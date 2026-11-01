@@ -24,7 +24,7 @@ class LogIntroTab extends StatelessWidget {
             for (final log in workoutLogs.take(2))
               AppCard(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('${log.date} · ${log.title}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                  Text('${log.date} · ${log.title}', style: AppText.bodyStrong),
                   Text(log.items.take(2).map((i) => '${i.name} ${i.weight} ${i.sets}×${i.reps}').join('\n')),
                 ]),
               ),
@@ -57,7 +57,7 @@ class LogListTab extends StatelessWidget {
             Navigator.pushNamed(context, Routes.logDetail, arguments: i);
           },
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('${workoutLogs[i].date} · ${workoutLogs[i].title}', style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text('${workoutLogs[i].date} · ${workoutLogs[i].title}', style: AppText.bodyStrong),
             Muted(
               '${workoutLogs[i].items.length}종목'
               '${workoutLogs[i].videos.isEmpty ? '' : ' · 영상 ${workoutLogs[i].videos.length}개'}'
@@ -205,7 +205,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
       for (final m in members)
         LineRow(
           left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(m, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(m, style: AppText.bodyStrong),
             const Muted('마지막 일지 10월 6일', bottom: 0),
           ]),
           right: FilledButton.tonal(

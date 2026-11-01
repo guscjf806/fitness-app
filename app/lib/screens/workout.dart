@@ -142,7 +142,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                 child: AppCard(
                   onTap: () => Navigator.pushNamed(context, Routes.records),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    const Text('오늘 운동 완료', style: TextStyle(fontWeight: FontWeight.w700)),
+                    const Text('오늘 운동 완료', style: AppText.bodyStrong),
                     Muted('연속 ${demo.streak}일째예요', bottom: 2),
                     const MoreLink('연속 기록 보기'),
                     Align(
@@ -225,7 +225,7 @@ class _IntensityGuide extends StatelessWidget {
     final rule = intensityRules[applied]!;
     return AppCard(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('강도 $applied', style: const TextStyle(fontWeight: FontWeight.w700)),
+        Text('강도 $applied', style: AppText.bodyStrong),
         if (applied != demo.desiredIntensity)
           Muted('지금 강도가 낮아서 첫 $rampUpWeeks주는 \'중\'으로 시작해요. 그다음 \'${demo.desiredIntensity}\'로 올려요.', bottom: 4),
         Muted('무게: 마지막 세트 뒤에 ${rule.repsInReserve} 더 할 수 있을 만큼\n세트 사이 휴식: ${rule.restText}', bottom: 0),

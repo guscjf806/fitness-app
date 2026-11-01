@@ -36,7 +36,7 @@ class FoodBodyScreen extends StatelessWidget {
           ]),
         );
     return AppPage(title: '식단·몸 상태', children: [
-      const Text('못 먹는 음식', style: TextStyle(fontWeight: FontWeight.w700)),
+      const Text('못 먹는 음식', style: AppText.bodyStrong),
       const Muted('알레르기가 있거나 못 먹는 음식은 식단에서 빼요. 여러 개 고를 수 있어요.', bottom: 0),
       chips(allergyOptions, demo.allergies, noneLabel: '없음'),
       TextFormField(
@@ -45,7 +45,7 @@ class FoodBodyScreen extends StatelessWidget {
         onChanged: (v) => demo.allergyNote = v,
       ),
       const SizedBox(height: 16),
-      const Text('아픈 부위', style: TextStyle(fontWeight: FontWeight.w700)),
+      const Text('아픈 부위', style: AppText.bodyStrong),
       const Muted('고른 부위에 무리가 가는 운동은 루틴에서 빼요.', bottom: 0),
       chips(painOptions, demo.painAreas, noneLabel: '없음'),
       if (demo.painAreas.isNotEmpty)
@@ -53,7 +53,7 @@ class FoodBodyScreen extends StatelessWidget {
           padding: EdgeInsets.only(bottom: 12),
           child: WarningBox('통증이 심하거나 질환이 있다면 운동 전에 의사와 먼저 상담하세요.', top: 0),
         ),
-      const Text('일주일에 운동할 수 있는 날', style: TextStyle(fontWeight: FontWeight.w700)),
+      const Text('일주일에 운동할 수 있는 날', style: AppText.bodyStrong),
       Seg(options: const ['2일', '3일', '4일', '5일', '6일'], value: demo.daysPerWeek, onChanged: (v) => demo.update(() => demo.daysPerWeek = v)),
       AppButton('결과 보기', onPressed: () {
         demo.update(() {}); // 직접 입력한 음식을 기기에 저장
