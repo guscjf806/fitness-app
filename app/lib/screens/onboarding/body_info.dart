@@ -41,7 +41,7 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
     final errors = tried ? _check() : const <String, String>{};
     final teen = (int.tryParse(demo.age) ?? 99) >= minAge && (int.tryParse(demo.age) ?? 99) <= teenMaxAge;
     return AppPage(title: '몸 정보', children: [
-      const Muted('성별', bottom: 0),
+      const FieldLabel('성별'),
       Seg(options: const ['남', '여'], value: demo.sex, onChanged: (v) => demo.update(() => demo.sex = v)),
       // 폰에서 라벨이 잘리지 않게 한 줄에 한 칸씩 (리뷰 10/29 #2)
       NumField(label: '키 (cm)', value: demo.height, error: errors['height'], onChanged: (v) => demo.update(() => demo.height = v)),
@@ -70,7 +70,7 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
         onUnknown: () => demo.update(() => demo.bodyFatUnknown = !demo.bodyFatUnknown),
       ),
       const Muted("체지방량을 알면 더 정확한 공식으로 계산해요. 모르면 '잘 모르겠음'을 눌러 주세요."),
-      const Muted('목표', bottom: 0),
+      const FieldLabel('목표'),
       Seg(options: const ['감량', '유지', '증량'], value: demo.goal, onChanged: (v) => demo.update(() => demo.goal = v)),
       if (teen && demo.goal == '감량')
         const AppCard(

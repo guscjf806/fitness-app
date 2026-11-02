@@ -396,6 +396,22 @@ class DayChips extends StatelessWidget {
   }
 }
 
+/// 고르기 버튼(Seg) 위의 질문 라벨: 굵은 제목 + 회색 설명 (디자인 리뷰 11/02 #3)
+class FieldLabel extends StatelessWidget {
+  const FieldLabel(this.text, {super.key, this.sub});
+  final String text;
+  final String? sub;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(text, style: AppText.bodyStrong),
+          if (sub != null) Muted(sub!, bottom: 0),
+        ]),
+      );
+}
+
 /// 켜고 끄는 스위치가 있는 줄. 스위치 색은 테마(switchTheme)에서 정한다 (디자인 리뷰 11/02 #2)
 class SwitchRow extends StatelessWidget {
   const SwitchRow({super.key, required this.title, required this.subtitle, required this.value, required this.onChanged});

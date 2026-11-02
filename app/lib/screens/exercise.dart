@@ -104,7 +104,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
       appBar: AppBar(title: const Text('운동 추가하기')),
       body: ListView(padding: const EdgeInsets.fromLTRB(18, 8, 18, 20), children: [
         Row(children: [
-          const Expanded(child: Muted('운동을 골라 주세요', bottom: 0)),
+          const Expanded(child: FieldLabel('운동을 골라 주세요')),
           FilterChip(
             label: const Text('내 조건 맞춤'),
             selected: fitOnly,

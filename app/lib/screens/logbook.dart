@@ -387,7 +387,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         onChanged: (v) => setState(() => comment = v),
       ),
       const SizedBox(height: 12),
-      const Muted('응원 스탬프 (저장하면 그날 출석 도장도 찍혀요)', bottom: 0),
+      const FieldLabel('응원 스탬프', sub: '저장하면 그날 출석 도장도 찍혀요'),
       Seg(options: stamps, value: stamp, onChanged: (v) => setState(() => stamp = v)),
       AppButton('저장하고 알림 보내기', onPressed: _save),
     ]),

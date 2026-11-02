@@ -148,7 +148,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
       keepLabel: '계속 쓰기',
       okLabel: '지우고 나가기',
       child: AppPage(title: '식단 올리기', children: [
-      const Muted('어느 끼니인가요?', bottom: 0),
+      const FieldLabel('어느 끼니인가요?'),
       Seg(options: const ['아침', '점심', '저녁', '간식'], value: slot, onChanged: (v) => setState(() => slot = v)),
       // 다시 눌러도 사진이 말없이 빠지지 않게: 누르면 바꾸기, 빼기는 따로 (리뷰 11/01 #2)
       _PhotoBox(
