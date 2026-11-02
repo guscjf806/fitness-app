@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../data/mock_data.dart';
 import '../routes.dart';
@@ -170,7 +171,8 @@ class _MemberManageTabState extends State<MemberManageTab> {
   Widget build(BuildContext context) {
     return TabBody(children: [
       const H1('회원 관리'),
-      AppButton('초대 코드 만들기',
+      // 코드가 있으면 다시 누를 때 새 코드로 바뀐다는 걸 이름으로 알린다 (리뷰 11/02 #5)
+      AppButton(demo.inviteCode == null ? '초대 코드 만들기' : '새 코드 만들기',
           top: 0,
           onPressed: () => demo.update(() => demo.inviteCode = '${100000 + Random().nextInt(900000)}')),
       const SizedBox(height: 12),
@@ -178,7 +180,18 @@ class _MemberManageTabState extends State<MemberManageTab> {
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Muted('회원님께 알려 주세요 (1회용 · 7일 유효)', bottom: 2),
-            BigNumber(demo.inviteCode!),
+            Row(children: [
+              Expanded(child: BigNumber(demo.inviteCode!)),
+              // 손으로 옮겨 적지 않게 복사 버튼
+              OutlinedButton.icon(
+                icon: const Icon(Icons.copy, size: 18),
+                label: const Text('복사'),
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: demo.inviteCode!));
+                  if (context.mounted) toast(context, '초대 코드를 복사했어요');
+                },
+              ),
+            ]),
           ]),
         ),
       AppCard(

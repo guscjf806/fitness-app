@@ -2,6 +2,7 @@ import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -81,5 +82,24 @@ void main() {
     await tap(tester, find.text('미션 보내기'));
     expect(find.text('미션 내용을 적어 주세요'), findsOneWidget);
     expect(demo.missions, before);
+  });
+
+  testWidgets('#5 초대 코드를 복사할 수 있고, 코드가 있으면 버튼 이름이 새 코드 만들기', (tester) async {
+    demo.inviteCode = null;
+    String? copied;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') copied = (call.arguments as Map)['text'] as String?;
+      return null;
+    });
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    await tap(tester, find.text('초대 코드 만들기'));
+    expect(find.text('새 코드 만들기'), findsOneWidget);
+    await tap(tester, find.text('복사'));
+    expect(find.text('초대 코드를 복사했어요'), findsOneWidget);
+    expect(copied, demo.inviteCode);
   });
 }
