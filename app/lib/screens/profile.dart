@@ -48,16 +48,11 @@ class ProfileTab extends StatelessWidget {
         ]),
       ),
       const _ConditionRows(),
-      LineRow(
-        left: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('매일 알림'),
-          Muted('식단·운동 확인 리마인더', bottom: 0),
-        ]),
-        right: Switch(
-          value: demo.pushOn,
-          activeTrackColor: AppColors.primary,
-          onChanged: (v) => demo.update(() => demo.pushOn = v),
-        ),
+      SwitchRow(
+        title: '매일 알림',
+        subtitle: '식단·운동 확인 리마인더',
+        value: demo.pushOn,
+        onChanged: (v) => demo.update(() => demo.pushOn = v),
       ),
       // 알림을 끄면 시간도 고를 수 없게 회색으로 (디자인 리뷰 10/29 #5)
       LineRow(
@@ -72,16 +67,11 @@ class ProfileTab extends StatelessWidget {
           child: Text(demo.pushTime.format(context)),
         ),
       ),
-      LineRow(
-        left: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('쉬기 모드'),
-          Muted('아프거나 다칠 때 켜면 연속 기록이 유지돼요', bottom: 0),
-        ]),
-        right: Switch(
-          value: demo.restMode,
-          activeTrackColor: AppColors.primary,
-          onChanged: (v) => demo.update(() => demo.restMode = v),
-        ),
+      SwitchRow(
+        title: '쉬기 모드',
+        subtitle: '아프거나 다칠 때 켜면 연속 기록이 유지돼요',
+        value: demo.restMode,
+        onChanged: (v) => demo.update(() => demo.restMode = v),
       ),
       LineRow(
         left: const Text('연속 기록 · 배지'),

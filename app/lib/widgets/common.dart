@@ -396,6 +396,24 @@ class DayChips extends StatelessWidget {
   }
 }
 
+/// 켜고 끄는 스위치가 있는 줄. 스위치 색은 테마(switchTheme)에서 정한다 (디자인 리뷰 11/02 #2)
+class SwitchRow extends StatelessWidget {
+  const SwitchRow({super.key, required this.title, required this.subtitle, required this.value, required this.onChanged});
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) => LineRow(
+        left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title),
+          Muted(subtitle, bottom: 0),
+        ]),
+        right: Switch(value: value, onChanged: onChanged),
+      );
+}
+
 /// 아래 구분선이 있는 한 줄
 class LineRow extends StatelessWidget {
   const LineRow({super.key, required this.left, this.right, this.onTap, this.showArrow = false});
