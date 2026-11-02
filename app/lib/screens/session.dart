@@ -86,17 +86,10 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                   // 체크한 세트가 있으면 사라진다고 먼저 묻고, 바꾼 뒤에도 되돌릴 수 있게 한다 (리뷰 10/28 #1)
                   final doneCount = current.sets.where((s) => s.done).length;
                   if (doneCount > 0) {
-                    final ok = await showDialog<bool>(
-                      context: sheet,
-                      builder: (dialog) => AlertDialog(
-                        title: Text('기록한 $doneCount세트가 사라져요. 바꿀까요?'),
-                        actions: [
-                          TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('그대로 두기')),
-                          TextButton(onPressed: () => Navigator.pop(dialog, true), child: const Text('바꾸기')),
-                        ],
-                      ),
-                    );
-                    if (ok != true || !sheet.mounted) return;
+                    // 체크한 세트가 지워지니 빨간 글씨로 (디자인 리뷰 11/02 #1)
+                    final ok = await confirmDialog(sheet,
+                        title: '기록한 $doneCount세트가 사라져요. 바꿀까요?', keepLabel: '그대로 두기', okLabel: '바꾸기', danger: true);
+                    if (!ok || !sheet.mounted) return;
                   }
                   final before = current;
                   final at = index;

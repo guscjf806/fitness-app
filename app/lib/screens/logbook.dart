@@ -308,26 +308,12 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   Widget build(BuildContext context) {
     member ??= (ModalRoute.of(context)?.settings.arguments as String?) ?? members.first;
     // 수업 뒤 길게 적은 일지가 뒤로 가기로 사라지지 않게 먼저 묻는다 (리뷰 11/02 #3)
-    return PopScope(
-      canPop: !dirty,
-      onPopInvokedWithResult: (didPop, _) async {
-        if (didPop) return;
-        final discard = await showDialog<bool>(
-          context: context,
-          builder: (dialog) => AlertDialog(
-            title: const Text('작성 중인 일지를 버릴까요?'),
-            content: const Text('나가면 적은 내용과 영상이 사라져요.'),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('계속 쓰기')),
-              TextButton(
-                onPressed: () => Navigator.pop(dialog, true),
-                child: const Text('버리고 나가기', style: TextStyle(color: AppColors.warning)),
-              ),
-            ],
-          ),
-        );
-        if (discard == true && context.mounted) Navigator.pop(context);
-      },
+    return DiscardGuard(
+      dirty: dirty,
+      title: '작성 중인 일지를 버릴까요?',
+      body: '나가면 적은 내용과 영상이 사라져요.',
+      keepLabel: '계속 쓰기',
+      okLabel: '버리고 나가기',
       child: AppPage(title: '일지 작성', children: [
       DropdownButtonFormField<String>(
         initialValue: member,

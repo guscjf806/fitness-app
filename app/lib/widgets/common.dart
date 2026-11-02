@@ -66,6 +66,49 @@ class GuestBanner extends StatelessWidget {
   }
 }
 
+/// 확인 창. 고르면 true. [danger]면 확인 버튼을 빨간 글씨로 (기록이 사라지는 버튼) (디자인 리뷰 11/02 #1)
+Future<bool> confirmDialog(BuildContext context,
+    {required String title, String? body, required String keepLabel, required String okLabel, bool danger = false}) async {
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (dialog) => AlertDialog(
+      title: Text(title),
+      content: body == null ? null : Text(body),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialog, false), child: Text(keepLabel)),
+        TextButton(
+          onPressed: () => Navigator.pop(dialog, true),
+          child: Text(okLabel, style: danger ? const TextStyle(color: AppColors.warning) : null),
+        ),
+      ],
+    ),
+  );
+  return ok == true;
+}
+
+/// 쓰던 내용이 있을 때([dirty]) 뒤로 가면 버릴지 먼저 묻는다. 버리면 화면을 닫는다
+class DiscardGuard extends StatelessWidget {
+  const DiscardGuard(
+      {super.key, required this.dirty, required this.title, required this.body, required this.keepLabel, required this.okLabel, required this.child});
+  final bool dirty;
+  final String title;
+  final String body;
+  final String keepLabel;
+  final String okLabel;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => PopScope(
+        canPop: !dirty,
+        onPopInvokedWithResult: (didPop, _) async {
+          if (didPop) return;
+          final discard = await confirmDialog(context, title: title, body: body, keepLabel: keepLabel, okLabel: okLabel, danger: true);
+          if (discard && context.mounted) Navigator.pop(context);
+        },
+        child: child,
+      );
+}
+
 /// 화면 아래에 붙는 버튼 띠. 위에 선을 그어 목록이 버튼 뒤에서 잘려 보이지 않게 한다 (디자인 리뷰 10/31 #1)
 class BottomActionBar extends StatelessWidget {
   const BottomActionBar({super.key, required this.child});

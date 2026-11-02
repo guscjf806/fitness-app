@@ -42,18 +42,9 @@ class _ConsentScreenState extends State<ConsentScreen> {
 
   /// 동의하지 않고 뒤로 가면 로그인을 취소한다. 건강정보 동의를 건너뛰지 못하게 (리뷰 10/29 #1)
   Future<void> _leave() async {
-    final cancel = await showDialog<bool>(
-      context: context,
-      builder: (dialog) => AlertDialog(
-        title: const Text('동의하지 않으면 로그인이 취소돼요'),
-        content: const Text('나가면 로그인 없이 둘러보기로 돌아가요.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('계속 동의하기')),
-          TextButton(onPressed: () => Navigator.pop(dialog, true), child: const Text('로그인 취소')),
-        ],
-      ),
-    );
-    if (cancel != true || !mounted) return;
+    final cancel = await confirmDialog(context,
+        title: '동의하지 않으면 로그인이 취소돼요', body: '나가면 로그인 없이 둘러보기로 돌아가요.', keepLabel: '계속 동의하기', okLabel: '로그인 취소');
+    if (!cancel || !mounted) return;
     demo.update(() {
       demo.role = 'guest';
       demo.continueToGenerate = false;

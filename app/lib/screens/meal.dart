@@ -141,26 +141,12 @@ class _MealPostScreenState extends State<MealPostScreen> {
   @override
   Widget build(BuildContext context) {
     // 쓰던 내용이 있는데 뒤로 가면 지울지 먼저 묻는다 (리뷰 11/01 #3)
-    return PopScope(
-      canPop: !dirty,
-      onPopInvokedWithResult: (didPop, _) async {
-        if (didPop) return;
-        final discard = await showDialog<bool>(
-          context: context,
-          builder: (dialog) => AlertDialog(
-            title: const Text('쓰던 내용을 지울까요?'),
-            content: const Text('나가면 고른 사진과 설명이 사라져요.'),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('계속 쓰기')),
-              TextButton(
-                onPressed: () => Navigator.pop(dialog, true),
-                child: const Text('지우고 나가기', style: TextStyle(color: AppColors.warning)),
-              ),
-            ],
-          ),
-        );
-        if (discard == true && context.mounted) Navigator.pop(context);
-      },
+    return DiscardGuard(
+      dirty: dirty,
+      title: '쓰던 내용을 지울까요?',
+      body: '나가면 고른 사진과 설명이 사라져요.',
+      keepLabel: '계속 쓰기',
+      okLabel: '지우고 나가기',
       child: AppPage(title: '식단 올리기', children: [
       const Muted('어느 끼니인가요?', bottom: 0),
       Seg(options: const ['아침', '점심', '저녁', '간식'], value: slot, onChanged: (v) => setState(() => slot = v)),
