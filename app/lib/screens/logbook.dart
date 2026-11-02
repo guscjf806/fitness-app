@@ -26,7 +26,7 @@ class LogIntroTab extends StatelessWidget {
               AppCard(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text('${log.date} · ${log.title}', style: AppText.bodyStrong),
-                  Text(log.items.take(2).map((i) => '${i.name} ${i.weight} ${i.sets}×${i.reps}').join('\n')),
+                  Text(log.items.take(2).map((i) => '${i.name} ${i.dose}').join('\n')),
                 ]),
               ),
           ]),
@@ -88,7 +88,7 @@ class LogDetailScreen extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(child: Text(item.name)),
           ]),
-          right: Muted('${item.weight}, ${item.reps} × ${item.sets}세트', bottom: 0),
+          right: Muted(item.dose, bottom: 0),
         ),
       if (log.videos.isNotEmpty) ...[
         const H2('운동 영상'),

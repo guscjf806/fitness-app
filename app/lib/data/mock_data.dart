@@ -206,6 +206,9 @@ class LogItem {
   final String weight;
   final String reps;
   final int sets;
+
+  /// 기획서 순서(무게 → 횟수 → 세트)대로 한 곳에서 만든다. 예: '60kg · 8개 × 4세트' (리뷰 11/02 #6)
+  String get dose => '$weight · $reps × $sets세트';
 }
 
 class LogVideo {

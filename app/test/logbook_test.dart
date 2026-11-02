@@ -1,3 +1,4 @@
+import 'package:fitness_app/data/mock_data.dart';
 import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
 import 'package:fitness_app/state/demo_state.dart';
@@ -101,5 +102,9 @@ void main() {
     await tap(tester, find.text('복사'));
     expect(find.text('초대 코드를 복사했어요'), findsOneWidget);
     expect(copied, demo.inviteCode);
+  });
+
+  test('#6 무게 → 횟수 → 세트 순서로 표기한다', () {
+    expect(const LogItem('바벨 스쿼트', '60kg', '8개', 4).dose, '60kg · 8개 × 4세트');
   });
 }
