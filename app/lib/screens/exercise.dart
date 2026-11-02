@@ -102,7 +102,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
       okLabel: '버리고 나가기',
       child: Scaffold(
       appBar: AppBar(title: const Text('운동 추가하기')),
-      body: ListView(padding: const EdgeInsets.fromLTRB(18, 8, 18, 20), children: [
+      body: TabBody(top: AppSpace.s, children: [
         Row(children: [
           const Expanded(child: FieldLabel('운동을 골라 주세요')),
           FilterChip(

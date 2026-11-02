@@ -38,6 +38,21 @@ class AppColors {
   static const kakaoText = Color(0xFF191600);
 }
 
+/// 여백은 여기서만 정한다 (디자인 리뷰 11/02 #4). 화면 바깥 여백부터 옮기는 중
+class AppSpace {
+  /// 화면 왼쪽·오른쪽 바깥 여백
+  static const double page = 18;
+
+  /// 스크롤 맨 아래 여백
+  static const double pageBottom = 28;
+
+  static const double xs = 4;
+  static const double s = 8;
+  static const double m = 12;
+  static const double l = 16;
+  static const double xl = 24;
+}
+
 /// 모서리 둥글기는 여기서만 정한다 (디자인 리뷰 10/31 #5)
 class AppRadius {
   /// 카드·큰 상자

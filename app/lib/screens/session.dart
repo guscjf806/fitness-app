@@ -204,7 +204,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         // 같은 창을 여는 버튼이 두 개라 헷갈려서 하나로 (디자인 리뷰 10/30 #7)
         actions: [TextButton(onPressed: _showList, child: const Text('목록·순서'))],
       ),
-      body: ListView(padding: const EdgeInsets.fromLTRB(18, 4, 18, 20), children: [
+      body: TabBody(top: AppSpace.xs, children: [
         // 끝까지 하고 나서야 저장 안 된다는 걸 알지 않게 처음부터 알린다 (리뷰 10/28 #6)
         if (demo.isGuest) const GuestBanner('체크해 볼 수 있지만 저장되지 않아요. 로그인하면 기록이 쌓여요.'),
         Muted('${index + 1} / ${session.items.length}', bottom: 2),

@@ -122,7 +122,7 @@ class BottomActionBar extends StatelessWidget {
         ),
         child: SafeArea(
           top: false,
-          child: Padding(padding: const EdgeInsets.fromLTRB(18, 8, 18, 12), child: child),
+          child: Padding(padding: const EdgeInsets.fromLTRB(AppSpace.page, AppSpace.s, AppSpace.page, AppSpace.m), child: child),
         ),
       );
 }
@@ -158,14 +158,17 @@ class AppPage extends StatelessWidget {
 
 /// 스크롤되는 본문
 class TabBody extends StatelessWidget {
-  const TabBody({super.key, required this.children});
+  const TabBody({super.key, required this.children, this.top = AppSpace.l});
 
   final List<Widget> children;
+
+  /// 위 여백. 목록을 한 화면에 많이 보여야 하는 작업 화면(운동 추가·운동 진행)은 좁게 쓴다
+  final double top;
 
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 28),
+      padding: EdgeInsets.fromLTRB(AppSpace.page, top, AppSpace.page, AppSpace.pageBottom),
       children: children,
     );
   }
