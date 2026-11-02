@@ -233,12 +233,34 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   String stamp = stamps.first;
   final List<String> videos = [];
 
+  // 적은 값을 상태에 남긴다 (리뷰 11/02 #2). 직접 입력한 종목 이름은 칩을 껐다 켜도 남는다 (#7)
+  String customName = '';
+  String kg = '';
+  String reps = '';
+  String sets = '';
+  String comment = '';
+
+  String get exerciseName => customExercise ? customName.trim() : exercise;
+
+  void _save() {
+    if (exerciseName.isEmpty) {
+      toast(context, '종목 이름을 적어 주세요');
+      return;
+    }
+    if (reps.trim().isEmpty) {
+      toast(context, '횟수를 적어 주세요');
+      return;
+    }
+    toast(context, '$member 회원님께 일지${videos.isEmpty ? '' : '와 영상 ${videos.length}개'}를 저장하고 알림을 보냈어요 (출석 도장 완료)');
+    Navigator.pop(context);
+  }
+
   void _addVideo(String source) {
     if (videos.length >= 5) {
       toast(context, '영상은 일지당 최대 5개까지 올릴 수 있어요');
       return;
     }
-    setState(() => videos.add('${customExercise ? '직접 입력' : exercise} 영상 · 0:1${videos.length + 1}'));
+    setState(() => videos.add('${exerciseName.isEmpty ? '직접 입력' : exerciseName} 영상 · 0:1${videos.length + 1}'));
     toast(context, source == '촬영' ? '15초가 되면 촬영이 자동으로 끝나요' : '15초보다 긴 영상은 앞 15초만 올라가요');
   }
 
@@ -265,7 +287,11 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       Row(children: [
         Expanded(
           child: customExercise
-              ? const TextField(decoration: InputDecoration(labelText: '종목 이름', hintText: '예: TRX 로우'))
+              ? TextFormField(
+                  initialValue: customName,
+                  decoration: const InputDecoration(labelText: '종목 이름', hintText: '예: TRX 로우'),
+                  onChanged: (v) => setState(() => customName = v),
+                )
               : InkWell(
                   borderRadius: BorderRadius.circular(AppRadius.small),
                   // 운동 추가하기(S21)에서 1개를 고른다
@@ -294,11 +320,11 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       const SizedBox(height: 12),
       // 휴대폰에서 숫자 자판이 뜨게 공용 숫자 칸으로 (디자인 리뷰 11/01 #2)
       Row(children: [
-        Expanded(child: NumField(label: '무게 (kg)', hint: '60', value: '', onChanged: (_) {})),
+        Expanded(child: NumField(label: '무게 (kg)', hint: '60', value: kg, onChanged: (v) => setState(() => kg = v))),
         const SizedBox(width: 8),
-        Expanded(child: NumField(label: '횟수', hint: '8', value: '', onChanged: (_) {})),
+        Expanded(child: NumField(label: '횟수', hint: '8', value: reps, onChanged: (v) => setState(() => reps = v))),
         const SizedBox(width: 8),
-        Expanded(child: NumField(label: '세트', hint: '4', value: '', onChanged: (_) {})),
+        Expanded(child: NumField(label: '세트', hint: '4', value: sets, onChanged: (v) => setState(() => sets = v))),
       ]),
       const SizedBox(height: 10),
       // 촬영 동의 안내가 묻히지 않게 제목·규칙·동의를 나눈다. 문구는 그대로 (디자인 리뷰 11/01 #4)
@@ -316,14 +342,16 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         Expanded(child: AppButton('앨범에서 선택', kind: ButtonKind.soft, onPressed: () => _addVideo('앨범'))),
       ]),
       const SizedBox(height: 12),
-      const TextField(maxLines: 3, decoration: InputDecoration(labelText: '코멘트', hintText: '자세, 다음 목표 등')),
+      TextFormField(
+        initialValue: comment,
+        maxLines: 3,
+        decoration: const InputDecoration(labelText: '코멘트', hintText: '자세, 다음 목표 등'),
+        onChanged: (v) => setState(() => comment = v),
+      ),
       const SizedBox(height: 12),
       const Muted('응원 스탬프 (저장하면 그날 출석 도장도 찍혀요)', bottom: 0),
       Seg(options: stamps, value: stamp, onChanged: (v) => setState(() => stamp = v)),
-      AppButton('저장하고 알림 보내기', onPressed: () {
-        toast(context, '$member 회원님께 일지${videos.isEmpty ? '' : '와 영상 ${videos.length}개'}를 저장하고 알림을 보냈어요 (출석 도장 완료)');
-        Navigator.pop(context);
-      }),
+      AppButton('저장하고 알림 보내기', onPressed: _save),
     ]);
   }
 }
