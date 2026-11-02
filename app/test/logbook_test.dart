@@ -107,4 +107,15 @@ void main() {
   test('#6 무게 → 횟수 → 세트 순서로 표기한다', () {
     expect(const LogItem('바벨 스쿼트', '60kg', '8개', 4).dose, '60kg · 8개 × 4세트');
   });
+
+  testWidgets('#7 회원마다 마지막 일지 날짜가 다르고, 없으면 안내', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    final page = find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first;
+    await tester.scrollUntilVisible(find.text('아직 쓴 일지가 없어요'), 200, scrollable: page);
+    expect(find.text('마지막 일지 10월 6일'), findsOneWidget);
+    expect(find.text('마지막 일지 10월 2일'), findsOneWidget);
+  });
 }

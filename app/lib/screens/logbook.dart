@@ -51,6 +51,7 @@ class LogListTab extends StatelessWidget {
     return TabBody(children: [
       const H1('운동일지'),
       const Muted('담당 선생님이 작성한 내 일지예요. 나만 볼 수 있어요.'),
+      if (workoutLogs.isEmpty) const AppCard(child: Text('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
       for (var i = 0; i < workoutLogs.length; i++)
         AppCard(
           onTap: () {
@@ -113,7 +114,11 @@ class LogDetailScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: Row(children: [
-              Expanded(child: Muted('서버 보관 만료까지 ${log.videos[j].daysLeft}일', bottom: 0)),
+              // '서버 보관 만료' 대신 쉬운 말로, 3일 이하면 경고색 (리뷰 11/02 #7)
+              Expanded(
+                child: Text('${log.videos[j].daysLeft}일 뒤 사라져요. 남기려면 내 폰에 저장하세요',
+                    style: AppText.caption.copyWith(color: log.videos[j].daysLeft <= 3 ? AppColors.warning : AppColors.textSub)),
+              ),
               if (demo.savedVideos.contains('$index-$j'))
                 const Muted('내 폰에 저장됨', bottom: 0)
               else
@@ -229,7 +234,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
         LineRow(
           left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(m, style: AppText.bodyStrong),
-            const Muted('마지막 일지 10월 6일', bottom: 0),
+            Muted(lastLogDates[m] == null ? '아직 쓴 일지가 없어요' : '마지막 일지 ${lastLogDates[m]}', bottom: 0),
           ]),
           right: FilledButton.tonal(
             style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
@@ -381,7 +386,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       for (var i = 0; i < videos.length; i++)
         LineRow(
           left: Text(videos[i]),
-          right: TextButton(onPressed: () => _removeVideo(i), child: const Text('삭제', style: TextStyle(color: AppColors.warning))),
+          right: TextButton(onPressed: () => _removeVideo(i), child: const Text('빼기', style: TextStyle(color: AppColors.warning))),
         ),
       Row(children: [
         Expanded(child: AppButton('촬영하기', kind: ButtonKind.soft, onPressed: () => _addVideo('촬영'))),
