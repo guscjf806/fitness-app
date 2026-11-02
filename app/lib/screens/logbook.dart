@@ -189,6 +189,11 @@ class _MemberManageTabState extends State<MemberManageTab> {
             items: [for (final m in members) DropdownMenuItem(value: m, child: Text(m))],
             onChanged: (v) => setState(() => member = v ?? member),
           ),
+          // 고른 회원에게 지금 보낸 미션을 보여 준다 (리뷰 11/02 #4)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Muted(demo.missions[member] == null ? '아직 보낸 미션이 없어요' : '지금 미션: ${demo.missions[member]}', bottom: 0),
+          ),
           const SizedBox(height: 8),
           TextField(
             controller: missionController,
@@ -196,7 +201,12 @@ class _MemberManageTabState extends State<MemberManageTab> {
           ),
           AppButton('미션 보내기', kind: ButtonKind.soft, onPressed: () {
             final text = missionController.text.trim();
-            demo.update(() => demo.missions[member] = text.isEmpty ? '이번 주 운동 3회 + 단백질 챙기기' : text);
+            // 빈칸이면 회색 예시 문구가 그대로 보내지지 않게 막는다
+            if (text.isEmpty) {
+              toast(context, '미션 내용을 적어 주세요');
+              return;
+            }
+            demo.update(() => demo.missions[member] = text);
             missionController.clear();
             toast(context, '$member 회원님께 이번 주 미션을 보냈어요');
           }),

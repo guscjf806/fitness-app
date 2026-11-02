@@ -70,4 +70,16 @@ void main() {
     await tap(tester, find.text('버리고 나가기'));
     expect(find.widgetWithText(AppBar, '일지 작성'), findsNothing);
   });
+
+  testWidgets('#4 빈 미션은 보내지 않고, 고른 회원의 지금 미션을 보여 준다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('지금 미션: '), findsOneWidget);
+    final before = Map.of(demo.missions);
+    await tap(tester, find.text('미션 보내기'));
+    expect(find.text('미션 내용을 적어 주세요'), findsOneWidget);
+    expect(demo.missions, before);
+  });
 }
