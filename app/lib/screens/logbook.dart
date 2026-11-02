@@ -242,6 +242,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
 
   String get exerciseName => customExercise ? customName.trim() : exercise;
 
+  /// 적은 게 있는지 (뒤로 갈 때 버릴지 묻는 기준)
+  bool get dirty => [customName, kg, reps, sets, comment].any((v) => v.trim().isNotEmpty) || videos.isNotEmpty;
+
   void _save() {
     if (exerciseName.isEmpty) {
       toast(context, '종목 이름을 적어 주세요');
@@ -276,7 +279,28 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   @override
   Widget build(BuildContext context) {
     member ??= (ModalRoute.of(context)?.settings.arguments as String?) ?? members.first;
-    return AppPage(title: '일지 작성', children: [
+    // 수업 뒤 길게 적은 일지가 뒤로 가기로 사라지지 않게 먼저 묻는다 (리뷰 11/02 #3)
+    return PopScope(
+      canPop: !dirty,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        final discard = await showDialog<bool>(
+          context: context,
+          builder: (dialog) => AlertDialog(
+            title: const Text('작성 중인 일지를 버릴까요?'),
+            content: const Text('나가면 적은 내용과 영상이 사라져요.'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('계속 쓰기')),
+              TextButton(
+                onPressed: () => Navigator.pop(dialog, true),
+                child: const Text('버리고 나가기', style: TextStyle(color: AppColors.warning)),
+              ),
+            ],
+          ),
+        );
+        if (discard == true && context.mounted) Navigator.pop(context);
+      },
+      child: AppPage(title: '일지 작성', children: [
       DropdownButtonFormField<String>(
         initialValue: member,
         decoration: const InputDecoration(labelText: '회원'),
@@ -352,6 +376,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       const Muted('응원 스탬프 (저장하면 그날 출석 도장도 찍혀요)', bottom: 0),
       Seg(options: stamps, value: stamp, onChanged: (v) => setState(() => stamp = v)),
       AppButton('저장하고 알림 보내기', onPressed: _save),
-    ]);
+    ]),
+    );
   }
 }

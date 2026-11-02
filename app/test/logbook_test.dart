@@ -59,4 +59,15 @@ void main() {
     await tap(tester, find.text('직접 입력'));
     expect(find.text('TRX 로우'), findsOneWidget);
   });
+
+  testWidgets('#3 적은 게 있으면 뒤로 갈 때 버릴지 묻는다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    await tester.enterText(field('횟수'), '8');
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('작성 중인 일지를 버릴까요?'), findsOneWidget);
+    await tap(tester, find.text('버리고 나가기'));
+    expect(find.widgetWithText(AppBar, '일지 작성'), findsNothing);
+  });
 }
