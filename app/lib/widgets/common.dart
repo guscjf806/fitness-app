@@ -399,6 +399,28 @@ class DayChips extends StatelessWidget {
   }
 }
 
+/// 앞에 체크 아이콘이 붙는 목록 (혜택 안내 등) (디자인 리뷰 11/02 #5)
+class BulletList extends StatelessWidget {
+  const BulletList(this.items, {super.key});
+  final List<String> items;
+
+  @override
+  Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        for (var i = 0; i < items.length; i++)
+          Padding(
+            padding: EdgeInsets.only(top: i == 0 ? 0 : 6),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 2),
+                child: Icon(Icons.check_circle, size: 18, color: AppColors.primary),
+              ),
+              const SizedBox(width: 8),
+              Expanded(child: Text(items[i])),
+            ]),
+          ),
+      ]);
+}
+
 /// 고르기 버튼(Seg) 위의 질문 라벨: 굵은 제목 + 회색 설명 (디자인 리뷰 11/02 #3)
 class FieldLabel extends StatelessWidget {
   const FieldLabel(this.text, {super.key, this.sub});
