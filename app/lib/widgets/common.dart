@@ -35,7 +35,7 @@ void requireLogin(BuildContext context, String reason, {bool thenGenerate = fals
         const SheetTitle('로그인이 필요해요'),
         const SizedBox(height: 8),
         Muted(reason),
-        const Muted('게스트로 입력한 몸 정보는 로그인 후에도 그대로 이어져요.'),
+        const Muted('둘러보며 입력한 몸 정보는 로그인 후에도 그대로 이어져요.'),
         AppButton('3초 만에 로그인하기', onPressed: () {
           Navigator.pop(sheetContext);
           demo.continueToGenerate = thenGenerate;
@@ -58,7 +58,7 @@ class GuestBanner extends StatelessWidget {
       accent: true,
       onTap: () => Navigator.pushNamed(context, Routes.login),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('게스트로 둘러보는 중', style: AppText.bodyStrong),
+        const Text('로그인 없이 둘러보는 중', style: AppText.bodyStrong),
         Muted(text, bottom: 4),
         const MoreLink('로그인하기'),
       ]),

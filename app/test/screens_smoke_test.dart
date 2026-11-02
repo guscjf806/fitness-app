@@ -88,7 +88,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(demo.isGuest, isTrue);
     expect(demo.entered, isTrue, reason: '다시 열면 바로 탭으로 들어가야 한다');
-    expect(find.text('게스트로 둘러보는 중'), findsOneWidget);
+    expect(find.text('로그인 없이 둘러보는 중'), findsOneWidget);
     for (var i = 0; i < 5; i++) {
       demo.update(() => demo.tab = i);
       await tester.pumpAndSettle();

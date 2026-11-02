@@ -16,7 +16,7 @@ class ProfileTab extends StatelessWidget {
     if (demo.isGuest) {
       return TabBody(children: [
         const H1('내 정보'),
-        const Muted('게스트'),
+        const Muted('로그인 없이 둘러보는 중'),
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Text('로그인하면 이런 걸 쓸 수 있어요', style: AppText.bodyStrong),
@@ -26,7 +26,7 @@ class ProfileTab extends StatelessWidget {
           ]),
         ),
         const _ConditionRows(),
-        const Muted('게스트로 입력한 정보는 이 기기에만 저장돼요.', bottom: 0),
+        const Muted('둘러보며 입력한 정보는 이 기기에만 저장돼요.', bottom: 0),
       ]);
     }
     return TabBody(children: [
