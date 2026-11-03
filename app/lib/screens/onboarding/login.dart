@@ -23,7 +23,8 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget social(String label, Color bg, Color fg, {bool outlined = false}) =>
+    // 각 회사 규칙대로 글자 왼쪽에 공식 로고를 20px로 둔다 (디자인 리뷰 11/03 #4)
+    Widget social(String label, Color bg, Color fg, {bool outlined = false, String? logo}) =>
         Padding(
           padding: const EdgeInsets.only(top: 12),
           child: FilledButton(
@@ -33,14 +34,21 @@ class LoginScreen extends StatelessWidget {
               foregroundColor: fg,
               side: outlined ? const BorderSide(color: AppColors.socialBorder) : null,
             ),
-            child: Text(label),
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              if (logo != null) ...[
+                Image.asset(logo, width: 20, height: 20, excludeFromSemantics: true),
+                const SizedBox(width: AppSpace.s),
+              ],
+              Text(label),
+            ]),
           ),
         );
     return AppPage(title: '로그인', children: [
       const H1('3초 만에 시작해요'),
       const Muted('로그인하면 식단·운동 루틴 생성, 식단 올리기를 쓸 수 있어요.'),
-      social('카카오로 시작하기', AppColors.kakao, AppColors.kakaoText),
-      social('구글로 시작하기', Colors.white, AppColors.googleText, outlined: true),
+      social('카카오로 시작하기', AppColors.kakao, AppColors.kakaoText, logo: 'assets/logos/kakao.png'),
+      social('구글로 시작하기', Colors.white, AppColors.googleText, outlined: true, logo: 'assets/logos/google.png'),
+      // Apple 로고는 공식 자료를 받으려면 라이선스 동의가 필요해 아직 비워 둔다 (assets/logos/README.md)
       social('Apple로 시작하기', Colors.black, Colors.white),
       const Disclaimer(text: '목업이라 실제 로그인은 하지 않아요. 누르면 일반 회원으로 들어가요.'),
     ]);
