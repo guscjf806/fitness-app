@@ -86,7 +86,18 @@ class ProfileTab extends StatelessWidget {
       LineRow(left: const Text('구독'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.subscribe)),
       // 위험한 줄은 실수로 누르지 않게 떼어서 맨 아래에 (디자인 리뷰 10/29 #6)
       const SizedBox(height: 24),
-      LineRow(left: const Text('로그아웃'), onTap: () => demo.switchRole('guest')),
+      // 잘못 눌러 다시 로그인하는 일이 없게 한 번 묻는다 (리뷰 11/03 #2)
+      LineRow(
+        left: const Text('로그아웃'),
+        onTap: () async {
+          final ok = await confirmDialog(context,
+              title: '로그아웃할까요?',
+              body: '다시 쓰려면 카카오·구글·애플로 로그인해야 해요. 기록은 계정에 그대로 남아 있어요.',
+              keepLabel: '그만두기',
+              okLabel: '로그아웃');
+          if (ok) demo.switchRole('guest');
+        },
+      ),
       LineRow(
         left: const Text('계정 삭제', style: TextStyle(color: AppColors.warning)),
         onTap: () => toast(context, '계정 삭제 확인 화면이 열려요 (데모)'),
