@@ -67,6 +67,12 @@ class ProfileTab extends StatelessWidget {
           child: Text(demo.pushTime.format(context)),
         ),
       ),
+      // 알림 스위치 값은 그대로 두고, 쉬는 동안 멈춘다는 것만 알린다 (리뷰 11/03 #4)
+      if (demo.restMode && demo.pushOn)
+        const Padding(
+          padding: EdgeInsets.only(top: AppSpace.s),
+          child: Muted('쉬기 모드 중이라 알림이 잠시 멈췄어요', bottom: 0),
+        ),
       const RestModeSwitch(),
       LineRow(
         left: const Text('연속 기록 · 배지'),
