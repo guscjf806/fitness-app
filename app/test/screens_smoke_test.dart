@@ -310,4 +310,48 @@ void main() {
     await step(tester);
     expect(demo.workoutDone, isTrue);
   });
+  testWidgets('리뷰 11/03 #1·#2·#7: 지키기권·로그아웃은 한 번 묻고, PT 코드는 숫자 6자리여야 연결된다', (tester) async {
+    await start(tester);
+    demo.switchRole('user');
+    demo.freezesLeft = 1;
+    await tester.pumpAndSettle();
+
+    // #1 지키기권: 그만두면 그대로, 쓰면 1회 줄어든다
+    demoNavigatorKey.currentState!.pushNamed(Routes.records);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('사용하기'));
+    await tester.pumpAndSettle();
+    expect(find.text('기록 지키기권을 쓸까요?'), findsOneWidget);
+    await tester.tap(find.text('그만두기'));
+    await tester.pumpAndSettle();
+    expect(demo.freezesLeft, 1);
+    await tester.tap(find.text('사용하기'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('쓰기'));
+    await tester.pumpAndSettle();
+    expect(demo.freezesLeft, 0);
+    demoNavigatorKey.currentState!.pop();
+    await tester.pumpAndSettle();
+
+    // #7 PT 코드: 하이픈을 붙여 넣어도 숫자만 남고, 6자리가 되어야 버튼이 눌린다
+    demoNavigatorKey.currentState!.pushNamed(Routes.ptCode);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '482-91');
+    await tester.pump();
+    expect(tester.widget<FilledButton>(find.widgetWithText(FilledButton, '연결하기')).onPressed, isNull);
+    await tester.enterText(find.byType(TextField), '482-915');
+    await tester.pump();
+    expect(tester.widget<FilledButton>(find.widgetWithText(FilledButton, '연결하기')).onPressed, isNotNull);
+    demoNavigatorKey.currentState!.pop();
+    await tester.pumpAndSettle();
+
+    // #2 로그아웃: 그만두면 로그인 상태 그대로
+    demo.update(() => demo.tab = 4);
+    await tester.pumpAndSettle();
+    await tapText(tester, '로그아웃');
+    expect(find.text('로그아웃할까요?'), findsOneWidget);
+    await tester.tap(find.text('그만두기'));
+    await tester.pumpAndSettle();
+    expect(demo.role, 'user');
+  });
 }
