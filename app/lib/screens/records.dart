@@ -50,24 +50,25 @@ class _RecordsScreenState extends State<RecordsScreen> {
       const RestModeSwitch(),
       LineRow(
         left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('스트릭 프리즈'),
-          Muted('하루 놓쳐도 기록을 지켜 줘요 · 이번 달 ${demo.freezesLeft}회 남음', bottom: 0),
+          // 영어 '스트릭 프리즈' 대신 쉬운 이름 (리뷰 11/03 #5)
+          const Text('기록 지키기권'),
+          Muted('하루 빠져도 연속 기록이 끊기지 않게 지켜 줘요 · 이번 달 ${demo.freezesLeft}회 남음', bottom: 0),
         ]),
         right: OutlinedButton(
           onPressed: () async {
             if (demo.freezesLeft < 1) {
-              toast(context, '이번 달 프리즈를 모두 썼어요');
+              toast(context, '이번 달 기록 지키기권을 모두 썼어요');
               return;
             }
             // 되돌릴 수 없으니 쓰기 전에 한 번 묻는다 (리뷰 11/03 #1)
             final ok = await confirmDialog(context,
-                title: '프리즈를 쓸까요?',
-                body: '프리즈 1회를 써요. 이번 달 남은 횟수: ${demo.freezesLeft - 1}회',
+                title: '기록 지키기권을 쓸까요?',
+                body: '기록 지키기권 1회를 써요. 이번 달 남은 횟수: ${demo.freezesLeft - 1}회',
                 keepLabel: '그만두기',
                 okLabel: '쓰기');
             if (!ok || !context.mounted) return;
             demo.update(() => demo.freezesLeft--);
-            toast(context, '프리즈를 사용했어요. 연속 기록이 지켜졌어요');
+            toast(context, '기록 지키기권을 썼어요. 연속 기록이 지켜졌어요');
           },
           child: const Text('사용하기'),
         ),

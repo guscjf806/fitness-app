@@ -6,7 +6,7 @@ class AppConfig {
   /// 무료 횟수가 다시 채워지는 날: 매월 1일 (확정, 기획서 12번 B8)
   static DateTime nextQuotaReset(DateTime now) => DateTime(now.year, now.month + 1, 1);
 
-  /// 무료 회원의 월 스트릭 프리즈 횟수. 초안 값
+  /// 무료 회원의 월 기록 지키기권(스트릭 프리즈) 횟수. 초안 값
   static const freeMonthlyFreezes = 1;
 
   /// 한 번에 고를 수 있는 운동 수

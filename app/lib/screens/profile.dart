@@ -76,7 +76,7 @@ class ProfileTab extends StatelessWidget {
       const RestModeSwitch(),
       LineRow(
         left: const Text('연속 기록 · 배지'),
-        right: Muted('${demo.streak}일 · 프리즈 ${demo.freezesLeft}회', bottom: 0),
+        right: Muted('${demo.streak}일 · 기록 지키기권 ${demo.freezesLeft}회', bottom: 0),
         showArrow: true,
         onTap: () => Navigator.pushNamed(context, Routes.records),
       ),
@@ -194,7 +194,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
   Widget build(BuildContext context) {
     return AppPage(title: '구독', children: [
       const H1('AI를 마음껏 쓰세요'),
-      const AppCard(child: BulletList(['식단·운동 루틴 생성 횟수 확대', 'AI 식단 답변 횟수 확대', '스트릭 프리즈 추가'])),
+      const AppCard(child: BulletList(['식단·운동 루틴 생성 횟수 확대', 'AI 식단 답변 횟수 확대', '기록 지키기권 추가'])),
       Seg(options: const ['월', '연'], value: bill, onChanged: (v) => setState(() => bill = v)),
       BigNumber(bill == '월' ? '월 9,900원' : '연 79,000원'),
       const Muted('예시 가격이에요. 실제 가격은 출시 전에 정해요.'),
