@@ -47,15 +47,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
           const Muted('최근 7일 (마지막이 오늘)', bottom: 0),
         ]),
       ),
-      SwitchRow(
-        title: '쉬기 모드',
-        subtitle: '아프거나 다칠 때 켜 두세요 (최대 7일)',
-        value: demo.restMode,
-        onChanged: (v) {
-          demo.update(() => demo.restMode = v);
-          toast(context, v ? '쉬기 모드를 켰어요. 알림이 멈추고 기록이 유지돼요' : '쉬기 모드를 껐어요');
-        },
-      ),
+      const RestModeSwitch(),
       LineRow(
         left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('스트릭 프리즈'),

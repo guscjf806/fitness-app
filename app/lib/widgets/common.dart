@@ -455,6 +455,22 @@ class SwitchRow extends StatelessWidget {
       );
 }
 
+/// 쉬기 모드 스위치. 내 정보와 내 기록이 같은 문구·안내를 쓴다 (리뷰 11/03 #3)
+class RestModeSwitch extends StatelessWidget {
+  const RestModeSwitch({super.key});
+
+  @override
+  Widget build(BuildContext context) => SwitchRow(
+        title: '쉬기 모드',
+        subtitle: '아프거나 다칠 때 켜 두세요. 연속 기록이 유지돼요 (최대 7일)',
+        value: demo.restMode,
+        onChanged: (v) {
+          demo.update(() => demo.restMode = v);
+          toast(context, v ? '쉬기 모드를 켰어요. 알림이 멈추고 기록이 유지돼요' : '쉬기 모드를 껐어요');
+        },
+      );
+}
+
 /// 아래 구분선이 있는 한 줄
 class LineRow extends StatelessWidget {
   const LineRow({super.key, required this.left, this.right, this.onTap, this.showArrow = false});

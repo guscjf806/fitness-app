@@ -67,12 +67,7 @@ class ProfileTab extends StatelessWidget {
           child: Text(demo.pushTime.format(context)),
         ),
       ),
-      SwitchRow(
-        title: '쉬기 모드',
-        subtitle: '아프거나 다칠 때 켜면 연속 기록이 유지돼요',
-        value: demo.restMode,
-        onChanged: (v) => demo.update(() => demo.restMode = v),
-      ),
+      const RestModeSwitch(),
       LineRow(
         left: const Text('연속 기록 · 배지'),
         right: Muted('${demo.streak}일 · 프리즈 ${demo.freezesLeft}회', bottom: 0),
