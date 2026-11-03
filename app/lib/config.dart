@@ -9,6 +9,10 @@ class AppConfig {
   /// 무료 회원의 월 기록 지키기권(스트릭 프리즈) 횟수. 초안 값
   static const freeMonthlyFreezes = 1;
 
+  /// 구독 예시 가격(원). 실제 가격은 출시 전에 정한다
+  static const monthlyPrice = 9900;
+  static const yearlyPrice = 79000;
+
   /// 한 번에 고를 수 있는 운동 수
   static const maxExercisePick = 10;
 }

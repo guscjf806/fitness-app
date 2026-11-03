@@ -193,12 +193,20 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
   @override
   Widget build(BuildContext context) {
     return AppPage(title: '구독', children: [
-      const H1('AI를 마음껏 쓰세요'),
+      // 무제한으로 오해하지 않게 '더 많이', 몇 회로 느는지와 자동 연장·해지를 함께 알린다 (리뷰 11/03 #6)
+      const H1('AI를 더 많이 쓰세요'),
       const AppCard(child: BulletList(['식단·운동 루틴 생성 횟수 확대', 'AI 식단 답변 횟수 확대', '기록 지키기권 추가'])),
+      Muted('무료는 AI를 한 달에 ${AppConfig.freeMonthlyAiLimit}회 쓸 수 있어요. 구독하면 몇 회로 늘어나는지는 출시 전에 정해요.',
+          bottom: AppSpace.m),
       Seg(options: const ['월', '연'], value: bill, onChanged: (v) => setState(() => bill = v)),
-      BigNumber(bill == '월' ? '월 9,900원' : '연 79,000원'),
+      BigNumber(bill == '월' ? '월 ${formatNumber(AppConfig.monthlyPrice)}원' : '연 ${formatNumber(AppConfig.yearlyPrice)}원'),
+      if (bill == '연') Muted('월 약 ${formatNumber((AppConfig.yearlyPrice / 12 / 100).round() * 100)}원꼴이에요', bottom: 2),
       const Muted('예시 가격이에요. 실제 가격은 출시 전에 정해요.'),
       AppButton('구독하기', onPressed: () => toast(context, '실제 앱에서는 앱스토어 결제 창이 열려요 (데모)')),
+      const Padding(
+        padding: EdgeInsets.only(top: AppSpace.s),
+        child: Muted('기간이 끝나면 자동으로 연장돼요 · 앱스토어에서 언제든 해지할 수 있어요', align: TextAlign.center),
+      ),
     ]);
   }
 }
