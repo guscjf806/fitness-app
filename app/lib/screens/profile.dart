@@ -200,13 +200,20 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
           bottom: AppSpace.m),
       Seg(options: const ['월', '연'], value: bill, onChanged: (v) => setState(() => bill = v)),
       BigNumber(bill == '월' ? '월 ${formatNumber(AppConfig.monthlyPrice)}원' : '연 ${formatNumber(AppConfig.yearlyPrice)}원'),
-      if (bill == '연') Muted('월 약 ${formatNumber((AppConfig.yearlyPrice / 12 / 100).round() * 100)}원꼴이에요', bottom: 2),
-      const Muted('예시 가격이에요. 실제 가격은 출시 전에 정해요.'),
+      // 가격 판단에 중요한 월 환산은 회색 안내와 구분되게 굵은 주황 글씨로 (디자인 리뷰 11/03 #3)
+      if (bill == '연')
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppSpace.xs),
+          child: Text('월 약 ${formatNumber((AppConfig.yearlyPrice / 12 / 100).round() * 100)}원꼴이에요',
+              style: AppText.bodyStrong.copyWith(color: AppColors.primary)),
+        ),
       AppButton('구독하기', onPressed: () => toast(context, '실제 앱에서는 앱스토어 결제 창이 열려요 (데모)')),
       const Padding(
         padding: EdgeInsets.only(top: AppSpace.s),
-        child: Muted('기간이 끝나면 자동으로 연장돼요 · 앱스토어에서 언제든 해지할 수 있어요', align: TextAlign.center),
+        child: Muted('기간이 끝나면 자동으로 연장돼요 · 앱스토어에서 언제든 해지할 수 있어요'),
       ),
+      // 목업 표시는 로그인 화면처럼 맨 아래 안내(Disclaimer)로
+      const Disclaimer(text: '예시 가격이에요. 실제 가격은 출시 전에 정해요.'),
     ]);
   }
 }
