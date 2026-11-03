@@ -42,20 +42,23 @@ class _RecordsScreenState extends State<RecordsScreen> {
           const Muted('현재 연속 기록', bottom: 2),
           BigNumber('${demo.streak}일'),
           Muted('최장 기록 $longest일${demo.restMode ? ' · 쉬기 모드 중이라 기록이 유지돼요' : ''}', bottom: 10),
-          // 어느 날인지 알 수 있게 동그라미 아래에 요일을 쓴다
+          // 어느 날인지 알 수 있게 동그라미 아래에 요일을 쓴다.
+          // 마지막 칸은 '오늘'로 쓰고 색을 달리해, 아직 안 한 날처럼 보이지 않게 (디자인 리뷰 11/03 #2)
           Row(children: [
             for (var i = 1; i <= 7; i++) ...[
               Column(children: [
-                _Dot(on: i < 7 || demo.recordedToday),
+                _Dot(on: i < 7 || demo.recordedToday, today: i == 7),
                 const SizedBox(height: 2),
-                Text(dayLabels[DateTime(2026, 10, demoToday - 7 + i).weekday - 1],
-                    style: AppText.small.copyWith(color: AppColors.textSub)),
+                Text(i == 7 ? '오늘' : dayLabels[DateTime(2026, 10, demoToday - 7 + i).weekday - 1],
+                    style: i == 7
+                        ? AppText.small.copyWith(color: AppColors.primary, fontWeight: FontWeight.w700)
+                        : AppText.small.copyWith(color: AppColors.textSub)),
               ]),
               const SizedBox(width: 6),
             ],
           ]),
           const SizedBox(height: 8),
-          const Muted('최근 7일 (마지막이 오늘)', bottom: 0),
+          const Muted('최근 7일', bottom: 0),
         ]),
       ),
       const RestModeSwitch(),
@@ -140,14 +143,21 @@ class _RecordsScreenState extends State<RecordsScreen> {
 }
 
 class _Dot extends StatelessWidget {
-  const _Dot({required this.on});
+  const _Dot({required this.on, this.today = false});
   final bool on;
+
+  /// 오늘 칸. 아직 안 했으면 회색 대신 주황 테두리 원으로 그린다
+  final bool today;
 
   @override
   Widget build(BuildContext context) => Container(
         width: 30,
         height: 30,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: on ? AppColors.primary : AppColors.track),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: on ? AppColors.primary : (today ? null : AppColors.track),
+          border: !on && today ? Border.all(color: AppColors.primary, width: 2) : null,
+        ),
         child: on ? const Icon(Icons.check, size: 16, color: Colors.white) : null,
       );
 }
