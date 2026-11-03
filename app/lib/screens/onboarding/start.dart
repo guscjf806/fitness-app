@@ -12,26 +12,21 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppPage(children: [
-      const SizedBox(height: 28),
+      const SizedBox(height: AppSpace.xl + AppSpace.xs),
       Text(keepWords('내 몸에 맞춘 식단과 운동, AI가 짜드려요'),
           semanticsLabel: '내 몸에 맞춘 식단과 운동, AI가 짜드려요', style: AppText.display),
-      const SizedBox(height: 8),
+      const SizedBox(height: AppSpace.s),
       const Muted('몸 정보로 하루에 쓰는 칼로리를 계산하고, 일주일 또는 한 달치 식단과 운동 루틴을 만들어요.'),
-      const SizedBox(height: 10),
-      const AppCard(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('식단과 운동 루틴을 한 번에 생성'),
-          Text('올린 식단에 AI가 답변'),
-          Text('PT 회원님은 운동일지까지'),
-        ]),
-      ),
+      const SizedBox(height: AppSpace.m),
+      // 내 정보·구독 화면과 같은 체크 아이콘 목록으로 (디자인 리뷰 11/03 #5)
+      const AppCard(child: BulletList(['식단과 운동 루틴을 한 번에 생성', '올린 식단에 AI가 답변', 'PT 회원님은 운동일지까지'])),
       AppButton('내 칼로리 계산하기',
           onPressed: () => Navigator.pushNamed(context, Routes.body)),
       AppButton('로그인',
           kind: ButtonKind.soft,
           onPressed: () => Navigator.pushNamed(context, Routes.login)),
       Padding(
-        padding: const EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.only(top: AppSpace.xs),
         child: TextButton(
           onPressed: () {
             demo.update(() {
