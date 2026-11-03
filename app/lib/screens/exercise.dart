@@ -118,19 +118,19 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
             child: Text('${demo.conditionText}${demo.painAreas.isEmpty ? '' : ' · ${demo.painAreas.join(', ')} 주의'} 기준이에요.',
                 style: AppText.body),
           ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpace.s),
         TextField(
           decoration: const InputDecoration(hintText: '운동 이름으로 검색해 보세요', prefixIcon: Icon(Icons.search)),
           onChanged: (v) => setState(() => query = v),
         ),
         const SizedBox(height: 10),
-        const Muted('부위', bottom: 4),
+        const Muted('부위', bottom: AppSpace.xs),
         _filterRow(_parts, part, (v) => setState(() => part = v)),
-        const Muted('기구', bottom: 4),
+        const Muted('기구', bottom: AppSpace.xs),
         _filterRow(_equipments, equipment, (v) => setState(() => equipment = v)),
         Row(children: [
-          Expanded(child: Muted('선택한 운동 ${selected.length} / $maxPick', bottom: 4)),
-          Muted('전체 ${list.length}개', bottom: 4),
+          Expanded(child: Muted('선택한 운동 ${selected.length} / $maxPick', bottom: AppSpace.xs)),
+          Muted('전체 ${list.length}개', bottom: AppSpace.xs),
         ]),
         if (list.isEmpty)
           const Padding(

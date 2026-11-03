@@ -57,7 +57,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
               const SizedBox(width: 6),
             ],
           ]),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpace.s),
           const Muted('최근 7일', bottom: 0),
         ]),
       ),

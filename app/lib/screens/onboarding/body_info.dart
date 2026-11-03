@@ -45,14 +45,14 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
       Seg(options: const ['남', '여'], value: demo.sex, onChanged: (v) => demo.update(() => demo.sex = v)),
       // 폰에서 라벨이 잘리지 않게 한 줄에 한 칸씩 (리뷰 10/29 #2)
       NumField(label: '키 (cm)', value: demo.height, error: errors['height'], onChanged: (v) => demo.update(() => demo.height = v)),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpace.m),
       NumField(label: '나이 (만)', value: demo.age, error: errors['age'], onChanged: (v) => demo.update(() => demo.age = v)),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpace.m),
       NumField(label: '몸무게 (kg)', value: demo.weight, error: errors['weight'], onChanged: (v) => demo.update(() => demo.weight = v)),
       // 놓치면 안 되는 안내는 큰 경고 상자로 (리뷰 10/29 #6)
       if (errors['age'] == underAgeError)
         const WarningBox('만 14세 미만은 보호자 동의 절차가 필요해서 지금은 이용할 수 없어요.'),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpace.m),
       _OptionalField(
         label: '근육량 (kg, 선택)',
         value: demo.muscle,

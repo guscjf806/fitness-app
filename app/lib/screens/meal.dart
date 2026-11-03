@@ -51,7 +51,7 @@ class _MealTabState extends State<MealTab> {
           onTap: () => Navigator.pushNamed(context, Routes.mealReply, arguments: i),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(demo.mealPosts[i].date, style: AppText.bodyStrong),
-            Muted(demo.mealPosts[i].note, bottom: 4),
+            Muted(demo.mealPosts[i].note, bottom: AppSpace.xs),
             Text(demo.mealPosts[i].reply, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.caption),
           ]),
         ),
@@ -214,7 +214,7 @@ class _PhotoBox extends StatelessWidget {
                         ? Icons.photo_camera_outlined
                         : Icons.image_outlined,
                 color: tappable ? AppColors.primaryDark : AppColors.textSub),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpace.xs),
             Text(label, style: AppText.caption.copyWith(color: tappable ? AppColors.primaryDark : AppColors.textSub)),
           ]),
           ),

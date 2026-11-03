@@ -76,7 +76,7 @@ class _RestTimerState extends State<_RestTimer> {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         const SheetTitle('휴식 타이머'),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpace.m),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(children: [
@@ -117,7 +117,7 @@ class _RestTimerState extends State<_RestTimer> {
           const SizedBox(width: 10),
           Expanded(child: AppButton('+ 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(10))),
         ]),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpace.m),
         // 운동을 그만두는 버튼처럼 보이지 않게 기본 색으로 (리뷰 10/28 #4)
         AppButton('휴식 끝내기', top: 0, onPressed: () => Navigator.pop(context)),
       ]),

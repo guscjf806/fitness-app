@@ -44,7 +44,7 @@ class FoodBodyScreen extends StatelessWidget {
         decoration: const InputDecoration(labelText: '그 밖에 못 먹는 음식 (선택)', hintText: '예: 오이, 고수'),
         onChanged: (v) => demo.allergyNote = v,
       ),
-      const SizedBox(height: 16),
+      const SizedBox(height: AppSpace.l),
       const Text('아픈 부위', style: AppText.bodyStrong),
       const Muted('고른 부위에 무리가 가는 운동은 루틴에서 빼요.', bottom: 0),
       chips(painOptions, demo.painAreas, noneLabel: '없음'),

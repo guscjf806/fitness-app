@@ -79,11 +79,11 @@ class HomeTab extends StatelessWidget {
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('내 칼로리', style: AppText.bodyStrong),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpace.s),
           if (demo.calorieCalculated) ...[
             const Muted('하루에 쓰는 칼로리', bottom: 2),
             BigNumber('${formatNumber(demo.tdee.tdee)} kcal'),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpace.s),
             Muted('${demo.goal} 목표 칼로리', bottom: 2),
             BigNumber('${formatNumber(target)} kcal'),
           ] else

@@ -227,7 +227,7 @@ class _IntensityGuide extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('강도 $applied', style: AppText.bodyStrong),
         if (applied != demo.desiredIntensity)
-          Muted('지금 강도가 낮아서 첫 $rampUpWeeks주는 \'중\'으로 시작해요. 그다음 \'${demo.desiredIntensity}\'로 올려요.', bottom: 4),
+          Muted('지금 강도가 낮아서 첫 $rampUpWeeks주는 \'중\'으로 시작해요. 그다음 \'${demo.desiredIntensity}\'로 올려요.', bottom: AppSpace.xs),
         Muted('무게: 마지막 세트 뒤에 ${rule.repsInReserve} 더 할 수 있을 만큼\n세트 사이 휴식: ${rule.restText}', bottom: 0),
       ]),
     );

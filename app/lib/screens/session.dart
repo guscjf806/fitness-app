@@ -209,7 +209,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         if (demo.isGuest) const GuestBanner('체크해 볼 수 있지만 저장되지 않아요. 로그인하면 기록이 쌓여요.'),
         Muted('${index + 1} / ${session.items.length}', bottom: 2),
         Text(ex.name, style: AppText.h1),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpace.m),
         if (info != null) Center(child: ExerciseFigureView(info.id, size: 120, radius: AppRadius.medium)),
         // 아픈 부위와 겹치면 운동 상세와 같은 경고 상자를 그림 바로 아래에 (리뷰 10/28 #3)
         if (info != null && info.avoidFor.any(demo.painAreas.contains))

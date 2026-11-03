@@ -139,9 +139,9 @@ class LogDetailScreen extends StatelessWidget {
         child: AppCard(
           accent: true,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Muted('선생님 코멘트', bottom: 4),
+          const Muted('선생님 코멘트', bottom: AppSpace.xs),
           Text(log.comment),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpace.s),
           Chip(
             label: Text(log.stamp),
             backgroundColor: AppColors.primarySoft,
@@ -180,7 +180,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
       AppButton(demo.inviteCode == null ? '초대 코드 만들기' : '새 코드 만들기',
           top: 0,
           onPressed: () => demo.update(() => demo.inviteCode = '${100000 + Random().nextInt(900000)}')),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpace.m),
       if (demo.inviteCode != null)
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -212,7 +212,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
             padding: const EdgeInsets.only(top: 8),
             child: Muted(demo.missions[member] == null ? '아직 보낸 미션이 없어요' : '지금 미션: ${demo.missions[member]}', bottom: 0),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpace.s),
           TextField(
             controller: missionController,
             decoration: const InputDecoration(hintText: '예: 이번 주 운동 3회 + 단백질 챙기기'),
@@ -321,7 +321,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         items: [for (final m in members) DropdownMenuItem(value: m, child: Text(m))],
         onChanged: (v) => setState(() => member = v),
       ),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpace.m),
       Row(children: [
         Expanded(
           child: customExercise
@@ -355,7 +355,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
           onSelected: (v) => setState(() => customExercise = v),
         ),
       ]),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpace.m),
       // 휴대폰에서 숫자 자판이 뜨게 공용 숫자 칸으로 (디자인 리뷰 11/01 #2)
       Row(children: [
         Expanded(child: NumField(label: '무게 (kg)', hint: '60', value: kg, onChanged: (v) => setState(() => kg = v))),
@@ -379,14 +379,14 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         const SizedBox(width: 8),
         Expanded(child: AppButton('앨범에서 선택', kind: ButtonKind.soft, onPressed: () => _addVideo('앨범'))),
       ]),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpace.m),
       TextFormField(
         initialValue: comment,
         maxLines: 3,
         decoration: const InputDecoration(labelText: '코멘트', hintText: '자세, 다음 목표 등'),
         onChanged: (v) => setState(() => comment = v),
       ),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpace.m),
       const FieldLabel('응원 스탬프', sub: '저장하면 그날 출석 도장도 찍혀요'),
       Seg(options: stamps, value: stamp, onChanged: (v) => setState(() => stamp = v)),
       AppButton('저장하고 알림 보내기', onPressed: _save),

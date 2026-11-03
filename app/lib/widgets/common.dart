@@ -37,7 +37,7 @@ void requireLogin(BuildContext context, String reason, {bool thenGenerate = fals
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SheetTitle('로그인이 필요해요'),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpace.s),
         Muted(reason),
         const Muted('둘러보며 입력한 몸 정보는 로그인 후에도 그대로 이어져요.'),
         AppButton('3초 만에 로그인하기', onPressed: () {
@@ -63,7 +63,7 @@ class GuestBanner extends StatelessWidget {
       onTap: () => Navigator.pushNamed(context, Routes.login),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const Text('로그인 없이 둘러보는 중', style: AppText.bodyStrong),
-        Muted(text, bottom: 4),
+        Muted(text, bottom: AppSpace.xs),
         const MoreLink('로그인하기'),
       ]),
     );
@@ -214,14 +214,17 @@ class H2 extends StatelessWidget {
 }
 
 class Muted extends StatelessWidget {
-  const Muted(this.text, {super.key, this.bottom = 8, this.align});
+  const Muted(this.text, {super.key, this.top = 0, this.bottom = AppSpace.s, this.align});
   final String text;
+
+  /// 위 여백. 'Padding(top: …) + Muted'로 감싸지 않게 (디자인 리뷰 11/03 #6)
+  final double top;
   final double bottom;
   final TextAlign? align;
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.only(bottom: bottom),
+        padding: EdgeInsets.only(top: top, bottom: bottom),
         child: Text(keepWords(text),
             semanticsLabel: text,
             textAlign: align,
@@ -620,7 +623,7 @@ class LoadingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(mainAxisSize: MainAxisSize.min, children: [
         const CircularProgressIndicator(color: AppColors.primary),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpace.l),
         Text(message, textAlign: TextAlign.center, style: AppText.bodyStrong),
         if (sub != null) Muted(sub!, align: TextAlign.center),
       ]);

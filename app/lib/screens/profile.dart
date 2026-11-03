@@ -70,10 +70,7 @@ class ProfileTab extends StatelessWidget {
       ),
       // 알림 스위치 값은 그대로 두고, 쉬는 동안 멈춘다는 것만 알린다 (리뷰 11/03 #4)
       if (demo.restMode && demo.pushOn)
-        const Padding(
-          padding: EdgeInsets.only(top: AppSpace.s),
-          child: Muted('쉬기 모드 중이라 알림이 잠시 멈췄어요', bottom: 0),
-        ),
+        const Muted('쉬기 모드 중이라 알림이 잠시 멈췄어요', top: AppSpace.s, bottom: 0),
       const RestModeSwitch(),
       LineRow(
         left: const Text('연속 기록 · 배지'),
@@ -87,7 +84,7 @@ class ProfileTab extends StatelessWidget {
         LineRow(left: const Text('회원 관리'), showArrow: true, onTap: () => demo.update(() => demo.tab = 3)),
       LineRow(left: const Text('구독'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.subscribe)),
       // 위험한 줄은 실수로 누르지 않게 떼어서 맨 아래에 (디자인 리뷰 10/29 #6)
-      const SizedBox(height: 24),
+      const SizedBox(height: AppSpace.xl),
       // 잘못 눌러 다시 로그인하는 일이 없게 한 번 묻는다 (리뷰 11/03 #2)
       LineRow(
         left: const Text('로그아웃'),
@@ -208,10 +205,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
               style: AppText.bodyStrong.copyWith(color: AppColors.primary)),
         ),
       AppButton('구독하기', onPressed: () => toast(context, '실제 앱에서는 앱스토어 결제 창이 열려요 (데모)')),
-      const Padding(
-        padding: EdgeInsets.only(top: AppSpace.s),
-        child: Muted('기간이 끝나면 자동으로 연장돼요 · 앱스토어에서 언제든 해지할 수 있어요'),
-      ),
+      const Muted('기간이 끝나면 자동으로 연장돼요 · 앱스토어에서 언제든 해지할 수 있어요', top: AppSpace.s),
       // 목업 표시는 로그인 화면처럼 맨 아래 안내(Disclaimer)로
       const Disclaimer(text: '예시 가격이에요. 실제 가격은 출시 전에 정해요.'),
     ]);
