@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../data/mock_data.dart';
@@ -25,21 +27,30 @@ class _RecordsScreenState extends State<RecordsScreen> {
   }
 
   List<Widget> _streak(BuildContext context) {
+    // 고정 숫자 대신 데이터에서 계산한다 (리뷰 11/03 #7)
+    final monthCount = monthDoneDays.length + (demo.workoutDone ? 1 : 0);
+    final longest = math.max(pastLongestStreak, demo.streak);
     final badges = [
       ('첫 식단', demo.mealPosts.isNotEmpty, ''),
       ('7일 연속', demo.streak >= 7, '연속 7일을 기록하면 받아요'),
       ('첫 PT 일지 확인', demo.role == 'member' || demo.firstLogSeen, 'PT 일지를 처음 열어 보면 받아요'),
-      ('한 달 운동 20회', false, '이번 달 ${14 + (demo.workoutDone ? 1 : 0)} / 20회'),
+      ('한 달 운동 20회', false, '이번 달 $monthCount / 20회'),
     ];
     return [
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('현재 연속 기록', bottom: 2),
           BigNumber('${demo.streak}일'),
-          Muted('최장 기록 12일${demo.restMode ? ' · 쉬기 모드 중이라 기록이 유지돼요' : ''}', bottom: 10),
+          Muted('최장 기록 $longest일${demo.restMode ? ' · 쉬기 모드 중이라 기록이 유지돼요' : ''}', bottom: 10),
+          // 어느 날인지 알 수 있게 동그라미 아래에 요일을 쓴다
           Row(children: [
             for (var i = 1; i <= 7; i++) ...[
-              _Dot(on: i < 7 || demo.recordedToday),
+              Column(children: [
+                _Dot(on: i < 7 || demo.recordedToday),
+                const SizedBox(height: 2),
+                Text(dayLabels[DateTime(2026, 10, demoToday - 7 + i).weekday - 1],
+                    style: AppText.small.copyWith(color: AppColors.textSub)),
+              ]),
               const SizedBox(width: 6),
             ],
           ]),

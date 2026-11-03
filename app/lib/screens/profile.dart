@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../config.dart';
 import '../routes.dart';
@@ -155,19 +156,18 @@ class _PtCodeScreenState extends State<PtCodeScreen> {
   Widget build(BuildContext context) {
     return AppPage(title: 'PT 코드 입력', children: [
       const Muted('선생님께 받은 6자리 코드를 입력하면 운동일지가 열려요.'),
+      // 진짜 코드처럼 보이는 예시 대신 '숫자 6자리', 붙여 넣은 공백·하이픈은 빼고 숫자만 남긴다 (리뷰 11/03 #7)
       TextField(
         maxLength: 6,
         keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         textAlign: TextAlign.center,
         style: AppText.number.copyWith(fontWeight: FontWeight.w400, letterSpacing: 4),
-        decoration: const InputDecoration(hintText: '예: 482915', counterText: ''),
-        onChanged: (v) => code = v,
+        decoration: const InputDecoration(hintText: '숫자 6자리', counterText: ''),
+        onChanged: (v) => setState(() => code = v),
       ),
-      AppButton('연결하기', onPressed: () {
-        if (code.length < 6) {
-          toast(context, '6자리 코드를 입력해 주세요');
-          return;
-        }
+      // 6자리가 되기 전에는 버튼을 흐리게
+      AppButton('연결하기', onPressed: code.length < 6 ? null : () {
         demo.update(() {
           demo.role = 'member';
           demo.tab = 3;

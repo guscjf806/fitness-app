@@ -279,4 +279,7 @@ const stamps = ['참 잘했어요', '꾸준해요', '자세 좋아요'];
 const demoToday = 12;
 const monthDoneDays = [1, 2, 3, 5, 6, 8, 9];
 const monthRestDays = [4, 7, 10, 11];
+
+/// 지난달까지의 최장 연속 기록 (목업)
+const pastLongestStreak = 12;
 const todayEatenKcal = 1240;
