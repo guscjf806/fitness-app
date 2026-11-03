@@ -4,6 +4,8 @@ import 'package:fitness_app/state/demo_state.dart';
 import 'package:fitness_app/state/workout_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'finders.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 좁은 폰(360px)과 큰 글씨(1.3배)에서도 화면이 넘치지 않는지 확인한다 (디자인 리뷰 10/30 #2·#3)
@@ -30,7 +32,7 @@ void main() {
   testWidgets('내 기록 배지가 넘치지 않는다', (tester) async {
     await openNarrow(tester, Routes.records);
     expect(tester.takeException(), isNull);
-    await tester.scrollUntilVisible(find.text('한 달 운동 20회'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.scrollUntilVisible(findText('한 달 운동 20회'), 200, scrollable: find.byType(Scrollable).first);
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
@@ -40,10 +42,10 @@ void main() {
     addTearDown(() => demo.session = null);
     await openNarrow(tester, Routes.session);
     expect(tester.takeException(), isNull);
-    await tester.scrollUntilVisible(find.text('10세트'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.scrollUntilVisible(findText('10세트'), 200, scrollable: find.byType(Scrollable).first);
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     // '10세트'가 두 줄로 꺾이지 않는다 (한 줄 높이: 14px × 1.3배 × 줄 간격 1.5 ≈ 27px)
-    expect(tester.getSize(find.text('10세트')).height, lessThan(32));
+    expect(tester.getSize(findText('10세트')).height, lessThan(32));
   });
 }

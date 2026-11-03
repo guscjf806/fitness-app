@@ -13,8 +13,8 @@ class StartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppPage(children: [
       const SizedBox(height: 28),
-      const Text('내 몸에 맞춘 식단과 운동, AI가 짜드려요',
-          style: AppText.display),
+      Text(keepWords('내 몸에 맞춘 식단과 운동, AI가 짜드려요'),
+          semanticsLabel: '내 몸에 맞춘 식단과 운동, AI가 짜드려요', style: AppText.display),
       const SizedBox(height: 8),
       const Muted('몸 정보로 하루에 쓰는 칼로리를 계산하고, 일주일 또는 한 달치 식단과 운동 루틴을 만들어요.'),
       const SizedBox(height: 10),

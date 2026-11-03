@@ -5,6 +5,10 @@ import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 import 'exercise_figure.dart';
 
+/// 한글이 단어 중간(예: '받/아요')에서 줄바꿈되지 않게, 단어 안 글자 사이에
+/// 보이지 않는 '줄바꿈 금지' 표시(U+2060)를 넣는다. 띄어쓰기에서만 줄이 바뀐다 (디자인 리뷰 11/03 #1)
+String keepWords(String text) => text.split(' ').map((w) => w.characters.join('\u2060')).join(' ');
+
 /// 데모 상태가 바뀌면 다시 그린다.
 Widget watch(Widget Function() build) =>
     ListenableBuilder(listenable: demo, builder: (_, _) => build());
@@ -218,7 +222,8 @@ class Muted extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: EdgeInsets.only(bottom: bottom),
-        child: Text(text,
+        child: Text(keepWords(text),
+            semanticsLabel: text,
             textAlign: align,
             style: AppText.caption.copyWith(color: AppColors.textSub)),
       );
@@ -415,7 +420,7 @@ class BulletList extends StatelessWidget {
                 child: Icon(Icons.check_circle, size: 18, color: AppColors.primary),
               ),
               const SizedBox(width: 8),
-              Expanded(child: Text(items[i])),
+              Expanded(child: Text(keepWords(items[i]), semanticsLabel: items[i])),
             ]),
           ),
       ]);
