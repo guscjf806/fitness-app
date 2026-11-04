@@ -129,7 +129,7 @@ void main() {
     expect(findText('시작하기 전에'), findsOneWidget);
     await tapText(tester, '동의하고 시작하기');
     expect(demo.consented, isFalse);
-    await tapText(tester, '전체 동의');
+    await tapText(tester, '전체 동의 (선택 항목 포함)');
     await tapText(tester, '동의하고 시작하기');
     expect(demo.consented, isTrue);
     expect(findText('기간 선택'), findsOneWidget);

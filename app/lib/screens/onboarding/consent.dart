@@ -68,7 +68,8 @@ class _ConsentScreenState extends State<ConsentScreen> {
         child: Row(children: [
           CheckCircle(agreed.length == items.length),
           const SizedBox(width: 10),
-          const Expanded(child: Text('전체 동의', style: AppText.bodyStrong)),
+          // 선택 항목까지 동의된다는 걸 이름으로 알린다. 약관·동의 원문은 그대로 (리뷰 11/04 #5)
+          const Expanded(child: Text('전체 동의 (선택 항목 포함)', style: AppText.bodyStrong)),
         ]),
       ),
       for (var i = 0; i < items.length; i++)
