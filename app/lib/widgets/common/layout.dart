@@ -35,6 +35,8 @@ class TabBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
+      // 스크롤하면 키보드가 닫힌다 (디자인 리뷰 11/04 #1)
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsets.fromLTRB(AppSpace.page, top, AppSpace.page, AppSpace.pageBottom),
       children: children,
     );

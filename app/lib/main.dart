@@ -34,29 +34,34 @@ class FitnessApp extends StatelessWidget {
       initialRoute: demo.entered ? Routes.main : Routes.start,
       routes: Routes.table,
       // 웹 미리보기: 위에 역할 전환 바, 가운데 폰 크기 화면
-      builder: (context, child) => ColoredBox(
-        color: AppColors.pageBackground,
-        child: SafeArea(
-          child: Column(
-            children: [
-              const DemoBar(),
-              Expanded(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints:
-                        const BoxConstraints(maxWidth: 420, maxHeight: 860),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(24),
-                      child: Column(children: [
-                        const OfflineBanner(),
-                        Expanded(child: child ?? const SizedBox()),
-                      ]),
+      // 아이폰 숫자판에는 완료 키가 없어서, 빈 곳을 누르면 키보드가 닫히게 한다 (디자인 리뷰 11/04 #1)
+      builder: (context, child) => GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: ColoredBox(
+          color: AppColors.pageBackground,
+          child: SafeArea(
+            child: Column(
+              children: [
+                const DemoBar(),
+                Expanded(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints:
+                          const BoxConstraints(maxWidth: 420, maxHeight: 860),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Column(children: [
+                          const OfflineBanner(),
+                          Expanded(child: child ?? const SizedBox()),
+                        ]),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSpace.s),
-            ],
+                const SizedBox(height: AppSpace.s),
+              ],
+            ),
           ),
         ),
       ),
