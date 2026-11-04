@@ -270,6 +270,12 @@ const workoutLogs = [
 
 const members = ['김지아', '이도현', '박서연'];
 
+/// 일지 날짜('10월 6일')를 비교할 수 있는 숫자로 바꾼다. 목업이라 연도는 보지 않는다
+int logDateKey(String date) {
+  final m = RegExp(r'(\d+)월 (\d+)일').firstMatch(date);
+  return m == null ? 0 : int.parse(m[1]!) * 100 + int.parse(m[2]!);
+}
+
 /// 회원별 마지막 일지 날짜 (목업). 없으면 아직 일지가 없는 회원
 const lastLogDates = {'김지아': '10월 6일', '이도현': '10월 2일'};
 const exerciseNames = ['벤치프레스', '바벨 스쿼트', '랫 풀다운', '오버헤드 프레스', '데드리프트', '레그 프레스'];

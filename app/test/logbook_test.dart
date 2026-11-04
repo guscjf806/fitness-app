@@ -14,6 +14,7 @@ void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     demo.switchRole('trainer');
+    demo.sentLogs.clear();
   });
 
   Future<void> openRoute(WidgetTester tester, String route, {Object? args}) async {
@@ -48,6 +49,30 @@ void main() {
     await tester.pumpAndSettle();
     await tap(tester, findText('저장하고 알림 보내기'));
     expect(find.widgetWithText(AppBar, '일지 작성'), findsNothing);
+  });
+
+  testWidgets('11/04 #1 저장한 일지가 마지막 일지 날짜와 회원의 일지 목록에 바로 보인다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '박서연');
+    expect(demo.lastLogOf('박서연'), isNull);
+    await tester.enterText(field('횟수'), '8');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('저장하고 알림 보내기'));
+    expect(demo.lastLogOf('박서연'), '10월 12일');
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    expect(findText('마지막 일지 10월 12일'), findsOneWidget);
+    // 김지아에게 쓰면 PT 회원 화면의 목록 맨 위에 보인다
+    demoNavigatorKey.currentState!.pushNamed(Routes.logWrite, arguments: '김지아');
+    await tester.pumpAndSettle();
+    await tester.enterText(field('횟수'), '10');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('저장하고 알림 보내기'));
+    demo.switchRole('member');
+    await tester.pumpAndSettle();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    expect(findTextContaining('10월 12일 · '), findsOneWidget);
+    expect(demo.logsOf('김지아').first.date, '10월 12일');
   });
 
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {

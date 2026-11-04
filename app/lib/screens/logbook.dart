@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../data/exercise_lookup.dart';
 import '../data/mock_data.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
@@ -48,22 +49,23 @@ class LogListTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final logs = demo.logsOf(demo.memberName);
     return TabBody(children: [
       const H1('운동일지'),
       const Muted('담당 선생님이 작성한 내 일지예요. 나만 볼 수 있어요.'),
-      if (workoutLogs.isEmpty) const AppCard(child: Text('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
-      for (var i = 0; i < workoutLogs.length; i++)
+      if (logs.isEmpty) const AppCard(child: Text('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
+      for (final log in logs)
         AppCard(
           onTap: () {
             demo.firstLogSeen = true;
-            Navigator.pushNamed(context, Routes.logDetail, arguments: i);
+            Navigator.pushNamed(context, Routes.logDetail, arguments: log);
           },
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('${workoutLogs[i].date} · ${workoutLogs[i].title}', style: AppText.bodyStrong),
+            Text('${log.date} · ${log.title}', style: AppText.bodyStrong),
             Muted(
-              '${workoutLogs[i].items.length}종목'
-              '${workoutLogs[i].videos.isEmpty ? '' : ' · 영상 ${workoutLogs[i].videos.length}개'}'
-              ' · ${workoutLogs[i].comment}',
+              '${log.items.length}종목'
+              '${log.videos.isEmpty ? '' : ' · 영상 ${log.videos.length}개'}'
+              '${log.comment.isEmpty ? '' : ' · ${log.comment}'}',
               bottom: 0,
             ),
           ]),
@@ -78,8 +80,10 @@ class LogDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final index = (ModalRoute.of(context)?.settings.arguments as int?) ?? 0;
-    final log = workoutLogs[index];
+    final arg = ModalRoute.of(context)?.settings.arguments;
+    final log = arg is WorkoutLog ? arg : workoutLogs.first;
+    // 새 일지가 들어와도 목록 순서와 상관없이 같은 영상을 가리키게 날짜·제목으로 구분한다
+    String videoKey(int j) => '${log.date}-${log.title}-$j';
     return AppPage(title: '${log.date} · ${log.title}', children: [
       for (final item in log.items)
         LineRow(
@@ -119,12 +123,12 @@ class LogDetailScreen extends StatelessWidget {
                 child: Text('${log.videos[j].daysLeft}일 뒤 사라져요. 남기려면 내 폰에 저장하세요',
                     style: AppText.caption.copyWith(color: log.videos[j].daysLeft <= 3 ? AppColors.warning : AppColors.textSub)),
               ),
-              if (demo.savedVideos.contains('$index-$j'))
+              if (demo.savedVideos.contains(videoKey(j)))
                 const Muted('내 폰에 저장됨', bottom: 0)
               else
                 OutlinedButton(
                   onPressed: () {
-                    demo.update(() => demo.savedVideos.add('$index-$j'));
+                    demo.update(() => demo.savedVideos.add(videoKey(j)));
                     toast(context, '영상을 내 폰에 저장했어요');
                   },
                   child: const Text('내 폰에 저장'),
@@ -140,8 +144,10 @@ class LogDetailScreen extends StatelessWidget {
           accent: true,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('선생님 코멘트', bottom: AppSpace.xs),
-          Text(log.comment),
-          const SizedBox(height: AppSpace.s),
+          if (log.comment.isNotEmpty) ...[
+            Text(log.comment),
+            const SizedBox(height: AppSpace.s),
+          ],
           Chip(
             label: Text(log.stamp),
             backgroundColor: AppColors.primarySoft,
@@ -234,7 +240,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
         LineRow(
           left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(m, style: AppText.bodyStrong),
-            Muted(lastLogDates[m] == null ? '아직 쓴 일지가 없어요' : '마지막 일지 ${lastLogDates[m]}', bottom: 0),
+            Muted(demo.lastLogOf(m) == null ? '아직 쓴 일지가 없어요' : '마지막 일지 ${demo.lastLogOf(m)}', bottom: 0),
           ]),
           right: FilledButton.tonal(
             style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
@@ -282,6 +288,16 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       toast(context, '횟수를 적어 주세요');
       return;
     }
+    // 저장한 일지를 남겨서 회원 관리의 '마지막 일지'와 회원의 일지 목록에 바로 보이게 한다 (리뷰 11/04 #1)
+    final log = WorkoutLog(
+      '${DateTime(2026, 10, demoToday).month}월 $demoToday일',
+      exerciseByName(exerciseName)?.part ?? '수업',
+      [LogItem(exerciseName, kg.trim().isEmpty ? '체중' : '${kg.trim()}kg', '${reps.trim()}개', int.tryParse(sets.trim()) ?? 1)],
+      [for (final v in videos) LogVideo(v, 30)], // 기획서 6번 초안: 올린 날부터 30일
+      comment.trim(),
+      stamp,
+    );
+    demo.update(() => (demo.sentLogs[member!] ??= []).add(log));
     toast(context, '$member 회원님께 일지${videos.isEmpty ? '' : '와 영상 ${videos.length}개'}를 저장하고 알림을 보냈어요 (출석 도장 완료)');
     Navigator.pop(context);
   }

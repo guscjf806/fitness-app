@@ -89,6 +89,22 @@ class DemoState extends ChangeNotifier {
   String? inviteCode;
   final Set<String> savedVideos = {};
 
+  /// 선생님이 저장한 일지 (목업, 회원별). 저장 결과가 화면에 바로 보이게 한다 (리뷰 11/04 #1)
+  final Map<String, List<WorkoutLog>> sentLogs = {};
+
+  /// 그 회원의 일지 목록 (최신이 위). 목업 일지(workoutLogs)는 처음 회원의 것으로 둔다
+  List<WorkoutLog> logsOf(String member) => [
+        ...?sentLogs[member],
+        if (member == members.first) ...workoutLogs,
+      ]..sort((a, b) => logDateKey(b.date).compareTo(logDateKey(a.date)));
+
+  /// 그 회원의 마지막 일지 날짜. 일지가 없으면 null
+  String? lastLogOf(String member) {
+    final dates = [?lastLogDates[member], for (final log in logsOf(member)) log.date]
+      ..sort((a, b) => logDateKey(b).compareTo(logDateKey(a)));
+    return dates.isEmpty ? null : dates.first;
+  }
+
   // 내 정보
   bool pushOn = true;
   TimeOfDay pushTime = const TimeOfDay(hour: 7, minute: 30);
