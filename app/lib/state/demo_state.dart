@@ -92,6 +92,9 @@ class DemoState extends ChangeNotifier {
   /// 선생님이 저장한 일지 (목업, 회원별). 저장 결과가 화면에 바로 보이게 한다 (리뷰 11/04 #1)
   final Map<String, List<WorkoutLog>> sentLogs = {};
 
+  /// 회원이 아직 열어 보지 않은 일지 (목업: 가장 최근 일지 하나로 시작)
+  final Set<WorkoutLog> unseenLogs = {workoutLogs.first};
+
   /// 그 회원의 일지 목록 (최신이 위). 목업 일지(workoutLogs)는 처음 회원의 것으로 둔다
   List<WorkoutLog> logsOf(String member) => [
         ...?sentLogs[member],
@@ -121,10 +124,11 @@ class DemoState extends ChangeNotifier {
   bool get loggedIn => role != 'guest';
   bool get isGuest => role == 'guest';
 
-  String get displayName => switch (role) {
-        'trainer' => '선생님',
-        'guest' => '게스트님',
-        _ => '지아님',
+  /// 홈 첫 줄 인사. 로그인 안 했으면 낯선 '게스트님' 없이 (리뷰 11/04 #7)
+  String get greeting => switch (role) {
+        'trainer' => '안녕하세요, 선생님',
+        'guest' => '안녕하세요',
+        _ => '안녕하세요, 지아님',
       };
 
   TdeeResult get tdee => calcTdee(

@@ -10,12 +10,14 @@ class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   void _login(BuildContext context) {
+    final wasEntered = demo.entered;
     demo.update(() {
       demo.role = 'user';
       demo.entered = true;
     });
     if (!demo.consented) {
-      Navigator.pushReplacementNamed(context, Routes.consent);
+      // 동의를 취소하면 로그인 전 상태로 되돌릴 수 있게 알려 준다
+      Navigator.pushReplacementNamed(context, Routes.consent, arguments: wasEntered);
     } else {
       continueAfterLogin(context);
     }

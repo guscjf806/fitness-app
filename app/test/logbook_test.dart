@@ -15,6 +15,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     demo.switchRole('trainer');
     demo.sentLogs.clear();
+    demo.unseenLogs
+      ..clear()
+      ..add(workoutLogs.first);
   });
 
   Future<void> openRoute(WidgetTester tester, String route, {Object? args}) async {
@@ -115,6 +118,30 @@ void main() {
     demo.failMode = '정상';
     await tap(tester, findText('연결하기'));
     expect(demo.role, 'member');
+  });
+
+  testWidgets('11/04 #7 안 본 일지에만 새 일지 표시, 열어 보면 사라진다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demo.switchRole('member');
+    await tester.pumpAndSettle();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    expect(findText('새 일지'), findsOneWidget);
+    await tap(tester, findTextContaining('10월 6일 · '));
+    demoNavigatorKey.currentState!.pop();
+    await tester.pumpAndSettle();
+    expect(findText('새 일지'), findsNothing);
+  });
+
+  testWidgets('11/04 #7 로그인하지 않은 일반 안내: 예시 표시, 홈 인사에 게스트님 없음', (tester) async {
+    demo.switchRole('user');
+    await tester.pumpWidget(const FitnessApp());
+    await tester.pumpAndSettle();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    expect(findText('예시: PT를 시작하면 이렇게 받아요'), findsOneWidget);
+    demo.switchRole('guest');
+    expect(demo.greeting, '안녕하세요');
   });
 
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {

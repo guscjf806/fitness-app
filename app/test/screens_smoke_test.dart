@@ -84,6 +84,20 @@ void main() {
     });
   }
 
+  testWidgets('리뷰 11/04 #7 시작 화면에서 로그인하다 동의를 취소하면 이전 화면으로, 다시 열면 시작 화면', (tester) async {
+    await start(tester);
+    demo.consented = false;
+    await tapText(tester, '로그인');
+    await tapText(tester, '카카오로 시작하기');
+    expect(demo.entered, isTrue);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(findText('나가면 이전 화면으로 돌아가요.'), findsOneWidget);
+    await tapText(tester, '로그인 취소');
+    expect(demo.isGuest, isTrue);
+    expect(demo.entered, isFalse);
+  });
+
   testWidgets('게스트로 시작하면 탭을 둘러보고, 저장 기능은 로그인 안내가 뜬다', (tester) async {
     await start(tester);
     await tester.tap(findText('로그인 없이 둘러보기'));

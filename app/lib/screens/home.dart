@@ -23,7 +23,7 @@ class HomeTab extends StatelessWidget {
     ];
     if (demo.isGuest) return _guestHome(context, target, today);
     return TabBody(children: [
-      H1('안녕하세요, ${demo.displayName}'),
+      H1(demo.greeting),
       AppCard(
         onTap: () => Navigator.pushNamed(context, Routes.records),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -74,7 +74,7 @@ class HomeTab extends StatelessWidget {
   /// 게스트 홈: 기록·목표 대신 내 칼로리와 예시 식단·운동만 보여 준다.
   Widget _guestHome(BuildContext context, int target, WorkoutDay today) {
     return TabBody(children: [
-      H1('안녕하세요, ${demo.displayName}'),
+      H1(demo.greeting),
       const GuestBanner('로그인하면 내 몸에 맞춘 식단·운동 루틴을 AI가 만들고, 연속 기록도 쌓을 수 있어요.'),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

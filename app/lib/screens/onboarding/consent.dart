@@ -43,9 +43,12 @@ class _ConsentScreenState extends State<ConsentScreen> {
   /// 동의하지 않고 뒤로 가면 로그인을 취소한다. 건강정보 동의를 건너뛰지 못하게 (리뷰 10/29 #1)
   Future<void> _leave() async {
     final cancel = await confirmDialog(context,
-        title: '동의하지 않으면 로그인이 취소돼요', body: '나가면 로그인 없이 둘러보기로 돌아가요.', keepLabel: '계속 동의하기', okLabel: '로그인 취소');
+        title: '동의하지 않으면 로그인이 취소돼요', body: '나가면 이전 화면으로 돌아가요.', keepLabel: '계속 동의하기', okLabel: '로그인 취소');
     if (!cancel || !mounted) return;
+    // 시작 화면에서 로그인하러 왔으면 '앱 안에 들어옴'도 되돌려, 다시 열 때 시작 화면이 나오게 (리뷰 11/04 #7)
+    final wasEntered = ModalRoute.of(context)?.settings.arguments as bool? ?? true;
     demo.update(() {
+      demo.entered = wasEntered;
       demo.role = 'guest';
       demo.continueToGenerate = false;
     });

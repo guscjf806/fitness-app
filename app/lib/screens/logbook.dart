@@ -19,8 +19,10 @@ class LogIntroTab extends StatelessWidget {
     return TabBody(children: [
       const H1('운동일지'),
       const Muted('PT 회원님 전용 기능이에요. 선생님이 수업마다 작성한 일지를 여기서 받아볼 수 있어요.'),
+      // 흐린 일지가 내 기록처럼 보이지 않게 '예시'라고 쓰고, 글자가 읽히게 덜 흐리게 (리뷰 11/04 #7)
+      const Muted('예시: PT를 시작하면 이렇게 받아요', top: AppSpace.s, bottom: AppSpace.xs),
       Opacity(
-        opacity: 0.45,
+        opacity: 0.7,
         child: IgnorePointer(
           child: Column(children: [
             for (final log in workoutLogs.take(2))
@@ -57,11 +59,19 @@ class LogListTab extends StatelessWidget {
       for (final log in logs)
         AppCard(
           onTap: () {
-            demo.firstLogSeen = true;
+            demo.update(() {
+              demo.firstLogSeen = true;
+              demo.unseenLogs.remove(log);
+            });
             Navigator.pushNamed(context, Routes.logDetail, arguments: log);
           },
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('${log.date} · ${log.title}', style: AppText.bodyStrong),
+            Row(children: [
+              Expanded(child: Text('${log.date} · ${log.title}', style: AppText.bodyStrong)),
+              // 안 본 일지를 구분한다 (리뷰 11/04 #7)
+              if (demo.unseenLogs.contains(log))
+                Text('새 일지', style: AppText.caption.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
+            ]),
             Muted(
               '${log.items.length}종목'
               '${log.videos.isEmpty ? '' : ' · 영상 ${log.videos.length}개'}'
@@ -328,7 +338,10 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       comment.trim(),
       stamp,
     );
-    demo.update(() => (demo.sentLogs[member!] ??= []).add(log));
+    demo.update(() {
+      (demo.sentLogs[member!] ??= []).add(log);
+      demo.unseenLogs.add(log);
+    });
     toast(context, '$member 회원님께 일지${videos.isEmpty ? '' : '와 영상 ${videos.length}개'}를 저장하고 알림을 보냈어요 ($dateLabel 출석 도장 완료)');
     Navigator.pop(context);
   }
