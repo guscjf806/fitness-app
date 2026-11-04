@@ -2,6 +2,7 @@ import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:fitness_app/state/workout_session.dart';
+import 'package:fitness_app/widgets/failure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,5 +57,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(sets.length, 3);
     expect(sets.last, same(last));
+  });
+  testWidgets('#4 큰 글씨·좁은 폰에서 무료 횟수 소진 시트가 넘치지 않는다', (tester) async {
+    tester.view.physicalSize = const Size(320 * 3, 480 * 3);
+    tester.platformDispatcher.textScaleFactorTestValue = 1.5;
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await tester.pumpWidget(const FitnessApp());
+    await tester.pumpAndSettle();
+    showQuotaExhausted(demoNavigatorKey.currentContext!);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(findText('이번 달 무료 횟수를 모두 썼어요'), findsOneWidget);
+    expect(find.byType(SingleChildScrollView), findsWidgets);
   });
 }

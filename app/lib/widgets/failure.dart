@@ -61,11 +61,9 @@ class FailureView extends StatelessWidget {
 /// 무료 횟수를 다 썼을 때. 결제를 강요하지 않도록 '기다리기'도 똑같이 누를 수 있게 둔다.
 void showQuotaExhausted(BuildContext context) {
   final reset = AppConfig.nextQuotaReset(DateTime.now());
-  showModalBottomSheet<void>(
-    context: context,
-    builder: (sheetContext) => Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+  showAppSheet<void>(
+    context,
+    builder: (sheetContext) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SheetTitle('이번 달 무료 횟수를 모두 썼어요'),
         const SizedBox(height: 10),
         Row(children: [
@@ -81,6 +79,5 @@ void showQuotaExhausted(BuildContext context) {
         }),
         AppButton('다음 달까지 기다리기', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheetContext)),
       ]),
-    ),
   );
 }

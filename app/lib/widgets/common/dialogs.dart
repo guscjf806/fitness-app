@@ -27,14 +27,43 @@ void toastOn(ScaffoldMessengerState messenger, String message, {String? actionLa
     ));
 }
 
+/// 바텀시트 공용 틀: 내용에 맞는 높이, 아이폰 아래 막대·키보드 피하기, 넘치면 스크롤, 같은 여백 (디자인 리뷰 11/04 #4)
+/// [maxHeightFactor]: 화면 높이 대비 최대 높이. 긴 목록은 작게 줘서 뒤 화면이 보이게 한다
+Future<T?> showAppSheet<T>(
+  BuildContext context, {
+  required WidgetBuilder builder,
+  bool isDismissible = true,
+  bool enableDrag = true,
+  double maxHeightFactor = 0.9,
+}) =>
+    showModalBottomSheet<T>(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: isDismissible,
+      enableDrag: enableDrag,
+      builder: (sheet) {
+        final media = MediaQuery.of(sheet);
+        return Padding(
+          padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
+          child: SafeArea(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: media.size.height * maxHeightFactor),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(AppSpace.sheet, AppSpace.xl, AppSpace.sheet, AppSpace.xl),
+                child: builder(sheet),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
 /// 게스트가 로그인이 필요한 기능을 누르면 이유를 알려 주고 로그인으로 안내한다.
 /// [thenGenerate]가 true면 로그인 후 바로 기간 선택(S06)으로 이어진다.
 void requireLogin(BuildContext context, String reason, {bool thenGenerate = false}) {
-  showModalBottomSheet<void>(
-    context: context,
-    builder: (sheetContext) => Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+  showAppSheet<void>(
+    context,
+    builder: (sheetContext) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SheetTitle('로그인이 필요해요'),
         const SizedBox(height: AppSpace.s),
         Muted(reason),
@@ -46,7 +75,6 @@ void requireLogin(BuildContext context, String reason, {bool thenGenerate = fals
         }),
         AppButton('계속 둘러보기', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheetContext)),
       ]),
-    ),
   );
 }
 

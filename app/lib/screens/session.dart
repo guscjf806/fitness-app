@@ -70,13 +70,10 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                 atHome: session.atHome, equipment: demo.equipment, quiet: demo.noise == '예', painAreas: demo.painAreas))
           e,
     ];
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (sheet) => SafeArea(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(sheet).size.height * .7),
-          child: ListView(shrinkWrap: true, padding: const EdgeInsets.fromLTRB(20, 20, 20, 20), children: [
+    showAppSheet<void>(
+      context,
+      maxHeightFactor: .7,
+      builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
             const SheetTitle('운동 대체'),
             Muted('${current.name} 대신 할 수 있는 ${info?.part ?? ''} 운동이에요. 내 조건에 맞는 것만 보여 줘요.'),
             if (options.isEmpty) const Muted('바꿀 수 있는 운동이 없어요.'),
@@ -109,8 +106,6 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                 right: Muted(e.equipment, bottom: 0),
               ),
           ]),
-        ),
-      ),
     );
   }
 
@@ -125,14 +120,14 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
             constraints: BoxConstraints(maxHeight: MediaQuery.of(sheet).size.height * .7),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
+                padding: const EdgeInsets.fromLTRB(AppSpace.sheet, AppSpace.xl, AppSpace.sheet, AppSpace.xs),
                 child: Row(children: [
                   const Expanded(child: SheetTitle('오늘 운동 순서')),
                   Muted('총 ${session.items.length}개 · ${session.doneSets}/${session.totalSets}세트', bottom: 0),
                 ]),
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: AppSpace.sheet),
                 child: Muted('오른쪽 손잡이를 끌어 순서를 바꿔요.'),
               ),
               Flexible(

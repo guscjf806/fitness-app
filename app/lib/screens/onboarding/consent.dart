@@ -28,16 +28,13 @@ class _ConsentScreenState extends State<ConsentScreen> {
   bool get requiredDone => [for (var i = 0; i < items.length; i++) if (items[i].$2) i].every(agreed.contains);
 
   void _showDraft(String title) {
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (_) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+    showAppSheet<void>(
+      context,
+      builder: (_) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           SheetTitle(title), // 다른 시트 제목과 같게 (디자인 리뷰 10/30 #6)
           const SizedBox(height: 10),
           const Muted('이 자리에는 전문가 검토를 마친 약관·동의서 원문이 들어가요. 목업에서는 비워 두었어요.'),
         ]),
-      ),
     );
   }
 

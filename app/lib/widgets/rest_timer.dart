@@ -10,14 +10,12 @@ String _mmss(int seconds) => '${seconds ~/ 60}:${(seconds % 60).toString().padLe
 
 /// 세트를 마치면 뜨는 휴식 타이머. [recommendedSeconds]는 강도 규칙의 휴식 시간 (기획서 6번).
 Future<void> showRestTimer(BuildContext context, int recommendedSeconds) {
-  return showModalBottomSheet<void>(
-    context: context,
-    // 작은 화면에서도 아래 버튼이 잘리지 않게 높이를 내용에 맞추고, 넘치면 스크롤한다
-    isScrollControlled: true,
+  return showAppSheet<void>(
+    context,
     // 땀 묻은 손으로 바깥을 잘못 눌러 닫히지 않게, 닫는 건 아래 버튼으로만 (리뷰 10/28 #2)
     isDismissible: false,
     enableDrag: false,
-    builder: (_) => SafeArea(child: SingleChildScrollView(child: _RestTimer(recommended: recommendedSeconds))),
+    builder: (_) => _RestTimer(recommended: recommendedSeconds),
   );
 }
 
@@ -72,9 +70,7 @@ class _RestTimerState extends State<_RestTimer> {
   @override
   Widget build(BuildContext context) {
     final presets = [widget.recommended, 30, 60, 90, 120];
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
+    return Column(mainAxisSize: MainAxisSize.min, children: [
         const SheetTitle('휴식 타이머'),
         const SizedBox(height: AppSpace.m),
         SingleChildScrollView(
@@ -120,7 +116,6 @@ class _RestTimerState extends State<_RestTimer> {
         const SizedBox(height: AppSpace.m),
         // 운동을 그만두는 버튼처럼 보이지 않게 기본 색으로 (리뷰 10/28 #4)
         AppButton('휴식 끝내기', top: 0, onPressed: () => Navigator.pop(context)),
-      ]),
-    );
+      ]);
   }
 }

@@ -49,6 +49,9 @@ class AppSpace {
   /// 스크롤 맨 아래 여백
   static const double pageBottom = 28;
 
+  /// 바텀시트 왼쪽·오른쪽 여백
+  static const double sheet = 20;
+
   static const double xs = 4;
   static const double s = 8;
   static const double m = 12;

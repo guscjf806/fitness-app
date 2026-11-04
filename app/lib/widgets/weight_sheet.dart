@@ -8,13 +8,9 @@ import 'common.dart';
 /// 몸무게가 늘거나 줄었다고 칭찬·경고하지 않는다 (기획서 14번 원칙). 기록한 행동만 인정한다.
 void showWeightSheet(BuildContext context) {
   final controller = TextEditingController(text: demo.weight);
-  showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    builder: (sheetContext) => Padding(
-      padding: EdgeInsets.fromLTRB(20, 24, 20, 28 + MediaQuery.of(sheetContext).viewInsets.bottom),
-      child: _WeightForm(controller: controller, parentContext: context),
-    ),
+  showAppSheet<void>(
+    context,
+    builder: (_) => _WeightForm(controller: controller, parentContext: context),
   ).whenComplete(controller.dispose);
 }
 
