@@ -131,7 +131,7 @@ class LogDetailScreen extends StatelessWidget {
               // '서버 보관 만료' 대신 쉬운 말로, 3일 이하면 경고색 (리뷰 11/02 #7)
               Expanded(
                 child: Text('${log.videos[j].daysLeft}일 뒤 사라져요. 남기려면 내 폰에 저장하세요',
-                    style: AppText.caption.copyWith(color: log.videos[j].daysLeft <= 3 ? AppColors.warning : AppColors.textSub)),
+                    style: AppText.caption.copyWith(color: log.videos[j].daysLeft <= 3 ? AppColors.warningText : AppColors.textSub)),
               ),
               if (demo.savedVideos.contains(videoKey(j)))
                 const Muted('내 폰에 저장됨', bottom: 0)
@@ -444,7 +444,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       for (var i = 0; i < videos.length; i++)
         LineRow(
           left: Text(videos[i]),
-          right: TextButton(onPressed: () => _removeVideo(i), child: const Text('빼기', style: TextStyle(color: AppColors.warning))),
+          right: TextButton(onPressed: () => _removeVideo(i), child: const Text('빼기', style: TextStyle(color: AppColors.warningText))),
         ),
       Row(children: [
         Expanded(child: AppButton('촬영하기', kind: ButtonKind.soft, onPressed: () => _addVideo('촬영'))),

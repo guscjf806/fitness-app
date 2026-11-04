@@ -36,7 +36,7 @@ class PainTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text('${areas.join('·')} 주의',
-      style: AppText.caption.copyWith(color: AppColors.warning, fontWeight: FontWeight.w700));
+      style: AppText.body.copyWith(color: AppColors.warningText, fontWeight: FontWeight.w700));
 }
 
 /// 아픈 부위와 겹치는 운동의 경고 문구 (운동 상세와 운동 진행에서 같이 쓴다)
@@ -78,7 +78,7 @@ class WarningBox extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: Text(text,
-              style: AppText.warning.copyWith(color: AppColors.warning)),
+              style: AppText.warning.copyWith(color: AppColors.warningText)),
         ),
       ]),
     );

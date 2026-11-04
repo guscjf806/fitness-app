@@ -12,6 +12,9 @@ class AppColors {
   static const line = Color(0xFFE4EAE8);
   static const warning = Color(0xFFD9534F);
 
+  /// 경고 글씨. 흰 배경·경고 상자에서 글자가 잘 읽히는 진한 빨강. 아이콘과 테두리는 warning (디자인 리뷰 11/04 #3)
+  static const warningText = Color(0xFFB3362F);
+
   /// 경고 상자 배경
   static const warningSoft = Color(0xFFFCECEB);
 

@@ -62,7 +62,7 @@ Future<bool> confirmDialog(BuildContext context,
         TextButton(onPressed: () => Navigator.pop(dialog, false), child: Text(keepLabel)),
         TextButton(
           onPressed: () => Navigator.pop(dialog, true),
-          child: Text(okLabel, style: danger ? const TextStyle(color: AppColors.warning) : null),
+          child: Text(okLabel, style: danger ? const TextStyle(color: AppColors.warningText) : null),
         ),
       ],
     ),

@@ -98,7 +98,7 @@ class ProfileTab extends StatelessWidget {
         },
       ),
       LineRow(
-        left: const Text('계정 삭제', style: TextStyle(color: AppColors.warning)),
+        left: const Text('계정 삭제', style: TextStyle(color: AppColors.warningText)),
         onTap: () => toast(context, '계정 삭제 확인 화면이 열려요 (데모)'),
       ),
     ]);
@@ -174,7 +174,7 @@ class _PtCodeScreenState extends State<PtCodeScreen> {
           counterText: '',
           errorText: error,
           errorMaxLines: 3,
-          errorStyle: AppText.body.copyWith(color: AppColors.warning),
+          errorStyle: AppText.body.copyWith(color: AppColors.warningText),
         ),
         onChanged: (v) => setState(() {
           code = v;

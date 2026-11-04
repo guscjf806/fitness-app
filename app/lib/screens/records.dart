@@ -51,7 +51,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
                 const SizedBox(height: 2),
                 Text(i == 7 ? '오늘' : dayLabels[DateTime(2026, 10, demoToday - 7 + i).weekday - 1],
                     style: i == 7
-                        ? AppText.small.copyWith(color: AppColors.primary, fontWeight: FontWeight.w700)
+                        ? AppText.small.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)
                         : AppText.small.copyWith(color: AppColors.textSub)),
               ]),
               const SizedBox(width: 6),
