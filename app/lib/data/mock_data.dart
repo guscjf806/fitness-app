@@ -283,6 +283,7 @@ const stamps = ['참 잘했어요', '꾸준해요', '자세 좋아요'];
 
 /// 데모 달력: 2026년 10월, 오늘은 12일(월)로 가정
 const demoToday = 12;
+final demoTodayDate = DateTime(2026, 10, demoToday);
 const monthDoneDays = [1, 2, 3, 5, 6, 8, 9];
 const monthRestDays = [4, 7, 10, 11];
 

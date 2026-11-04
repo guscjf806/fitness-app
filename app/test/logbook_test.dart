@@ -32,6 +32,12 @@ void main() {
     // 앞에서 뜬 알림이 버튼을 가리지 않게 닫는다
     ScaffoldMessenger.maybeOf(tester.element(find.byType(Scaffold).last))?.removeCurrentSnackBar();
     await tester.pumpAndSettle();
+    // 긴 화면에서 아직 그려지지 않은 버튼은 스크롤해서 찾는다
+    if (f.evaluate().isEmpty) {
+      await tester.scrollUntilVisible(f, 200,
+          scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last);
+      await tester.pumpAndSettle();
+    }
     await tester.ensureVisible(f);
     await tester.pumpAndSettle();
     await tester.tap(f);
@@ -73,6 +79,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(findTextContaining('10월 12일 · '), findsOneWidget);
     expect(demo.logsOf('김지아').first.date, '10월 12일');
+  });
+
+  testWidgets('11/04 #4 수업 날짜를 고르면 그 날짜로 저장되고, 옛날 날짜여도 마지막 일지는 최신을 유지', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    expect(findText('10월 12일 (월) · 오늘'), findsOneWidget);
+    expect(findText('이 날짜에 출석 도장이 찍혀요'), findsOneWidget);
+    await tap(tester, findText('10월 12일 (월) · 오늘'));
+    await tap(tester, findText('5'));
+    await tap(tester, findText('확인'));
+    expect(findText('10월 5일 (월)'), findsOneWidget);
+    await tester.enterText(field('횟수'), '8');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('저장하고 알림 보내기'));
+    expect(demo.sentLogs['김지아']!.single.date, '10월 5일');
+    expect(demo.lastLogOf('김지아'), '10월 6일');
+    expect(demo.logsOf('김지아').map((l) => l.date).take(2), ['10월 6일', '10월 5일']);
   });
 
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'routes.dart';
 import 'state/demo_state.dart';
@@ -21,6 +22,10 @@ class FitnessApp extends StatelessWidget {
       title: '운동 앱 (목업)',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      // 달력·시간 고르기 같은 기본 창이 한국어로 나오게 (리뷰 11/04 #4)
+      locale: const Locale('ko'),
+      supportedLocales: const [Locale('ko')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       navigatorKey: demoNavigatorKey,
       // 전에 앱 안에 들어온 적이 있으면 시작 화면을 건너뛴다
       initialRoute: demo.entered ? Routes.main : Routes.start,

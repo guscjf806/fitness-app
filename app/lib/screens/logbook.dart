@@ -277,6 +277,9 @@ class LogWriteScreen extends StatefulWidget {
 
 class _LogWriteScreenState extends State<LogWriteScreen> {
   String? member;
+
+  /// 수업 날짜. 다음 날 몰아서 써도 그날 일지·출석 도장이 되게 고른다 (리뷰 11/04 #4)
+  DateTime date = demoTodayDate;
   String exercise = exerciseNames.first;
   bool customExercise = false;
   String stamp = stamps.first;
@@ -292,7 +295,20 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   String get exerciseName => customExercise ? customName.trim() : exercise;
 
   /// 적은 게 있는지 (뒤로 갈 때 버릴지 묻는 기준)
-  bool get dirty => [customName, kg, reps, sets, comment].any((v) => v.trim().isNotEmpty) || videos.isNotEmpty;
+  bool get dirty => [customName, kg, reps, sets, comment].any((v) => v.trim().isNotEmpty) || videos.isNotEmpty || date != demoTodayDate;
+
+  String get dateLabel => '${date.month}월 ${date.day}일';
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: date,
+      firstDate: demoTodayDate.subtract(const Duration(days: 30)),
+      lastDate: demoTodayDate,
+      helpText: '수업 날짜',
+    );
+    if (picked != null) setState(() => date = picked);
+  }
 
   void _save() {
     if (exerciseName.isEmpty) {
@@ -305,7 +321,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
     }
     // 저장한 일지를 남겨서 회원 관리의 '마지막 일지'와 회원의 일지 목록에 바로 보이게 한다 (리뷰 11/04 #1)
     final log = WorkoutLog(
-      '${DateTime(2026, 10, demoToday).month}월 $demoToday일',
+      dateLabel,
       exerciseByName(exerciseName)?.part ?? '수업',
       [LogItem(exerciseName, kg.trim().isEmpty ? '체중' : '${kg.trim()}kg', '${reps.trim()}개', int.tryParse(sets.trim()) ?? 1)],
       [for (final v in videos) LogVideo(v, 30)], // 기획서 6번 초안: 올린 날부터 30일
@@ -313,7 +329,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       stamp,
     );
     demo.update(() => (demo.sentLogs[member!] ??= []).add(log));
-    toast(context, '$member 회원님께 일지${videos.isEmpty ? '' : '와 영상 ${videos.length}개'}를 저장하고 알림을 보냈어요 (출석 도장 완료)');
+    toast(context, '$member 회원님께 일지${videos.isEmpty ? '' : '와 영상 ${videos.length}개'}를 저장하고 알림을 보냈어요 ($dateLabel 출석 도장 완료)');
     Navigator.pop(context);
   }
 
@@ -353,6 +369,18 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         onChanged: (v) => setState(() => member = v),
       ),
       const SizedBox(height: AppSpace.m),
+      InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.small),
+        onTap: _pickDate,
+        child: InputDecorator(
+          decoration: const InputDecoration(labelText: '수업 날짜'),
+          child: Row(children: [
+            Expanded(child: Text('$dateLabel (${dayLabels[date.weekday - 1]})${date == demoTodayDate ? ' · 오늘' : ''}')),
+            const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.textSub),
+          ]),
+        ),
+      ),
+      const Muted('이 날짜에 출석 도장이 찍혀요', top: AppSpace.xs, bottom: AppSpace.m),
       Row(children: [
         Expanded(
           child: customExercise
@@ -418,7 +446,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         onChanged: (v) => setState(() => comment = v),
       ),
       const SizedBox(height: AppSpace.m),
-      const FieldLabel('응원 스탬프', sub: '저장하면 그날 출석 도장도 찍혀요'),
+      const FieldLabel('응원 스탬프'),
       Seg(options: stamps, value: stamp, onChanged: (v) => setState(() => stamp = v)),
       AppButton('저장하고 알림 보내기', onPressed: _save),
     ]),
