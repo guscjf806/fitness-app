@@ -182,29 +182,20 @@ class _MemberManageTabState extends State<MemberManageTab> {
   Widget build(BuildContext context) {
     return TabBody(children: [
       const H1('회원 관리'),
-      // 코드가 있으면 다시 누를 때 새 코드로 바뀐다는 걸 이름으로 알린다 (리뷰 11/02 #5)
-      AppButton(demo.inviteCode == null ? '초대 코드 만들기' : '새 코드 만들기',
-          top: 0,
-          onPressed: () => demo.update(() => demo.inviteCode = '${100000 + Random().nextInt(900000)}')),
-      const SizedBox(height: AppSpace.m),
-      if (demo.inviteCode != null)
-        AppCard(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Muted('회원님께 알려 주세요 (1회용 · 7일 유효)', bottom: 2),
-            Row(children: [
-              Expanded(child: BigNumber(demo.inviteCode!)),
-              // 손으로 옮겨 적지 않게 복사 버튼
-              OutlinedButton.icon(
-                icon: const Icon(Icons.copy, size: 18),
-                label: const Text('복사'),
-                onPressed: () async {
-                  await Clipboard.setData(ClipboardData(text: demo.inviteCode!));
-                  if (context.mounted) toast(context, '초대 코드를 복사했어요');
-                },
-              ),
-            ]),
+      // 수업 끝나고 가장 자주 쓰는 회원 목록을 맨 위로, 가끔 쓰는 초대 코드는 맨 아래로 (리뷰 11/04 #3)
+      for (final m in members)
+        LineRow(
+          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(m, style: AppText.bodyStrong),
+            Muted(demo.lastLogOf(m) == null ? '아직 쓴 일지가 없어요' : '마지막 일지 ${demo.lastLogOf(m)}', bottom: 0),
           ]),
+          right: FilledButton.tonal(
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+            onPressed: () => Navigator.pushNamed(context, Routes.logWrite, arguments: m),
+            child: const Text('일지 작성'),
+          ),
         ),
+      const SizedBox(height: AppSpace.l),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('이번 주 미션', bottom: 6),
@@ -247,17 +238,30 @@ class _MemberManageTabState extends State<MemberManageTab> {
           }),
         ]),
       ),
-      for (final m in members)
-        LineRow(
-          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(m, style: AppText.bodyStrong),
-            Muted(demo.lastLogOf(m) == null ? '아직 쓴 일지가 없어요' : '마지막 일지 ${demo.lastLogOf(m)}', bottom: 0),
+      const SizedBox(height: AppSpace.s),
+      // 코드가 있으면 다시 누를 때 새 코드로 바뀐다는 걸 이름으로 알린다 (리뷰 11/02 #5)
+      AppButton(demo.inviteCode == null ? '초대 코드 만들기' : '새 코드 만들기',
+          kind: ButtonKind.soft,
+          top: 0,
+          onPressed: () => demo.update(() => demo.inviteCode = '${100000 + Random().nextInt(900000)}')),
+      const SizedBox(height: AppSpace.m),
+      if (demo.inviteCode != null)
+        AppCard(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Muted('회원님께 알려 주세요 (1회용 · 7일 유효)', bottom: 2),
+            Row(children: [
+              Expanded(child: BigNumber(demo.inviteCode!)),
+              // 손으로 옮겨 적지 않게 복사 버튼
+              OutlinedButton.icon(
+                icon: const Icon(Icons.copy, size: 18),
+                label: const Text('복사'),
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: demo.inviteCode!));
+                  if (context.mounted) toast(context, '초대 코드를 복사했어요');
+                },
+              ),
+            ]),
           ]),
-          right: FilledButton.tonal(
-            style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
-            onPressed: () => Navigator.pushNamed(context, Routes.logWrite, arguments: m),
-            child: const Text('일지 작성'),
-          ),
         ),
     ]);
   }
