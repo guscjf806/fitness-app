@@ -7,6 +7,7 @@ import '../logic/intensity.dart';
 import '../logic/routine.dart';
 import '../logic/tdee.dart';
 import '../routes.dart';
+import '../services/auth_service.dart';
 import 'workout_session.dart';
 
 final demoNavigatorKey = GlobalKey<NavigatorState>();
@@ -173,6 +174,8 @@ class DemoState extends ChangeNotifier {
 
   void switchRole(String newRole) {
     role = newRole;
+    // 로그아웃하면 실제 로그인도 끊는다
+    if (newRole == 'guest') AuthService.signOut();
     entered = newRole != 'guest';
     // 데모 바로 바꾼 역할은 이미 가입·동의를 마친 계정으로 본다
     if (newRole != 'guest') consented = true;

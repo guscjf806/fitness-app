@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'routes.dart';
+import 'services/auth_service.dart';
 import 'state/demo_state.dart';
 import 'theme/app_theme.dart';
 import 'widgets/demo_bar.dart';
@@ -10,7 +11,9 @@ import 'widgets/failure.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await demo.load();
+  await AuthService.init();
   runApp(const FitnessApp());
+  WidgetsBinding.instance.addPostFrameCallback((_) => AuthService.listen());
 }
 
 class FitnessApp extends StatelessWidget {

@@ -13,6 +13,13 @@ class AppConfig {
   static const monthlyPrice = 9900;
   static const yearlyPrice = 79000;
 
+  /// Supabase 연결 정보. 공개용 키라 앱에 넣어도 된다 (데이터는 RLS가 지킨다)
+  static const supabaseUrl = 'https://feqxciztzgadnvamwakv.supabase.co';
+  static const supabasePublishableKey = 'sb_publishable_XQscU0ZAjgeQup9hfgM7ZQ_syv2RkR1';
+
+  /// 소셜 로그인을 마치고 폰 앱으로 돌아오는 주소 (iOS Info.plist·안드로이드 매니페스트와 같아야 한다)
+  static const loginRedirect = 'com.guscjf806.fitnessapp://login-callback';
+
   /// 한 번에 고를 수 있는 운동 수
   static const maxExercisePick = 10;
 }

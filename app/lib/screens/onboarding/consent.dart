@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../services/auth_service.dart';
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
@@ -52,6 +53,8 @@ class _ConsentScreenState extends State<ConsentScreen> {
       demo.role = 'guest';
       demo.continueToGenerate = false;
     });
+    // 동의하지 않았으면 실제 로그인도 끊는다
+    AuthService.signOut();
     Navigator.pop(context);
   }
 
