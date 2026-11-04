@@ -69,7 +69,8 @@ class _RestTimerState extends State<_RestTimer> {
 
   @override
   Widget build(BuildContext context) {
-    final presets = [widget.recommended, 30, 60, 90, 120];
+    // 추천값과 같은 칸은 빼서 '추천 1:00'과 '1:00'이 겹치지 않게 (디자인 리뷰 11/04 #7)
+    final presets = [widget.recommended, for (final s in const [30, 60, 90, 120]) if (s != widget.recommended) s];
     return Column(mainAxisSize: MainAxisSize.min, children: [
         const SheetTitle('휴식 타이머'),
         const SizedBox(height: AppSpace.m),
@@ -81,7 +82,7 @@ class _RestTimerState extends State<_RestTimer> {
                 padding: const EdgeInsets.only(right: 6),
                 child: ChoiceChip(
                   label: Text(i == 0 ? '추천 ${_mmss(presets[i])}' : _mmss(presets[i])),
-                  selected: total == presets[i] && (i == 0 || presets[i] != widget.recommended),
+                  selected: total == presets[i],
                   showCheckmark: false,
                   selectedColor: AppColors.primarySoft,
                   shape: const StadiumBorder(),
@@ -101,15 +102,21 @@ class _RestTimerState extends State<_RestTimer> {
               color: AppColors.primary,
               backgroundColor: AppColors.primarySoft,
             ),
+            // 큰 글씨 설정에서도 숫자가 원 밖으로 나가지 않게
             Center(
-              child: Text(_mmss(remaining),
-                  style: AppText.timer),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpace.l),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(_mmss(remaining), style: AppText.timer),
+                ),
+              ),
             ),
           ]),
         ),
         const SizedBox(height: 20),
         Row(children: [
-          Expanded(child: AppButton('- 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(-10))),
+          Expanded(child: AppButton('− 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(-10))),
           const SizedBox(width: 10),
           Expanded(child: AppButton('+ 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(10))),
         ]),

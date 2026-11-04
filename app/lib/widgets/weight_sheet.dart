@@ -51,8 +51,8 @@ class _WeightFormState extends State<_WeightForm> {
         const SheetTitle('이번 주 몸무게를 기록했어요'),
         const SizedBox(height: 10),
         Muted(result.$1 == result.$2
-            ? '목표 칼로리는 ${formatNumber(result.$2)}kcal 그대로예요.'
-            : '목표 칼로리가 ${formatNumber(result.$1)} → ${formatNumber(result.$2)}kcal로 바뀌었어요.'),
+            ? '목표 칼로리는 ${formatNumber(result.$2)} kcal 그대로예요.'
+            : '목표 칼로리가 ${formatNumber(result.$1)} → ${formatNumber(result.$2)} kcal로 바뀌었어요.'),
         if (changed) ...[
           const Muted('지금 식단·운동 루틴은 바뀌기 전 칼로리로 만들었어요. 새로 만들면 바뀐 칼로리에 맞춰져요.'),
           AppButton('새 식단·운동 루틴 만들기', onPressed: () {
