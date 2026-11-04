@@ -31,9 +31,10 @@ class AuthService {
   }
 
   /// 카카오·구글 로그인 창을 연다. 끝나면 앱으로 돌아와 listen()이 이어받는다
-  static Future<void> signIn(OAuthProvider provider) async {
+  /// 창을 열었으면 true
+  static Future<bool> signIn(OAuthProvider provider) async {
     _fromLoginScreen = true;
-    await Supabase.instance.client.auth.signInWithOAuth(
+    return Supabase.instance.client.auth.signInWithOAuth(
       provider,
       redirectTo: kIsWeb ? Uri.base.origin : AppConfig.loginRedirect,
       authScreenLaunchMode: kIsWeb ? LaunchMode.platformDefault : LaunchMode.externalApplication,

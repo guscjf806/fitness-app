@@ -1,5 +1,6 @@
 import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
+import 'package:fitness_app/services/auth_service.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:fitness_app/state/workout_session.dart';
 import 'package:fitness_app/widgets/failure.dart';
@@ -75,5 +76,16 @@ void main() {
   testWidgets('#5 글자 한 줄짜리 줄도 누르는 자리가 48px 이상', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: Scaffold(body: Column(children: [LineRow(left: Text('한 줄'))]))));
     expect(tester.getSize(find.byType(LineRow)).height, greaterThanOrEqualTo(48));
+  });
+  testWidgets('#6 로그인 창을 못 열면 안내하고 버튼이 다시 눌린다', (tester) async {
+    demo.switchRole('guest');
+    AuthService.enabled = true; // Supabase를 켜지 않아 signIn이 실패한다
+    addTearDown(() => AuthService.enabled = false);
+    await open(tester, Routes.login);
+    await tester.tap(findText('구글로 시작하기'));
+    await tester.pumpAndSettle();
+    expect(findText('로그인 창을 열지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요'), findsOneWidget);
+    expect(findText('연결하는 중…'), findsNothing);
+    expect(tester.widget<FilledButton>(find.widgetWithText(FilledButton, '구글로 시작하기')).onPressed, isNotNull);
   });
 }

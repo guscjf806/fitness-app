@@ -8,8 +8,34 @@ import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
 
 /// S05 로그인
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
+  /// 로그인 창을 여는 중인 곳. 그동안 버튼을 막아 여러 번 불리지 않게 한다 (디자인 리뷰 11/04 #6)
+  OAuthProvider? connecting;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// 로그인 창에서 그냥 돌아와도 다시 누를 수 있게
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && connecting != null) setState(() => connecting = null);
+  }
 
   void _login(BuildContext context) {
     final wasEntered = demo.entered;
@@ -31,10 +57,13 @@ class LoginScreen extends StatelessWidget {
       _login(context);
       return;
     }
+    setState(() => connecting = provider);
     try {
-      await AuthService.signIn(provider);
+      if (!await AuthService.signIn(provider)) throw StateError('login window not opened');
     } catch (_) {
-      if (context.mounted) toast(context, '로그인 창을 열지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요');
+      if (!context.mounted) return;
+      setState(() => connecting = null);
+      toast(context, '로그인 창을 열지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요');
     }
   }
 
@@ -45,18 +74,18 @@ class LoginScreen extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 12),
           child: FilledButton(
-            onPressed: () => _socialLogin(context, provider),
+            onPressed: connecting != null ? null : () => _socialLogin(context, provider),
             style: FilledButton.styleFrom(
               backgroundColor: bg,
               foregroundColor: fg,
               side: outlined ? const BorderSide(color: AppColors.socialBorder) : null,
             ),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              if (logo != null) ...[
+              if (logo != null && (provider == null || connecting != provider)) ...[
                 Image.asset(logo, width: 20, height: 20, excludeFromSemantics: true),
                 const SizedBox(width: AppSpace.s),
               ],
-              Text(label),
+              Text(provider != null && connecting == provider ? '연결하는 중…' : label),
             ]),
           ),
         );
