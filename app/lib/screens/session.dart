@@ -248,7 +248,15 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
           Expanded(
             child: AppButton('세트 삭제', kind: ButtonKind.soft, onPressed: ex.sets.length <= 1
                 ? null
-                : () => setState(() => ex.sets.removeLast())),
+                : () {
+                    // 체크와 무게까지 지워지니 되돌릴 수 있게 한다 (디자인 리뷰 11/04 #2)
+                    final number = ex.sets.length;
+                    final removed = ex.sets.last;
+                    setState(() => ex.sets.removeLast());
+                    toast(context, '$number세트를 지웠어요', actionLabel: '되돌리기', onAction: () {
+                      if (mounted) setState(() => ex.sets.add(removed));
+                    });
+                  }),
           ),
           const SizedBox(width: 10),
           Expanded(
