@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 
-const failModes = ['정상', 'AI 실패', '횟수 소진', '오프라인'];
+const failModes = ['정상', 'AI 실패', '횟수 소진', '오프라인', '코드 틀림', '코드 만료', '코드 사용됨'];
 
 /// 목업 전용: 사용자 역할을 바꿔 가며 화면을 확인한다. 실제 앱에는 없다.
 class DemoBar extends StatelessWidget {

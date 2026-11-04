@@ -97,6 +97,26 @@ void main() {
     expect(demo.logsOf('김지아').map((l) => l.date).take(2), ['10월 6일', '10월 5일']);
   });
 
+  testWidgets('11/04 #6 틀린 코드는 이유를 알려 주고 코드를 지우지 않으며 연결하지 않는다', (tester) async {
+    demo.switchRole('user');
+    addTearDown(() => demo.failMode = '정상');
+    await openRoute(tester, Routes.ptCode);
+    demo.failMode = '코드 만료';
+    await tester.enterText(find.byType(TextField), '482915');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('연결하기'));
+    expect(findText('기간이 지난 코드예요. 선생님께 새 코드를 받아 주세요'), findsOneWidget);
+    expect(demo.role, 'user');
+    expect(findText('482915'), findsOneWidget);
+    // 고쳐 쓰기 시작하면 안내가 사라지고, 정상이면 연결된다
+    await tester.enterText(find.byType(TextField), '482916');
+    await tester.pumpAndSettle();
+    expect(findText('기간이 지난 코드예요. 선생님께 새 코드를 받아 주세요'), findsNothing);
+    demo.failMode = '정상';
+    await tap(tester, findText('연결하기'));
+    expect(demo.role, 'member');
+  });
+
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {
     await openRoute(tester, Routes.logWrite, args: '김지아');
     await tap(tester, findText('직접 입력'));

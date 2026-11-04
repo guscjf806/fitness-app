@@ -149,6 +149,15 @@ class PtCodeScreen extends StatefulWidget {
 class _PtCodeScreenState extends State<PtCodeScreen> {
   String code = '';
 
+  /// 코드가 안 맞을 때 이유별 안내. 코드는 지우지 않아 고쳐 쓸 수 있다 (리뷰 11/04 #6)
+  /// 목업에서는 데모 바의 '상황'으로 미리 본다
+  static const _codeErrors = {
+    '코드 틀림': '코드가 맞지 않아요. 선생님께 다시 확인해 주세요',
+    '코드 만료': '기간이 지난 코드예요. 선생님께 새 코드를 받아 주세요',
+    '코드 사용됨': '이미 쓴 코드예요. 코드는 한 번만 쓸 수 있어요. 선생님께 새 코드를 받아 주세요',
+  };
+  String? error;
+
   @override
   Widget build(BuildContext context) {
     return AppPage(title: 'PT 코드 입력', children: [
@@ -160,11 +169,25 @@ class _PtCodeScreenState extends State<PtCodeScreen> {
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         textAlign: TextAlign.center,
         style: AppText.number.copyWith(fontWeight: FontWeight.w400, letterSpacing: 4),
-        decoration: const InputDecoration(hintText: '숫자 6자리', counterText: ''),
-        onChanged: (v) => setState(() => code = v),
+        decoration: InputDecoration(
+          hintText: '숫자 6자리',
+          counterText: '',
+          errorText: error,
+          errorMaxLines: 3,
+          errorStyle: AppText.body.copyWith(color: AppColors.warning),
+        ),
+        onChanged: (v) => setState(() {
+          code = v;
+          error = null;
+        }),
       ),
       // 6자리가 되기 전에는 버튼을 흐리게
       AppButton('연결하기', onPressed: code.length < 6 ? null : () {
+        final problem = _codeErrors[demo.failMode];
+        if (problem != null) {
+          setState(() => error = problem);
+          return;
+        }
         demo.update(() {
           demo.role = 'member';
           demo.tab = 3;

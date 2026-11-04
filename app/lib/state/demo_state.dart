@@ -109,7 +109,7 @@ class DemoState extends ChangeNotifier {
   bool pushOn = true;
   TimeOfDay pushTime = const TimeOfDay(hour: 7, minute: 30);
 
-  /// 목업 전용: 실패 상황 미리 보기 ('정상' / 'AI 실패' / '횟수 소진' / '오프라인')
+  /// 목업 전용: 실패 상황 미리 보기 (목록은 demo_bar.dart의 failModes)
   String failMode = '정상';
 
   void update(VoidCallback change) {
