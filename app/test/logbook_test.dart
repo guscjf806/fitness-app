@@ -107,9 +107,28 @@ void main() {
     await tester.pumpAndSettle();
     expect(findTextContaining('지금 미션: '), findsOneWidget);
     final before = Map.of(demo.missions);
-    await tap(tester, findText('미션 보내기'));
+    await tap(tester, findText('김지아 회원님 미션 바꾸기'));
     expect(findText('미션 내용을 적어 주세요'), findsOneWidget);
     expect(demo.missions, before);
+  });
+
+  testWidgets('11/04 #2 버튼에 받는 사람이 보이고, 있던 미션은 물어본 뒤에 바꾼다', (tester) async {
+    demo.missions
+      ..clear()
+      ..['김지아'] = '처음 미션';
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, '예: 이번 주 운동 3회 + 단백질 챙기기'), '새 미션');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('김지아 회원님 미션 바꾸기'));
+    expect(findText('김지아 회원님 미션을 바꿀까요?'), findsOneWidget);
+    await tap(tester, findText('그대로 두기'));
+    expect(demo.missions['김지아'], '처음 미션');
+    await tap(tester, findText('김지아 회원님 미션 바꾸기'));
+    await tap(tester, findText('바꾸기').last);
+    expect(demo.missions['김지아'], '새 미션');
   });
 
   testWidgets('#5 초대 코드를 복사할 수 있고, 코드가 있으면 버튼 이름이 새 코드 만들기', (tester) async {

@@ -223,12 +223,23 @@ class _MemberManageTabState extends State<MemberManageTab> {
             controller: missionController,
             decoration: const InputDecoration(hintText: '예: 이번 주 운동 3회 + 단백질 챙기기'),
           ),
-          AppButton('미션 보내기', kind: ButtonKind.soft, onPressed: () {
+          // 다른 회원에게 보내지 않게 버튼에 이름을 쓰고, 있던 미션은 말없이 덮어쓰지 않는다 (리뷰 11/04 #2)
+          AppButton(demo.missions[member] == null ? '$member 회원님께 보내기' : '$member 회원님 미션 바꾸기', kind: ButtonKind.soft,
+              onPressed: () async {
             final text = missionController.text.trim();
             // 빈칸이면 회색 예시 문구가 그대로 보내지지 않게 막는다
             if (text.isEmpty) {
               toast(context, '미션 내용을 적어 주세요');
               return;
+            }
+            final old = demo.missions[member];
+            if (old != null) {
+              final ok = await confirmDialog(context,
+                  title: '$member 회원님 미션을 바꿀까요?',
+                  body: '지금 미션: $old',
+                  keepLabel: '그대로 두기',
+                  okLabel: '바꾸기');
+              if (!ok || !context.mounted) return;
             }
             demo.update(() => demo.missions[member] = text);
             missionController.clear();
