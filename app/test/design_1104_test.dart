@@ -3,6 +3,7 @@ import 'package:fitness_app/routes.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:fitness_app/state/workout_session.dart';
 import 'package:fitness_app/widgets/failure.dart';
+import 'package:fitness_app/widgets/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -70,5 +71,9 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(findText('이번 달 무료 횟수를 모두 썼어요'), findsOneWidget);
     expect(find.byType(SingleChildScrollView), findsWidgets);
+  });
+  testWidgets('#5 글자 한 줄짜리 줄도 누르는 자리가 48px 이상', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: Scaffold(body: Column(children: [LineRow(left: Text('한 줄'))]))));
+    expect(tester.getSize(find.byType(LineRow)).height, greaterThanOrEqualTo(48));
   });
 }

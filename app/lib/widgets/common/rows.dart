@@ -56,6 +56,8 @@ class LineRow extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
+        // 글자 한 줄이어도 누르는 자리가 48px 이상 되게 (디자인 리뷰 11/04 #5)
+        constraints: const BoxConstraints(minHeight: 48),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: const BoxDecoration(
             border: Border(bottom: BorderSide(color: AppColors.line))),

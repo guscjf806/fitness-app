@@ -148,7 +148,11 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                         leading: ExerciseThumb(session.items[i].name),
                         title: Text(session.items[i].name),
                         subtitle: Text('${session.items[i].sets.where((s) => s.done).length}/${session.items[i].sets.length}세트'),
-                        trailing: ReorderableDragStartListener(index: i, child: const Icon(Icons.drag_handle)),
+                        trailing: ReorderableDragStartListener(
+                          index: i,
+                          // 잡는 자리를 48px로 (디자인 리뷰 11/04 #5)
+                          child: const SizedBox(width: 48, height: 48, child: Center(child: Icon(Icons.drag_handle))),
+                        ),
                         onTap: () {
                           setState(() => index = i);
                           Navigator.pop(sheet);
