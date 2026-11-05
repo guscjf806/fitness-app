@@ -123,7 +123,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
               for (final d in cells) d == null ? const SizedBox() : _CalendarDay(d),
             ],
           ),
-          const Muted('불꽃 = 운동한 날 · 연한 색 = 쉬는 날(기록으로 인정)', bottom: 0),
+          const Muted('진한 색과 불꽃 = 운동한 날 · 연한 색 = 쉬는 날(기록으로 인정)', bottom: 0),
         ]),
       ),
       AppCard(
@@ -181,20 +181,28 @@ class _CalendarDay extends StatelessWidget {
           color: done ? AppColors.primaryDark : (rest ? AppColors.primarySoft : null),
           border: day == demoToday ? Border.all(color: AppColors.text, width: 2) : null,
         ),
-        // 운동한 날은 불꽃 위에 날짜를 얹는다
+        // 운동한 날: 청록 동그라미에 흰 숫자, 불꽃은 숫자 아래 작게 (결정 dd1030-calendar-done)
         child: Stack(alignment: Alignment.center, children: [
-          if (done) const Icon(Icons.local_fire_department, color: AppColors.streakFire, size: 30),
-          Text('$day',
-            style: AppText.caption.copyWith(
-              fontWeight: done ? FontWeight.w700 : FontWeight.w400,
-              color: done
-                  ? Colors.white
-                  : rest
-                      ? AppColors.primaryDark
-                      : future
-                          ? AppColors.textSub
-                          : AppColors.text,
-            )),
+          Padding(
+            padding: EdgeInsets.only(bottom: done ? 8 : 0),
+            child: Text('$day',
+                style: AppText.caption.copyWith(
+                  height: 1,
+                  fontWeight: done ? FontWeight.w700 : FontWeight.w400,
+                  color: done
+                      ? Colors.white
+                      : rest
+                          ? AppColors.primaryDark
+                          : future
+                              ? AppColors.textSub
+                              : AppColors.text,
+                )),
+          ),
+          if (done)
+            const Positioned(
+              bottom: 3,
+              child: Icon(Icons.local_fire_department, color: AppColors.streakFire, size: 11),
+            ),
         ]),
       ),
     );
