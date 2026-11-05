@@ -171,27 +171,20 @@ class _CalendarDay extends StatelessWidget {
           border: day == demoToday ? Border.all(color: AppColors.text, width: 2) : null,
         ),
         // 운동한 날: 청록 동그라미에 흰 숫자, 불꽃은 숫자 아래 작게 (결정 dd1030-calendar-done)
-        child: Stack(alignment: Alignment.center, children: [
-          Padding(
-            padding: EdgeInsets.only(bottom: done ? 8 : 0),
-            child: Text('$day',
-                style: AppText.caption.copyWith(
-                  height: 1,
-                  fontWeight: done ? FontWeight.w700 : FontWeight.w400,
-                  color: done
-                      ? Colors.white
-                      : rest
-                          ? AppColors.primaryDark
-                          : future
-                              ? AppColors.textSub
-                              : AppColors.text,
-                )),
-          ),
-          if (done)
-            const Positioned(
-              bottom: 3,
-              child: Icon(Icons.local_fire_department, color: AppColors.streakFire, size: 11),
-            ),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text('$day',
+              style: AppText.caption.copyWith(
+                height: 1,
+                fontWeight: done ? FontWeight.w700 : FontWeight.w400,
+                color: done
+                    ? Colors.white
+                    : rest
+                        ? AppColors.primaryDark
+                        : future
+                            ? AppColors.textSub
+                            : AppColors.text,
+              )),
+          if (done) const Icon(Icons.local_fire_department, color: AppColors.streakFire, size: 11),
         ]),
       ),
     );
