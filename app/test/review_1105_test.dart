@@ -88,4 +88,19 @@ void main() {
     demo.continueToGenerate = false;
     await demo.save();
   });
+  testWidgets('#7 다른 곳에서 로그인이 끊기면 안내 후 로그인 화면으로, 목업은 영향 없음', (tester) async {
+    await start(tester);
+    demo.switchRole('user');
+    await tester.pumpAndSettle();
+    AuthService.onAuthChange(AuthChangeEvent.signedOut, null);
+    await tester.pumpAndSettle();
+    expect(demo.role, 'user', reason: '목업 로그인에는 실제 세션이 없다');
+
+    AuthService.onAuthChange(AuthChangeEvent.tokenRefreshed, fakeSession(name: '현철'));
+    AuthService.onAuthChange(AuthChangeEvent.signedOut, null);
+    await tester.pumpAndSettle();
+    expect(demo.isGuest, isTrue);
+    expect(findText('로그인이 끊겼어요. 다시 로그인해 주세요'), findsOneWidget);
+    expect(find.widgetWithText(AppBar, '로그인'), findsOneWidget);
+  });
 }

@@ -45,6 +45,10 @@ class AuthService {
 
   @visibleForTesting
   static void onAuthChange(AuthChangeEvent event, Session? session) {
+    if (event == AuthChangeEvent.signedOut) {
+      _onSignedOut();
+      return;
+    }
     if (session != null) {
       _user = session.user;
       final entering = event == AuthChangeEvent.signedIn || event == AuthChangeEvent.initialSession;
@@ -75,6 +79,22 @@ class AuthService {
       redirectTo: kIsWeb ? Uri.base.origin : AppConfig.loginRedirect,
       authScreenLaunchMode: kIsWeb ? LaunchMode.platformDefault : LaunchMode.externalApplication,
     );
+  }
+
+  /// 직접 로그아웃하면 signOut()이 먼저 _user를 비우므로 여기서는 아무것도 안 한다.
+  /// 다른 곳에서 끊겼을 때만 안내하고 로그인 화면으로 보낸다 (리뷰 11/05 #7). 목업 로그인은 _user가 없어 영향 없음
+  static void _onSignedOut() {
+    if (_user == null) return;
+    _user = null;
+    final nav = demoNavigatorKey.currentState;
+    demo.update(() {
+      demo.role = 'guest';
+      demo.consented = false;
+    });
+    if (nav == null) return;
+    nav.pushNamedAndRemoveUntil(Routes.main, (_) => false);
+    nav.pushNamed(Routes.login);
+    toast(nav.context, '로그인이 끊겼어요. 다시 로그인해 주세요');
   }
 
   static Future<void> signOut() async {
