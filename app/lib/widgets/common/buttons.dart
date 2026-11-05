@@ -107,12 +107,17 @@ class _SegButton extends StatelessWidget {
 
 /// 가로로 스크롤되는 날짜·요일 칩
 class DayChips extends StatelessWidget {
-  /// '화 휴식' 같은 뒷말은 그대로 두고 요일 바로 뒤에 '·오늘'을 넣는다
-  String _label(int i) {
-    final l = labels[i];
-    if (i != today) return l;
-    final space = l.indexOf(' ');
-    return space < 0 ? '$l·오늘' : '${l.substring(0, space)}·오늘${l.substring(space)}';
+  /// 두 줄 칩: 위는 요일, 아래는 작은 글씨로 '오늘'/'휴식' (결정 dd1031-daychip).
+  /// labels의 '화 휴식'을 나눠 쓴다. 칩 높이가 같게 아랫줄이 비어도 자리를 둔다
+  Widget _label(int i) {
+    final parts = labels[i].split(' ');
+    final day = parts.first;
+    final notes = [if (i == today) '오늘', ...parts.skip(1)];
+    final on = i == selected;
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Text(day, style: TextStyle(color: on ? Colors.white : AppColors.text, fontWeight: on ? FontWeight.w700 : FontWeight.w400)),
+      Text(notes.isEmpty ? ' ' : notes.join('·'), style: AppText.small.copyWith(color: on ? Colors.white : AppColors.textSub)),
+    ]);
   }
 
   const DayChips({super.key, required this.labels, required this.selected, required this.onSelect, this.today});
@@ -120,7 +125,7 @@ class DayChips extends StatelessWidget {
   final int selected;
   final ValueChanged<int> onSelect;
 
-  /// 오늘인 칸. 주면 그 칩에 '·오늘'을 붙여 식단·운동 탭이 같은 모양이 된다 (리뷰 11/01 #6)
+  /// 오늘인 칸. 주면 그 칩 아랫줄에 '오늘'을 써서 식단·운동 탭이 같은 모양이 된다 (리뷰 11/01 #6)
   final int? today;
 
   @override
@@ -135,12 +140,10 @@ class DayChips extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 6),
                 child: ChoiceChip(
-                  label: Text(_label(i)),
+                  label: _label(i),
                   selected: i == selected,
                   showCheckmark: false,
                   selectedColor: AppColors.primary,
-                  labelStyle: TextStyle(
-                      color: i == selected ? Colors.white : AppColors.text),
                   shape: const StadiumBorder(),
                   onSelected: (_) => onSelect(i),
                 ),

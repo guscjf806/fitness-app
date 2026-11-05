@@ -108,10 +108,10 @@ void main() {
     demoNavigatorKey.currentState!.pop();
     demo.update(() => demo.tab = 1);
     await tester.pumpAndSettle();
-    expect(findText('월·오늘'), findsOneWidget);
+    expect(findText('오늘'), findsOneWidget);
     demo.update(() => demo.tab = 2);
     await tester.pumpAndSettle();
-    expect(findTextContaining('월·오늘'), findsOneWidget);
+    expect(findText('오늘'), findsOneWidget);
   });
 
   testWidgets('#7 합계는 목표와 함께, 올린 식단이 없으면 안내', (tester) async {
