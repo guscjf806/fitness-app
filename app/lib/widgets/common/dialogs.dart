@@ -23,6 +23,9 @@ void toastOn(ScaffoldMessengerState messenger, String message, {String? actionLa
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(
       content: Text(message),
+      // 버튼이 있어도 저절로 사라지게. 운동 중에도 누를 수 있게 조금 길게 띄운다 (리뷰 11/05 #1)
+      persist: false,
+      duration: Duration(seconds: actionLabel == null ? 4 : 6),
       action: actionLabel == null ? null : SnackBarAction(label: actionLabel, onPressed: onAction ?? () {}),
     ));
 }
