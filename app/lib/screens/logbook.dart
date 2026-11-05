@@ -273,6 +273,21 @@ class _MemberManageTabState extends State<MemberManageTab> {
   }
 }
 
+/// 일지의 종목 한 줄 (결정 dd1101-logwrite: '+ 종목 추가'로 줄을 늘린다)
+class _LogRow {
+  String exercise = exerciseNames.first;
+  bool custom = false;
+
+  // 적은 값을 상태에 남긴다 (리뷰 11/02 #2). 직접 입력한 종목 이름은 칩을 껐다 켜도 남는다 (#7)
+  String customName = '';
+  String kg = '';
+  String reps = '';
+  String sets = '';
+
+  String get name => custom ? customName.trim() : exercise;
+  bool get hasInput => [customName, kg, reps, sets].any((v) => v.trim().isNotEmpty);
+}
+
 /// S19 일지 작성 (선생님)
 class LogWriteScreen extends StatefulWidget {
   const LogWriteScreen({super.key});
@@ -286,22 +301,14 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
 
   /// 수업 날짜. 다음 날 몰아서 써도 그날 일지·출석 도장이 되게 고른다 (리뷰 11/04 #4)
   DateTime date = demoTodayDate;
-  String exercise = exerciseNames.first;
-  bool customExercise = false;
+  final List<_LogRow> rows = [_LogRow()];
   String stamp = stamps.first;
   final List<String> videos = [];
-
-  // 적은 값을 상태에 남긴다 (리뷰 11/02 #2). 직접 입력한 종목 이름은 칩을 껐다 켜도 남는다 (#7)
-  String customName = '';
-  String kg = '';
-  String reps = '';
-  String sets = '';
   String comment = '';
 
-  String get exerciseName => customExercise ? customName.trim() : exercise;
-
   /// 적은 게 있는지 (뒤로 갈 때 버릴지 묻는 기준)
-  bool get dirty => [customName, kg, reps, sets, comment].any((v) => v.trim().isNotEmpty) || videos.isNotEmpty || date != demoTodayDate;
+  bool get dirty =>
+      rows.length > 1 || rows.any((r) => r.hasInput) || comment.trim().isNotEmpty || videos.isNotEmpty || date != demoTodayDate;
 
   String get dateLabel => '${date.month}월 ${date.day}일';
 
@@ -317,19 +324,26 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   }
 
   void _save() {
-    if (exerciseName.isEmpty) {
-      toast(context, '종목 이름을 적어 주세요');
-      return;
-    }
-    if (reps.trim().isEmpty) {
-      toast(context, '횟수를 적어 주세요');
-      return;
+    // 줄이 여러 개면 몇 번째 줄인지 함께 알린다
+    for (var i = 0; i < rows.length; i++) {
+      final where = rows.length > 1 ? '${i + 1}번째 줄의 ' : '';
+      if (rows[i].name.isEmpty) {
+        toast(context, '$where종목 이름을 적어 주세요');
+        return;
+      }
+      if (rows[i].reps.trim().isEmpty) {
+        toast(context, '$where횟수를 적어 주세요');
+        return;
+      }
     }
     // 저장한 일지를 남겨서 회원 관리의 '마지막 일지'와 회원의 일지 목록에 바로 보이게 한다 (리뷰 11/04 #1)
     final log = WorkoutLog(
       dateLabel,
-      exerciseByName(exerciseName)?.part ?? '수업',
-      [LogItem(exerciseName, kg.trim().isEmpty ? '체중' : '${kg.trim()}kg', '${reps.trim()}개', int.tryParse(sets.trim()) ?? 1)],
+      {for (final r in rows) exerciseByName(r.name)?.part ?? '수업'}.join(' · '),
+      [
+        for (final r in rows)
+          LogItem(r.name, r.kg.trim().isEmpty ? '체중' : '${r.kg.trim()}kg', '${r.reps.trim()}개', int.tryParse(r.sets.trim()) ?? 1),
+      ],
       [for (final v in videos) LogVideo(v, 30)], // 기획서 6번 초안: 올린 날부터 30일
       comment.trim(),
       stamp,
@@ -347,8 +361,74 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       toast(context, '영상은 일지당 최대 5개까지 올릴 수 있어요');
       return;
     }
-    setState(() => videos.add('${exerciseName.isEmpty ? '직접 입력' : exerciseName} 영상 · 0:1${videos.length + 1}'));
+    final name = rows.last.name;
+    setState(() => videos.add('${name.isEmpty ? '직접 입력' : name} 영상 · 0:1${videos.length + 1}'));
     toast(context, source == '촬영' ? '15초가 되면 촬영이 자동으로 끝나요' : '15초보다 긴 영상은 앞 15초만 올라가요');
+  }
+
+  /// 줄을 빼고 되돌릴 수 있게 한다
+  void _removeRow(int i) {
+    final removed = rows[i];
+    setState(() => rows.removeAt(i));
+    toast(context, '${i + 1}번째 종목을 뺐어요', actionLabel: '되돌리기', onAction: () {
+      if (mounted) setState(() => rows.insert(i.clamp(0, rows.length), removed));
+    });
+  }
+
+  Widget _rowEditor(int i) {
+    final r = rows[i];
+    return AppCard(
+      key: ObjectKey(r),
+      child: Column(children: [
+        if (rows.length > 1)
+          Row(children: [
+            Expanded(child: Text('종목 ${i + 1}', style: AppText.bodyStrong)),
+            TextButton(onPressed: () => _removeRow(i), child: const Text('빼기', style: TextStyle(color: AppColors.warningText))),
+          ]),
+        Row(children: [
+          Expanded(
+            child: r.custom
+                ? TextFormField(
+                    initialValue: r.customName,
+                    decoration: const InputDecoration(labelText: '종목 이름', hintText: '예: TRX 로우'),
+                    onChanged: (v) => setState(() => r.customName = v),
+                  )
+                : InkWell(
+                    borderRadius: BorderRadius.circular(AppRadius.small),
+                    // 운동 추가하기(S21)에서 1개를 고른다
+                    onTap: () async {
+                      final picked = await Navigator.pushNamed(context, Routes.exercisePick, arguments: 1);
+                      if (picked is List<String> && picked.isNotEmpty) setState(() => r.exercise = picked.first);
+                    },
+                    child: InputDecorator(
+                      decoration: const InputDecoration(labelText: '종목'),
+                      child: Row(children: [
+                        ExerciseThumb(r.exercise, size: 32),
+                        const SizedBox(width: 10),
+                        Expanded(child: Text(r.exercise)),
+                        const Icon(Icons.chevron_right, color: AppColors.textSub),
+                      ]),
+                    ),
+                  ),
+          ),
+          const SizedBox(width: 8),
+          FilterChip(
+            label: const Text('직접 입력'),
+            selected: r.custom,
+            onSelected: (v) => setState(() => r.custom = v),
+          ),
+        ]),
+        const SizedBox(height: AppSpace.m),
+        // 휴대폰에서 숫자 자판이 뜨게 공용 숫자 칸으로 (디자인 리뷰 11/01 #2)
+        Row(children: [
+          Expanded(child: NumField(label: '무게 (kg)', hint: '60', value: r.kg, onChanged: (v) => setState(() => r.kg = v))),
+          const SizedBox(width: 8),
+          Expanded(child: NumField(label: '횟수', hint: '8', value: r.reps, onChanged: (v) => setState(() => r.reps = v))),
+          const SizedBox(width: 8),
+          Expanded(child: NumField(label: '세트', hint: '4', value: r.sets, onChanged: (v) => setState(() => r.sets = v))),
+        ]),
+      ]),
+    );
   }
 
   /// 영상을 빼고, 지운 자리에 되돌릴 수 있게 한다 (디자인 리뷰 11/01 #3)
@@ -390,48 +470,8 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         ),
       ),
       const Muted('이 날짜에 출석 도장이 찍혀요', top: AppSpace.xs, bottom: AppSpace.m),
-      Row(children: [
-        Expanded(
-          child: customExercise
-              ? TextFormField(
-                  initialValue: customName,
-                  decoration: const InputDecoration(labelText: '종목 이름', hintText: '예: TRX 로우'),
-                  onChanged: (v) => setState(() => customName = v),
-                )
-              : InkWell(
-                  borderRadius: BorderRadius.circular(AppRadius.small),
-                  // 운동 추가하기(S21)에서 1개를 고른다
-                  onTap: () async {
-                    final picked = await Navigator.pushNamed(context, Routes.exercisePick, arguments: 1);
-                    if (picked is List<String> && picked.isNotEmpty) setState(() => exercise = picked.first);
-                  },
-                  child: InputDecorator(
-                    decoration: const InputDecoration(labelText: '종목'),
-                    child: Row(children: [
-                      ExerciseThumb(exercise, size: 32),
-                      const SizedBox(width: 10),
-                      Expanded(child: Text(exercise)),
-                      const Icon(Icons.chevron_right, color: AppColors.textSub),
-                    ]),
-                  ),
-                ),
-        ),
-        const SizedBox(width: 8),
-        FilterChip(
-          label: const Text('직접 입력'),
-          selected: customExercise,
-          onSelected: (v) => setState(() => customExercise = v),
-        ),
-      ]),
-      const SizedBox(height: AppSpace.m),
-      // 휴대폰에서 숫자 자판이 뜨게 공용 숫자 칸으로 (디자인 리뷰 11/01 #2)
-      Row(children: [
-        Expanded(child: NumField(label: '무게 (kg)', hint: '60', value: kg, onChanged: (v) => setState(() => kg = v))),
-        const SizedBox(width: 8),
-        Expanded(child: NumField(label: '횟수', hint: '8', value: reps, onChanged: (v) => setState(() => reps = v))),
-        const SizedBox(width: 8),
-        Expanded(child: NumField(label: '세트', hint: '4', value: sets, onChanged: (v) => setState(() => sets = v))),
-      ]),
+      for (var i = 0; i < rows.length; i++) _rowEditor(i),
+      AppButton('+ 종목 추가', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => rows.add(_LogRow()))),
       const SizedBox(height: 10),
       // 촬영 동의 안내가 묻히지 않게 제목·규칙·동의를 나눈다. 문구는 그대로 (디자인 리뷰 11/01 #4)
       H2('운동 영상 ${videos.length}/5', top: 0),

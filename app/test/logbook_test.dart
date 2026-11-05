@@ -38,7 +38,7 @@ void main() {
     // 긴 화면에서 아직 그려지지 않은 버튼은 스크롤해서 찾는다
     if (f.evaluate().isEmpty) {
       await tester.scrollUntilVisible(f, 200,
-          scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last);
+          scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first);
       await tester.pumpAndSettle();
     }
     await tester.ensureVisible(f);
@@ -142,6 +142,21 @@ void main() {
     expect(findText('예시: PT를 시작하면 이렇게 받아요'), findsOneWidget);
     demo.switchRole('guest');
     expect(demo.greeting, '안녕하세요');
+  });
+
+  testWidgets('결정 dd1101-logwrite 종목 줄을 늘려 저장하고, 빈 줄은 몇 번째인지 알린다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '이도현');
+    await tester.enterText(field('횟수'), '8');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('+ 종목 추가'));
+    expect(findText('종목 2'), findsOneWidget);
+    await tap(tester, findText('저장하고 알림 보내기'));
+    expect(findText('2번째 줄의 횟수를 적어 주세요'), findsOneWidget);
+    await tester.enterText(field('횟수').last, '10');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('저장하고 알림 보내기'));
+    expect(demo.sentLogs['이도현']!.single.items.length, 2);
+    expect(demo.sentLogs['이도현']!.single.items.last.reps, '10개');
   });
 
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {
