@@ -24,24 +24,23 @@ class HomeTab extends StatelessWidget {
     if (demo.isGuest) return _guestHome(context, target, today);
     return TabBody(children: [
       H1(demo.greeting),
-      AppCard(
+      // 연속 기록은 작은 한 줄로, 오늘의 작은 목표를 맨 위로 (결정 dd1029-home-order)
+      LineRow(
         onTap: () => Navigator.pushNamed(context, Routes.records),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Muted('연속 기록${demo.restMode ? ' · 쉬기 모드 중' : ''}', bottom: 2),
-          BigNumber('${demo.streak}일째'),
-          Muted(demo.recordedToday ? '오늘 기록 완료!' : '오늘 하나만 기록하면 ${demo.streak + 1}일이에요', bottom: 2),
-          const MoreLink('자세히'),
+        left: Row(children: [
+          const Icon(Icons.local_fire_department, size: 20, color: AppColors.streakFire),
+          const SizedBox(width: 6),
+          Text('연속 ${demo.streak}일째', style: AppText.bodyStrong),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Muted(
+                demo.restMode ? '쉬기 모드 중' : (demo.recordedToday ? '오늘 기록 완료!' : '오늘 하나만 기록하면 ${demo.streak + 1}일'),
+                bottom: 0),
+          ),
         ]),
+        showArrow: true,
       ),
-      if (demo.role == 'member')
-        AppCard(
-          accent: true,
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Muted('선생님이 준 이번 주 미션', bottom: 2),
-            Text(demo.missions[demo.memberName] ?? '아직 미션이 없어요'),
-          ]),
-        ),
-      const H2('오늘의 작은 목표', top: 6),
+      const H2('오늘의 작은 목표', top: AppSpace.m),
       for (final g in goals)
         LineRow(
           onTap: g.$2 ? null : g.$3,
@@ -50,6 +49,14 @@ class HomeTab extends StatelessWidget {
           showArrow: !g.$2,
         ),
       const SizedBox(height: 14),
+      if (demo.role == 'member')
+        AppCard(
+          accent: true,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Muted('선생님이 준 이번 주 미션', bottom: 2),
+            Text(demo.missions[demo.memberName] ?? '아직 미션이 없어요'),
+          ]),
+        ),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('오늘 먹은 칼로리', bottom: 2),
