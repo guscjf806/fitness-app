@@ -31,7 +31,7 @@ class ResultScreen extends StatelessWidget {
               expandedCrossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Muted(
-                  '가만히 있어도 쓰는 칼로리(기초대사량) ${formatNumber(r.bmr)}kcal에 '
+                  '가만히 있어도 쓰는 칼로리(기초대사량) ${formatNumber(r.bmr)} kcal에 '
                   '지금 운동 강도(${demo.currentIntensity})를 곱했어요.\n'
                   '${r.usedKatchMcArdle ? '체지방량을 반영한 Katch-McArdle 공식' : '키·나이·몸무게로 계산하는 Mifflin-St Jeor 공식'}을 썼어요.',
                   bottom: 0,
@@ -47,16 +47,13 @@ class ResultScreen extends StatelessWidget {
           BigNumber('${formatNumber(r.target)} kcal'),
           if (r.teen && demo.goal == '감량')
             const Muted('성장기라 감량 폭을 줄여서(−10%) 계산했어요.', bottom: 0),
-          if (r.clampedToFloor) WarningBox('너무 낮은 칼로리는 위험해서 최소 ${formatNumber(r.floor)}kcal로 맞췄어요.', top: 8),
+          if (r.clampedToFloor) WarningBox('너무 낮은 칼로리는 위험해서 최소 ${formatNumber(r.floor)} kcal로 맞췄어요.', top: 8),
         ]),
       ),
-      const Muted('의료 조언이 아닙니다. 건강 상태에 따라 전문가와 상의하세요.'),
+      const Disclaimer(text: '의료 조언이 아닙니다. 건강 상태에 따라 전문가와 상의하세요.'),
       AppButton('식단·운동 루틴 만들기', onPressed: () => openPlanMaker(context)),
       if (!demo.loggedIn)
-        const Padding(
-          padding: EdgeInsets.only(top: 8),
-          child: Text('만들려면 로그인이 필요해요.', textAlign: TextAlign.center, style: AppText.body),
-        ),
+        const Muted('만들려면 로그인이 필요해요.', top: AppSpace.s, align: TextAlign.center),
     ]);
   }
 }
