@@ -27,7 +27,17 @@ class AuthService {
     Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       final signedIn = data.event == AuthChangeEvent.signedIn || data.event == AuthChangeEvent.initialSession;
       if (signedIn && data.session != null && demo.isGuest) _enter(data.session!.user);
-    }, onError: (_) {});
+    }, onError: onAuthError);
+  }
+
+  /// 카카오·구글에서 돌아오다 실패하면 알려 준다. 본인이 취소한 경우는 조용히 둔다 (리뷰 11/05 #2)
+  @visibleForTesting
+  static void onAuthError(Object error) {
+    final context = demoNavigatorKey.currentContext;
+    if (context == null) return;
+    final text = error.toString().toLowerCase();
+    if (text.contains('access_denied') || text.contains('cancel')) return;
+    toast(context, '로그인하지 못했어요. 다시 시도해 주세요');
   }
 
   /// 카카오·구글 로그인 창을 연다. 끝나면 앱으로 돌아와 listen()이 이어받는다

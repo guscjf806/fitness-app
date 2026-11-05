@@ -1,9 +1,11 @@
 import 'package:fitness_app/main.dart';
+import 'package:fitness_app/services/auth_service.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:fitness_app/widgets/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 
 import 'finders.dart';
 
@@ -32,5 +34,14 @@ void main() {
     await tester.pump(const Duration(seconds: 7));
     await tester.pumpAndSettle();
     expect(findText('지웠어요'), findsNothing);
+  });
+  testWidgets('#2 돌아오다 실패하면 안내하고, 본인이 취소하면 조용히 둔다', (tester) async {
+    await start(tester);
+    AuthService.onAuthError(const AuthException('access_denied'));
+    await tester.pump();
+    expect(findText('로그인하지 못했어요. 다시 시도해 주세요'), findsNothing);
+    AuthService.onAuthError(const AuthException('server error'));
+    await tester.pump();
+    expect(findText('로그인하지 못했어요. 다시 시도해 주세요'), findsOneWidget);
   });
 }
