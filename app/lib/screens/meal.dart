@@ -37,7 +37,7 @@ class _MealTabState extends State<MealTab> {
     return TabBody(children: [
       const H1('식단'),
       DayChips(labels: dayLabels, selected: day, today: 0, onSelect: (i) => setState(() => day = i)),
-      const Muted("g(그램) 수와 칼로리는 AI가 추정한 값이에요. 같은 음식이 없으면 오른쪽 '대체' 음식으로 바꿔 드세요.", bottom: 10),
+      const Muted("g(그램) 수와 칼로리는 AI가 추정한 값이에요. 같은 음식이 없으면 '없으면 →' 뒤의 음식으로 바꿔 드세요.", bottom: 10),
       for (final m in meals) _MealCard(m),
       LineRow(
         left: const Text('합계', style: AppText.bodyStrong),
@@ -78,20 +78,17 @@ class _MealCard extends StatelessWidget {
             margin: const EdgeInsets.only(top: 8),
             padding: const EdgeInsets.only(top: 8),
             decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.line))),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Expanded(
-                child: Text.rich(TextSpan(children: [
+            // 대체 음식은 음식 이름 바로 아래 줄에 (결정 dd1029-alt-food)
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text.rich(TextSpan(children: [
                   TextSpan(text: '${f.name} '),
                   TextSpan(text: '${f.grams}g', style: AppText.bodyStrong),
                 ])),
-              ),
-              Flexible(
-                child: Text('대체: ${f.altName} ${f.altGrams}g',
-                    textAlign: TextAlign.right,
-                    // 50대 이상도 읽기 쉽게 본문 크기로
-                    style: AppText.body.copyWith(color: AppColors.textSub)),
-              ),
-            ]),
+                Muted('없으면 → ${f.altName} ${f.altGrams}g', top: 2, bottom: 0),
+              ]),
+            ),
           ),
       ]),
     );
