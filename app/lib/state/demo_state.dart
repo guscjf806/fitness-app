@@ -129,6 +129,8 @@ class DemoState extends ChangeNotifier {
   String get greeting => switch (role) {
         'trainer' => '안녕하세요, 선생님',
         'guest' => '안녕하세요',
+        // 실제 로그인이면 내 닉네임으로, 없으면 이름 없이 (리뷰 11/05 #3). 지아님은 목업 계정
+        _ when AuthService.signedIn => AuthService.nickname == null ? '안녕하세요' : '안녕하세요, ${AuthService.nickname}님',
         _ => '안녕하세요, 지아님',
       };
 

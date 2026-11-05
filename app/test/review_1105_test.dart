@@ -5,16 +5,29 @@ import 'package:fitness_app/widgets/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthChangeEvent, AuthException, Session, User;
 
 import 'finders.dart';
 
 /// 사용자 리뷰 11/05: 실제 로그인 후의 흐름. Supabase 없이 로그인 이벤트만 흉내 낸다
+Session fakeSession({String? name}) => Session(
+      accessToken: 'test',
+      tokenType: 'bearer',
+      user: User(
+        id: 'test-user',
+        appMetadata: const {},
+        userMetadata: name == null ? const {} : {'name': name},
+        aud: 'authenticated',
+        createdAt: '2026-11-05',
+      ),
+    );
+
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     demo.switchRole('guest');
     demo.consented = false;
+    AuthService.resetForTest();
   });
 
   Future<void> start(WidgetTester tester) async {
@@ -43,5 +56,15 @@ void main() {
     AuthService.onAuthError(const AuthException('server error'));
     await tester.pump();
     expect(findText('로그인하지 못했어요. 다시 시도해 주세요'), findsOneWidget);
+  });
+  testWidgets('#3 실제 로그인하면 내 닉네임으로 인사하고, 닉네임이 없으면 이름 없이', (tester) async {
+    await start(tester);
+    demo.consented = true;
+    AuthService.onAuthChange(AuthChangeEvent.signedIn, fakeSession(name: '현철'));
+    await tester.pumpAndSettle();
+    expect(demo.greeting, '안녕하세요, 현철님');
+    expect(findText('안녕하세요, 현철님'), findsOneWidget);
+    AuthService.onAuthChange(AuthChangeEvent.tokenRefreshed, fakeSession());
+    expect(demo.greeting, '안녕하세요');
   });
 }

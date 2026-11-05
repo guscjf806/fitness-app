@@ -24,10 +24,36 @@ class AuthService {
   /// 앱 화면이 뜬 뒤에 듣기 시작한다 (돌아왔을 때 화면을 옮겨야 해서)
   static void listen() {
     if (!enabled) return;
-    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      final signedIn = data.event == AuthChangeEvent.signedIn || data.event == AuthChangeEvent.initialSession;
-      if (signedIn && data.session != null && demo.isGuest) _enter(data.session!.user);
-    }, onError: onAuthError);
+    Supabase.instance.client.auth.onAuthStateChange.listen(
+      (data) => onAuthChange(data.event, data.session),
+      onError: onAuthError,
+    );
+  }
+
+  /// 지금 로그인한 실제 계정. 없으면 목업(Apple·데모 바) 또는 비로그인
+  static User? _user;
+  static bool get signedIn => _user != null;
+
+  /// 실제 계정의 닉네임. 화면에만 쓰고 로그에는 남기지 않는다
+  static String? get nickname => _user == null ? null : _nickname(_user!);
+
+  @visibleForTesting
+  static void resetForTest() {
+    _user = null;
+    _fromLoginScreen = false;
+  }
+
+  @visibleForTesting
+  static void onAuthChange(AuthChangeEvent event, Session? session) {
+    if (session != null) {
+      _user = session.user;
+      final entering = event == AuthChangeEvent.signedIn || event == AuthChangeEvent.initialSession;
+      if (entering && demo.isGuest) {
+        _enter(session.user);
+      } else {
+        demo.update(() {}); // 홈 인사가 내 닉네임으로 바뀌게
+      }
+    }
   }
 
   /// 카카오·구글에서 돌아오다 실패하면 알려 준다. 본인이 취소한 경우는 조용히 둔다 (리뷰 11/05 #2)
@@ -53,6 +79,7 @@ class AuthService {
 
   static Future<void> signOut() async {
     if (!enabled) return;
+    _user = null;
     await Supabase.instance.client.auth.signOut();
   }
 
