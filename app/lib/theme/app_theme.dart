@@ -15,6 +15,10 @@ class AppColors {
   /// 경고 글씨. 흰 배경·경고 상자에서 글자가 잘 읽히는 진한 빨강. 아이콘과 테두리는 warning (디자인 리뷰 11/04 #3)
   static const warningText = Color(0xFFB3362F);
 
+  /// 정보 표시의 주의(소음 큼 등). 빨강(위험)과 구분되는 주황 (결정 dd1101-infotag)
+  static const caution = Color(0xFFC2410C);
+  static const cautionSoft = Color(0xFFFFF1E8);
+
   /// 경고 상자 배경
   static const warningSoft = Color(0xFFFCECEB);
 

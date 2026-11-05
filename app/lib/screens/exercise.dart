@@ -231,9 +231,9 @@ class ExerciseDetailScreen extends StatelessWidget {
       if (painHit.isNotEmpty) WarningBox(painPhrase(painHit)),
       const SizedBox(height: 14),
       Wrap(spacing: 6, runSpacing: 6, children: [
-        for (final t in [e.part, e.equipment, _placeLabel[e.place]!, _levelLabel[e.level]!]) Chip(label: Text(t)),
-        if (e.impact == 'high') const Chip(label: Text('점프·고충격')),
-        if (e.noise == 'loud') const Chip(label: Text('소음 큼')),
+        for (final t in [e.part, e.equipment, _placeLabel[e.place]!, _levelLabel[e.level]!]) InfoTag(t),
+        if (e.impact == 'high') const InfoTag('점프·고충격', caution: true),
+        if (e.noise == 'loud') const InfoTag('소음 큼', caution: true),
       ]),
       const H2('필요한 기구'),
       Text(e.gear.isEmpty ? '기구 없이 할 수 있어요' : e.gear.join(', ')),

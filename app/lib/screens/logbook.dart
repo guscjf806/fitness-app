@@ -158,11 +158,7 @@ class LogDetailScreen extends StatelessWidget {
             Text(log.comment),
             const SizedBox(height: AppSpace.s),
           ],
-          Chip(
-            label: Text(log.stamp),
-            backgroundColor: AppColors.primarySoft,
-            labelStyle: const TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.w700),
-          ),
+          InfoTag(log.stamp),
         ]),
         ),
       ),

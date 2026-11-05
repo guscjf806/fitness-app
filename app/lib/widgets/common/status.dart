@@ -29,6 +29,27 @@ class ExerciseThumb extends StatelessWidget {
   }
 }
 
+/// 누를 수 없는 작은 정보 표시: 회색 알약, 주의할 내용만 주황 (결정 dd1101-infotag)
+class InfoTag extends StatelessWidget {
+  const InfoTag(this.text, {super.key, this.caution = false});
+  final String text;
+  final bool caution;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: AppSpace.xs),
+        decoration: ShapeDecoration(
+          shape: const StadiumBorder(),
+          color: caution ? AppColors.cautionSoft : AppColors.surface,
+        ),
+        child: Text(text,
+            style: AppText.caption.copyWith(
+              color: caution ? AppColors.caution : AppColors.text,
+              fontWeight: caution ? FontWeight.w700 : FontWeight.w400,
+            )),
+      );
+}
+
 /// 아픈 부위와 겹치는 운동에 붙이는 표시. 예: '무릎·허리 주의' (디자인 리뷰 10/28 #2)
 class PainTag extends StatelessWidget {
   const PainTag(this.areas, {super.key});
