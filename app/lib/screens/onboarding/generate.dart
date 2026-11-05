@@ -42,8 +42,12 @@ class _GenerateScreenState extends State<GenerateScreen> {
   @override
   Widget build(BuildContext context) {
     if (generating) {
-      return const Scaffold(
-        body: Center(child: LoadingView('AI가 식단과 운동 루틴을 만들고 있어요', sub: '잠시만 기다려 주세요')),
+      // 만드는 중에 뒤로 나가면 끝난 뒤 갑자기 홈으로 옮겨지니 막는다 (디자인 리뷰 11/05 #2)
+      return const PopScope(
+        canPop: false,
+        child: Scaffold(
+          body: Center(child: LoadingView('AI가 식단과 운동 루틴을 만들고 있어요', sub: '잠시만 기다려 주세요')),
+        ),
       );
     }
     if (failed) {
