@@ -413,11 +413,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
                   ),
           ),
           const SizedBox(width: 8),
-          FilterChip(
-            label: const Text('직접 입력'),
-            selected: r.custom,
-            onSelected: (v) => setState(() => r.custom = v),
-          ),
+          SelectChip('직접 입력', selected: r.custom, onSelected: (v) => setState(() => r.custom = v)),
         ]),
         const SizedBox(height: AppSpace.m),
         // 휴대폰에서 숫자 자판이 뜨게 공용 숫자 칸으로 (디자인 리뷰 11/01 #2)

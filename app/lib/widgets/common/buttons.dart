@@ -105,6 +105,24 @@ class _SegButton extends StatelessWidget {
   }
 }
 
+/// 고르는 칩. 선택 표시는 체크 없이 색과 굵은 글씨로 통일한다 (디자인 리뷰 11/05 #4)
+class SelectChip extends StatelessWidget {
+  const SelectChip(this.label, {super.key, required this.selected, required this.onSelected});
+  final String label;
+  final bool selected;
+  final ValueChanged<bool> onSelected;
+
+  @override
+  Widget build(BuildContext context) => ChoiceChip(
+        label: Text(label),
+        selected: selected,
+        labelStyle: TextStyle(
+            color: selected ? AppColors.primaryDark : AppColors.text,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w400),
+        onSelected: onSelected,
+      );
+}
+
 /// 가로로 스크롤되는 날짜·요일 칩
 class DayChips extends StatelessWidget {
   /// 두 줄 칩: 위는 요일, 아래는 작은 글씨로 '오늘'/'휴식' (결정 dd1031-daychip).

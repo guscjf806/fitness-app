@@ -20,19 +20,9 @@ class FoodBodyScreen extends StatelessWidget {
           padding: const EdgeInsets.only(top: 6, bottom: 12),
           child: Wrap(spacing: 6, runSpacing: 6, children: [
             if (noneLabel != null)
-              FilterChip(
-                label: Text(noneLabel),
-                selected: selected.isEmpty,
-                selectedColor: AppColors.primarySoft,
-                onSelected: (_) => demo.update(selected.clear),
-              ),
+              SelectChip(noneLabel, selected: selected.isEmpty, onSelected: (_) => demo.update(selected.clear)),
             for (final o in options)
-              FilterChip(
-                label: Text(o),
-                selected: selected.contains(o),
-                selectedColor: AppColors.primarySoft,
-                onSelected: (_) => toggle(selected, o),
-              ),
+              SelectChip(o, selected: selected.contains(o), onSelected: (_) => toggle(selected, o)),
           ]),
         );
     return AppPage(title: '식단·몸 상태', children: [

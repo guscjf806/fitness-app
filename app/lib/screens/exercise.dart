@@ -75,17 +75,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
           for (final o in options)
             Padding(
               padding: const EdgeInsets.only(right: 6),
-              child: ChoiceChip(
-                label: Text(o),
-                selected: o == value,
-                showCheckmark: false,
-                selectedColor: AppColors.primarySoft,
-                labelStyle: TextStyle(
-                    color: o == value ? AppColors.primaryDark : AppColors.text,
-                    fontWeight: o == value ? FontWeight.w700 : FontWeight.w400),
-                shape: const StadiumBorder(),
-                onSelected: (_) => onChanged(o),
-              ),
+              child: SelectChip(o, selected: o == value, onSelected: (_) => onChanged(o)),
             ),
         ]),
       );
@@ -105,12 +95,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
       body: TabBody(top: AppSpace.s, children: [
         Row(children: [
           const Expanded(child: FieldLabel('운동을 골라 주세요')),
-          FilterChip(
-            label: const Text('내 조건 맞춤'),
-            selected: fitOnly,
-            selectedColor: AppColors.primarySoft,
-            onSelected: (v) => setState(() => fitOnly = v),
-          ),
+          SelectChip('내 조건 맞춤', selected: fitOnly, onSelected: (v) => setState(() => fitOnly = v)),
         ]),
         if (fitOnly)
           Padding(

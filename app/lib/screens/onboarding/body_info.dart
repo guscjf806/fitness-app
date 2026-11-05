@@ -107,12 +107,7 @@ class _OptionalField extends StatelessWidget {
               onChanged: onChanged),
         ),
         const SizedBox(width: 8),
-        FilterChip(
-          label: const Text('잘 모르겠음'),
-          selected: unknown,
-          selectedColor: AppColors.primarySoft,
-          onSelected: (_) => onUnknown(),
-        ),
+        SelectChip('잘 모르겠음', selected: unknown, onSelected: (_) => onUnknown()),
       ]),
     );
   }

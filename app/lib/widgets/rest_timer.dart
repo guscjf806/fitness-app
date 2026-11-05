@@ -80,14 +80,8 @@ class _RestTimerState extends State<_RestTimer> {
             for (var i = 0; i < presets.length; i++)
               Padding(
                 padding: const EdgeInsets.only(right: 6),
-                child: ChoiceChip(
-                  label: Text(i == 0 ? '추천 ${_mmss(presets[i])}' : _mmss(presets[i])),
-                  selected: total == presets[i],
-                  showCheckmark: false,
-                  selectedColor: AppColors.primarySoft,
-                  shape: const StadiumBorder(),
-                  onSelected: (_) => _set(presets[i]),
-                ),
+                child: SelectChip(i == 0 ? '추천 ${_mmss(presets[i])}' : _mmss(presets[i]),
+                    selected: total == presets[i], onSelected: (_) => _set(presets[i])),
               ),
           ]),
         ),

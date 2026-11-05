@@ -189,6 +189,8 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         trackColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? AppColors.primary : null),
       ),
+      // 칩 모양은 여기서 정한다. 고르는 칩은 공용 SelectChip을 쓴다 (디자인 리뷰 11/05 #4)
+      chipTheme: const ChipThemeData(selectedColor: AppColors.primarySoft, shape: StadiumBorder(), showCheckmark: false),
       dividerColor: AppColors.line,
     );
   }
