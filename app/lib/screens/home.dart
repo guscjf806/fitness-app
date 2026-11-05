@@ -136,6 +136,7 @@ class _TodayWorkoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppCard(
+        showArrow: true,
         onTap: () => demo.update(() => demo.tab = 2),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(today.title, style: AppText.bodyStrong),

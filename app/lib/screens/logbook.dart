@@ -58,6 +58,7 @@ class LogListTab extends StatelessWidget {
       if (logs.isEmpty) const AppCard(child: Text('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
       for (final log in logs)
         AppCard(
+          showArrow: true,
           onTap: () {
             demo.update(() {
               demo.firstLogSeen = true;

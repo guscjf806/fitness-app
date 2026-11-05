@@ -62,10 +62,13 @@ class BottomActionBar extends StatelessWidget {
 }
 
 class AppCard extends StatelessWidget {
-  const AppCard({super.key, required this.child, this.onTap, this.accent = false});
+  const AppCard({super.key, required this.child, this.onTap, this.accent = false, this.showArrow = false});
   final Widget child;
   final VoidCallback? onTap;
   final bool accent;
+
+  /// 눌리는 카드임을 알리는 오른쪽 화살표. LineRow와 같은 모양 (디자인 리뷰 11/05 #6)
+  final bool showArrow;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +88,13 @@ class AppCard extends StatelessWidget {
                         left: BorderSide(color: AppColors.primary, width: 4)))
                 : null,
             padding: const EdgeInsets.all(14),
-            child: child,
+            child: showArrow
+                ? Row(children: [
+                    Expanded(child: child),
+                    const SizedBox(width: AppSpace.xs),
+                    const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
+                  ])
+                : child,
           ),
         ),
       ),

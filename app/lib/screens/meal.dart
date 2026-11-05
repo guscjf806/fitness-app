@@ -48,6 +48,7 @@ class _MealTabState extends State<MealTab> {
       if (demo.mealPosts.isEmpty) const Muted('아직 올린 식단이 없어요. 아래 버튼으로 첫 끼니를 올려 보세요.'),
       for (var i = 0; i < demo.mealPosts.length; i++)
         AppCard(
+          showArrow: true,
           onTap: () => Navigator.pushNamed(context, Routes.mealReply, arguments: i),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(demo.mealPosts[i].date, style: AppText.bodyStrong),
