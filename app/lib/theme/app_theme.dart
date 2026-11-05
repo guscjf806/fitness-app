@@ -169,6 +169,9 @@ class AppTheme {
         focusedBorder: roundedBorder.copyWith(
             borderSide: const BorderSide(color: AppColors.primary)),
         labelStyle: const TextStyle(color: AppColors.textSub),
+        // 오류 글씨가 잘 읽히게, 좁은 칸에서도 잘리지 않게 (디자인 리뷰 11/05 #3)
+        errorStyle: const TextStyle(color: AppColors.warningText),
+        errorMaxLines: 3,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.background,

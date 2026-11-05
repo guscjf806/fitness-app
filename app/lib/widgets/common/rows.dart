@@ -92,7 +92,7 @@ class NumField extends StatelessWidget {
       initialValue: value,
       enabled: enabled,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(labelText: label, hintText: hint, errorText: error, errorMaxLines: 2),
+      decoration: InputDecoration(labelText: label, hintText: hint, errorText: error),
       onChanged: onChanged,
     );
   }

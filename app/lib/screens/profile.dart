@@ -178,7 +178,7 @@ class _PtCodeScreenState extends State<PtCodeScreen> {
           hintText: '숫자 6자리',
           counterText: '',
           errorText: error,
-          errorMaxLines: 3,
+          // 안내가 놓치면 안 되는 내용이라 글씨만 본문 크기로
           errorStyle: AppText.body.copyWith(color: AppColors.warningText),
         ),
         onChanged: (v) => setState(() {
