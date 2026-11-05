@@ -71,7 +71,7 @@ void requireLogin(BuildContext context, String reason, {bool thenGenerate = fals
         const SizedBox(height: AppSpace.s),
         Muted(reason),
         const Muted('둘러보며 입력한 몸 정보는 로그인 후에도 그대로 이어져요.'),
-        AppButton('3초 만에 로그인하기', onPressed: () {
+        AppButton('로그인하기', onPressed: () {
           Navigator.pop(sheetContext);
           demo.continueToGenerate = thenGenerate;
           Navigator.pushNamed(context, Routes.login);

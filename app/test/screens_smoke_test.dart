@@ -134,7 +134,7 @@ void main() {
 
     await tapText(tester, '식단·운동 루틴 만들기');
     expect(findText('로그인이 필요해요'), findsOneWidget);
-    await tester.tap(findText('3초 만에 로그인하기'));
+    await tester.tap(findText('로그인하기'));
     await tester.pumpAndSettle();
     await tester.tap(findText('카카오로 시작하기'));
     await tester.pumpAndSettle();

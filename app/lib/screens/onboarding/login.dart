@@ -90,8 +90,10 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
           ),
         );
     return AppPage(title: '로그인', children: [
-      const H1('3초 만에 시작해요'),
+      const H1('간편하게 시작해요'),
       const Muted('로그인하면 식단·운동 루틴 생성, 식단 올리기를 쓸 수 있어요.'),
+      // 다른 창으로 나갔다 오니 앱이 꺼진 줄 알지 않게 미리 알린다 (리뷰 11/05 #5)
+      const Muted('카카오·구글 창이 열려요. 로그인을 마치면 앱으로 돌아와요.'),
       social('카카오로 시작하기', AppColors.kakao, AppColors.kakaoText, logo: 'assets/logos/kakao.png', provider: OAuthProvider.kakao),
       social('구글로 시작하기', Colors.white, AppColors.googleText, outlined: true, logo: 'assets/logos/google.png', provider: OAuthProvider.google),
       // Apple 로고는 공식 자료를 받으려면 라이선스 동의가 필요해 아직 비워 둔다 (assets/logos/README.md)
