@@ -79,4 +79,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.widgetWithText(AppBar, '시작하기 전에'), findsOneWidget);
   });
+  test('#6 만들던 식단·루틴 이어 가기가 앱을 다시 열어도 남는다', () async {
+    demo.continueToGenerate = true;
+    await demo.save();
+    demo.continueToGenerate = false;
+    await demo.load();
+    expect(demo.continueToGenerate, isTrue);
+    demo.continueToGenerate = false;
+    await demo.save();
+  });
 }

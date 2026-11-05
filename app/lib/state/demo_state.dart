@@ -203,6 +203,7 @@ class DemoState extends ChangeNotifier {
     await p.setString('role', role);
     await p.setBool('entered', entered);
     await p.setBool('consented', consented);
+    await p.setBool('continueToGenerate', continueToGenerate);
     await p.setStringList('profile', [
       sex, height, age, weight, muscle, '$muscleUnknown', bodyFat, '$bodyFatUnknown', goal,
       '$calorieCalculated', currentIntensity, desiredIntensity, place, equipment, noise, minutes,
@@ -218,6 +219,8 @@ class DemoState extends ChangeNotifier {
     role = p.getString('role') ?? role;
     entered = p.getBool('entered') ?? entered;
     consented = p.getBool('consented') ?? consented;
+    // 로그인 창에 나간 사이 앱이 닫혀도 만들던 식단·루틴으로 이어 간다 (리뷰 11/05 #6)
+    continueToGenerate = p.getBool('continueToGenerate') ?? continueToGenerate;
     // 동의를 마치지 않은 채 앱이 꺼졌으면 로그인하지 않은 상태로 본다 (리뷰 10/29 #1)
     if (role != 'guest' && !consented) role = 'guest';
     final f = p.getStringList('profile');

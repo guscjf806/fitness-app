@@ -73,7 +73,7 @@ void requireLogin(BuildContext context, String reason, {bool thenGenerate = fals
         const Muted('둘러보며 입력한 몸 정보는 로그인 후에도 그대로 이어져요.'),
         AppButton('로그인하기', onPressed: () {
           Navigator.pop(sheetContext);
-          demo.continueToGenerate = thenGenerate;
+          demo.update(() => demo.continueToGenerate = thenGenerate);
           Navigator.pushNamed(context, Routes.login);
         }),
         AppButton('계속 둘러보기', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheetContext)),

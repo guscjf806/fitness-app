@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
 /// 로그인(과 동의)을 마친 뒤: 식단·운동 루틴을 만들던 중이면 기간 선택으로, 아니면 홈으로
 void continueAfterLogin(BuildContext context) {
   if (demo.continueToGenerate) {
-    demo.continueToGenerate = false;
+    demo.update(() => demo.continueToGenerate = false);
     Navigator.pushReplacementNamed(context, Routes.generate);
   } else {
     Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);

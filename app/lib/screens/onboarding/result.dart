@@ -65,7 +65,7 @@ class ResultScreen extends StatelessWidget {
 void openPlanMaker(BuildContext context) {
   // 로그인만 하고 동의를 안 했으면 동의 화면부터 (리뷰 10/29 #1)
   if (demo.loggedIn && !demo.consented) {
-    demo.continueToGenerate = true;
+    demo.update(() => demo.continueToGenerate = true);
     Navigator.pushNamed(context, Routes.consent);
   } else if (demo.loggedIn && demo.quotaExhausted) {
     showQuotaExhausted(context);
