@@ -88,19 +88,8 @@ class _RecordsScreenState extends State<RecordsScreen> {
         ),
       ),
       const H2('배지'),
-      // 두 칸씩 놓고 내용만큼 높이가 늘게 해서 큰 글씨에서도 잘리지 않게.
-      // 못 받은 배지는 통째로 흐리게 하지 않고 이름 색만 바꿔 글씨를 읽을 수 있게 (디자인 리뷰 10/30 #2)
-      for (var i = 0; i < badges.length; i += 2)
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: IntrinsicHeight(
-            child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              Expanded(child: _BadgeCell(badges[i])),
-              const SizedBox(width: 10),
-              Expanded(child: i + 1 < badges.length ? _BadgeCell(badges[i + 1]) : const SizedBox()),
-            ]),
-          ),
-        ),
+      // 줄마다 왼쪽 동그란 표시 + 이름·설명 (결정 dd1030-badge-look)
+      for (final b in badges) _BadgeRow(b),
     ];
   }
 
@@ -209,20 +198,29 @@ class _CalendarDay extends StatelessWidget {
   }
 }
 
-/// 배지 한 칸
-class _BadgeCell extends StatelessWidget {
-  const _BadgeCell(this.badge);
+/// 배지 한 줄: 받음은 청록 체크, 아직은 회색 자물쇠
+class _BadgeRow extends StatelessWidget {
+  const _BadgeRow(this.badge);
   final (String, bool, String) badge;
 
   @override
   Widget build(BuildContext context) {
     final (name, earned, how) = badge;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(AppRadius.card)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(name, style: TextStyle(fontWeight: FontWeight.w700, color: earned ? AppColors.text : AppColors.textSub)),
-        Muted(earned ? '획득했어요' : how, bottom: 0),
+    return LineRow(
+      left: Row(children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: earned ? AppColors.primary : AppColors.track),
+          child: Icon(earned ? Icons.check : Icons.lock_outline, size: 20, color: earned ? Colors.white : AppColors.textSub),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(name, style: AppText.bodyStrong),
+            Muted(earned ? '획득했어요' : how, bottom: 0),
+          ]),
+        ),
       ]),
     );
   }
