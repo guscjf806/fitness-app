@@ -94,7 +94,7 @@ class ProfileTab extends StatelessWidget {
               body: '다시 쓰려면 카카오·구글·애플로 로그인해야 해요. 기록은 계정에 그대로 남아 있어요.',
               keepLabel: '그만두기',
               okLabel: '로그아웃');
-          if (ok) demo.switchRole('guest');
+          if (ok) demo.logout();
         },
       ),
       LineRow(

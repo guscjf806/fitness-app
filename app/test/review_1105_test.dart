@@ -67,4 +67,16 @@ void main() {
     AuthService.onAuthChange(AuthChangeEvent.tokenRefreshed, fakeSession());
     expect(demo.greeting, '안녕하세요');
   });
+  testWidgets('#4 로그아웃하면 다음 로그인 때 동의 화면이 다시 나온다', (tester) async {
+    await start(tester);
+    demo.switchRole('user');
+    await tester.pumpAndSettle();
+    expect(demo.consented, isTrue);
+    demo.logout();
+    await tester.pumpAndSettle();
+    expect(demo.consented, isFalse);
+    AuthService.onAuthChange(AuthChangeEvent.signedIn, fakeSession(name: '다른 사람'));
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(AppBar, '시작하기 전에'), findsOneWidget);
+  });
 }

@@ -174,6 +174,13 @@ class DemoState extends ChangeNotifier {
   /// 화면에 보여 줄 이번 달 사용 횟수 (식단 올리기·내 정보가 같은 숫자를 쓴다, 리뷰 11/01 #1)
   int get aiUsedShown => quotaExhausted ? AppConfig.freeMonthlyAiLimit : aiUsed;
 
+  /// 내 정보의 로그아웃. 같은 폰에서 다른 사람이 로그인할 수 있으니, 동의 기록을 서버에 두기 전까지는
+  /// 동의도 처음으로 돌린다 (리뷰 11/05 #4). 데모 바로 역할을 바꾸는 건 switchRole
+  void logout() {
+    consented = false;
+    switchRole('guest');
+  }
+
   void switchRole(String newRole) {
     role = newRole;
     // 로그아웃하면 실제 로그인도 끊는다
