@@ -1,4 +1,5 @@
 import 'package:fitness_app/main.dart';
+import 'package:fitness_app/routes.dart';
 import 'package:fitness_app/services/auth_service.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:fitness_app/widgets/common.dart';
@@ -102,5 +103,17 @@ void main() {
     expect(demo.isGuest, isTrue);
     expect(findText('로그인이 끊겼어요. 다시 로그인해 주세요'), findsOneWidget);
     expect(find.widgetWithText(AppBar, '로그인'), findsOneWidget);
+  });
+  testWidgets('결정 dd1030-calendar-done 운동한 날의 불꽃이 숫자를 가리지 않는다', (tester) async {
+    await start(tester);
+    demo.switchRole('user');
+    await tester.pumpAndSettle();
+    demoNavigatorKey.currentState!.pushNamed(Routes.records);
+    await tester.pumpAndSettle();
+    await tester.tap(findText('통계'));
+    await tester.pumpAndSettle();
+    final number = tester.getRect(findText('1'));
+    final flame = tester.getRect(find.byIcon(Icons.local_fire_department).first);
+    expect(flame.top, greaterThanOrEqualTo(number.bottom));
   });
 }
