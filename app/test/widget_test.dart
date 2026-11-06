@@ -16,15 +16,15 @@ void main() {
     expect(findText('몸 정보'), findsOneWidget);
 
     // 몸 정보 칸이 한 줄에 하나씩이라 '다음'이 아래에 있다
-    await tester.dragUntilVisible(findText('다음'), find.byType(Scrollable).last, const Offset(0, -300));
+    await tester.dragUntilVisible(findText('다음'), find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first, const Offset(0, -300));
     await tester.pumpAndSettle();
     await tester.tap(findText('다음'));
     await tester.pumpAndSettle();
-    await tester.dragUntilVisible(findText('다음'), find.byType(Scrollable).last, const Offset(0, -300));
+    await tester.dragUntilVisible(findText('다음'), find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first, const Offset(0, -300));
     await tester.pumpAndSettle();
     await tester.tap(findText('다음'));
     await tester.pumpAndSettle();
-    await tester.dragUntilVisible(findText('결과 보기'), find.byType(Scrollable).last, const Offset(0, -300));
+    await tester.dragUntilVisible(findText('결과 보기'), find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first, const Offset(0, -300));
     await tester.pumpAndSettle();
     await tester.tap(findText('결과 보기'));
     await tester.pumpAndSettle();

@@ -202,6 +202,40 @@ class DemoState extends ChangeNotifier {
   /// 화면에 보여 줄 이번 달 사용 횟수 (식단 올리기·내 정보가 같은 숫자를 쓴다, 리뷰 11/01 #1)
   int get aiUsedShown => quotaExhausted ? AppConfig.freeMonthlyAiLimit : aiUsed;
 
+  /// 내 정보에서 고치다가 저장하지 않고 나가면 되돌리기 위한 값 (결정 dd1105-edit)
+  Map<String, Object> bodySnapshot() => {
+        'text': [sex, height, age, weight, muscle, bodyFat, bodyFatUnit, goal, currentIntensity, desiredIntensity, place, noise, minutes, daysPerWeek, allergyNote],
+        'flags': [muscleUnknown, bodyFatUnknown],
+        'homeGear': [...homeGear],
+        'allergies': [...allergies],
+        'painAreas': [...painAreas],
+      };
+
+  void restoreBody(Map<String, Object> s) => update(() {
+        final t = s['text']! as List<String>;
+        sex = t[0];
+        height = t[1];
+        age = t[2];
+        weight = t[3];
+        muscle = t[4];
+        bodyFat = t[5];
+        bodyFatUnit = t[6];
+        goal = t[7];
+        currentIntensity = t[8];
+        desiredIntensity = t[9];
+        place = t[10];
+        noise = t[11];
+        minutes = t[12];
+        daysPerWeek = t[13];
+        allergyNote = t[14];
+        final f = s['flags']! as List<bool>;
+        muscleUnknown = f[0];
+        bodyFatUnknown = f[1];
+        homeGear = [...s['homeGear']! as List<String>];
+        allergies = [...s['allergies']! as List<String>];
+        painAreas = [...s['painAreas']! as List<String>];
+      });
+
   /// 내 정보의 로그아웃. 같은 폰에서 다른 사람이 로그인할 수 있으니, 동의 기록을 서버에 두기 전까지는
   /// 동의도 처음으로 돌린다 (리뷰 11/05 #4). 데모 바로 역할을 바꾸는 건 switchRole
   void logout() {

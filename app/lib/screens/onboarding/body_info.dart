@@ -5,6 +5,7 @@ import '../../routes.dart';
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import 'setup_page.dart';
 
 /// S02 몸 정보 입력
 class BodyInfoScreen extends StatefulWidget {
@@ -26,22 +27,22 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
       bodyFat: demo.bodyFatUnknown ? '' : demo.bodyFat,
       bodyFatPercent: demo.bodyFatUnit == '%',);
 
-  void _next() {
+  bool _valid() {
     final errors = _check();
     if (errors.isNotEmpty) {
       setState(() => tried = true);
       toast(context, errors['age'] == underAgeError ? '$underAgeError.' : '입력한 값을 확인해 주세요.');
-      return;
+      return false;
     }
     demo.update(() {}); // 입력한 숫자를 기기에 저장
-    Navigator.pushNamed(context, Routes.condition);
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
     final errors = tried ? _check() : const <String, String>{};
     final teen = (int.tryParse(demo.age) ?? 99) >= minAge && (int.tryParse(demo.age) ?? 99) <= teenMaxAge;
-    return AppPage(title: '몸 정보', children: [
+    return SetupPage(title: '몸 정보', step: 1, canSave: _valid, onNext: () => Navigator.pushNamed(context, Routes.condition), children: [
       // 로그인 전에 넣은 정보가 어디에 있는지 알린다 (결정 d1029-local-notice)
       if (demo.isGuest) const Muted('입력한 정보는 이 폰에만 저장돼요. 로그인하기 전엔 어디에도 보내지 않아요'),
       const FieldLabel('성별'),
@@ -84,7 +85,6 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
           child: Text('성장기에는 키가 크는 데도 에너지가 필요해요. 그래서 감량 폭을 줄여서 계산해요. '
               '보호자나 전문가와 상의하며 천천히 관리하는 걸 권해요.'),
         ),
-      AppButton('다음', onPressed: _next),
     ]);
   }
 }

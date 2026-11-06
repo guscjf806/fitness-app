@@ -91,4 +91,34 @@ void main() {
     await tester.pumpAndSettle();
     expect(findTextContaining('전체 1개'), findsOneWidget);
   });
+  testWidgets('결정 dd1105-steps 처음에는 단계 표시, dd1105-edit 고치면 저장 후 돌아가고 저장 안 하면 되돌린다', (tester) async {
+    await start(tester, 1);
+    demoNavigatorKey.currentState!.pushNamed(Routes.condition);
+    await tester.pumpAndSettle();
+    expect(findText('2 / 3단계'), findsOneWidget);
+    expect(findText('다음'), findsOneWidget);
+    demoNavigatorKey.currentState!.pop();
+    await tester.pumpAndSettle();
+
+    final place = demo.place;
+    demoNavigatorKey.currentState!.pushNamed(Routes.condition, arguments: 'edit');
+    await tester.pumpAndSettle();
+    expect(findText('2 / 3단계'), findsNothing);
+    demo.update(() => demo.minutes = '15분');
+    final minutesBefore = demo.bodySnapshot();
+    expect((minutesBefore['text']! as List<String>).contains('15분'), isTrue);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(demo.place, place);
+    expect(demo.minutes, isNot('15분'), reason: '저장하지 않으면 되돌린다');
+
+    demoNavigatorKey.currentState!.pushNamed(Routes.condition, arguments: 'edit');
+    await tester.pumpAndSettle();
+    demo.update(() => demo.minutes = '15분');
+    await tester.scrollUntilVisible(findText('저장하기'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.tap(findText('저장하기'));
+    await tester.pumpAndSettle();
+    expect(demo.minutes, '15분');
+    expect(findTextContaining('저장했어요'), findsOneWidget);
+  });
 }

@@ -4,6 +4,7 @@ import '../../routes.dart';
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import 'setup_page.dart';
 
 /// S03-2 식단·몸 상태 (기획서 B1: 못 먹는 음식, 아픈 부위, 주당 운동 일수)
 class FoodBodyScreen extends StatelessWidget {
@@ -25,7 +26,15 @@ class FoodBodyScreen extends StatelessWidget {
               SelectChip(o, selected: selected.contains(o), onSelected: (_) => toggle(selected, o)),
           ]),
         );
-    return AppPage(title: '식단·몸 상태', children: [
+    return SetupPage(
+        title: '식단·몸 상태',
+        step: 3,
+        nextLabel: '결과 보기',
+        onNext: () {
+          demo.update(() {}); // 직접 입력한 음식을 기기에 저장
+          Navigator.pushNamed(context, Routes.result);
+        },
+        children: [
       const FieldLabel('못 먹는 음식', sub: '알레르기가 있거나 못 먹는 음식은 식단에서 빼요. 여러 개 고를 수 있어요.'),
       chips(allergyOptions, demo.allergies, noneLabel: '없음'),
       TextFormField(
@@ -43,10 +52,6 @@ class FoodBodyScreen extends StatelessWidget {
         ),
       const FieldLabel('일주일에 운동할 수 있는 날'),
       Seg(options: const ['2일', '3일', '4일', '5일', '6일'], value: demo.daysPerWeek, onChanged: (v) => demo.update(() => demo.daysPerWeek = v)),
-      AppButton('결과 보기', onPressed: () {
-        demo.update(() {}); // 직접 입력한 음식을 기기에 저장
-        Navigator.pushNamed(context, Routes.result);
-      }),
     ]);
   }
 }

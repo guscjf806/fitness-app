@@ -130,14 +130,14 @@ class _ConditionRows extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      LineRow(left: const Text('몸 정보 수정'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.body)),
+      LineRow(left: const Text('몸 정보 수정'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.body, arguments: 'edit')),
       LineRow(
         left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('운동 장소·장비 수정'),
           Muted(demo.conditionText, bottom: 0),
         ]),
         showArrow: true,
-        onTap: () => Navigator.pushNamed(context, Routes.condition),
+        onTap: () => Navigator.pushNamed(context, Routes.condition, arguments: 'edit'),
       ),
       LineRow(
         left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -150,7 +150,7 @@ class _ConditionRows extends StatelessWidget {
               bottom: 0),
         ]),
         showArrow: true,
-        onTap: () => Navigator.pushNamed(context, Routes.condition2),
+        onTap: () => Navigator.pushNamed(context, Routes.condition2, arguments: 'edit'),
       ),
     ]);
   }

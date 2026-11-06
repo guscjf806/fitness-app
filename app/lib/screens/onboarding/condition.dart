@@ -5,6 +5,7 @@ import '../../routes.dart';
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import 'setup_page.dart';
 
 /// S03 운동 강도·조건 선택
 class ConditionScreen extends StatelessWidget {
@@ -12,7 +13,7 @@ class ConditionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppPage(title: '운동 강도와 조건', children: [
+    return SetupPage(title: '운동 강도와 조건', step: 2, onNext: () => Navigator.pushNamed(context, Routes.condition2), children: [
       // 고르기 전에 기준을 먼저 보게 맨 위에, 본문 글씨로 (리뷰 10/29 #5)
       const AppCard(
         child: WordText('안 함: 거의 앉아서 지내요 · 하: 주 1~3회 가볍게 · 중: 주 3~5회 · 상: 주 6회 이상 또는 고강도',
@@ -41,7 +42,6 @@ class ConditionScreen extends StatelessWidget {
       ],
       const FieldLabel('한 번에 운동할 시간'),
       Seg(options: const ['15분', '30분', '45분'], value: demo.minutes, onChanged: (v) => demo.update(() => demo.minutes = v)),
-      AppButton('다음', onPressed: () => Navigator.pushNamed(context, Routes.condition2)),
     ]);
   }
 }
