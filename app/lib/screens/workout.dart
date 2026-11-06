@@ -152,7 +152,14 @@ class _WorkoutTabState extends State<WorkoutTab> {
                   ]),
                 ),
               )
-            : AppButton('기록 없이 완료 체크만 하기', kind: ButtonKind.soft, onPressed: _finish),
+            // 운동 시작이 먼저 보이게 작은 글씨 링크로 (결정 d1030-2)
+            : Center(
+                child: TextButton(
+                  style: TextButton.styleFrom(foregroundColor: AppColors.textSub),
+                  onPressed: _finish,
+                  child: const Text('기록 없이 완료 체크만 하기'),
+                ),
+              ),
       if (!isToday && !day.isRest)
         Padding(
           padding: const EdgeInsets.only(top: 10),
