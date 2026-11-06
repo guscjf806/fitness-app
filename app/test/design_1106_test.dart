@@ -67,4 +67,12 @@ void main() {
     final title = tester.element(findText('운동 강도와 조건'));
     expect(DefaultTextStyle.of(title).style.fontFamily, 'Pretendard');
   });
+  testWidgets('결정 d1030-1 선생님 홈에는 회원 목록이 나오고 개인 목표는 없다', (tester) async {
+    await start(tester, 1);
+    demo.switchRole('trainer');
+    await tester.pumpAndSettle();
+    expect(findText('일지 쓸 회원'), findsOneWidget);
+    expect(findText('오늘의 작은 목표'), findsNothing);
+    expect(findText('김지아'), findsWidgets);
+  });
 }

@@ -4,6 +4,7 @@ import '../data/mock_data.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
+import 'logbook.dart';
 import '../widgets/common.dart';
 import '../widgets/weight_sheet.dart';
 import 'onboarding.dart';
@@ -23,6 +24,7 @@ class HomeTab extends StatelessWidget {
       ('이번 주 몸무게 기록', demo.weightLoggedThisWeek, () => showWeightSheet(context)),
     ];
     if (demo.isGuest) return _guestHome(context, target, today);
+    if (demo.role == 'trainer') return _trainerHome();
     return TabBody(children: [
       H1(demo.greeting),
       // 연속 기록은 작은 한 줄로, 오늘의 작은 목표를 맨 위로 (결정 dd1029-home-order)
@@ -76,6 +78,24 @@ class HomeTab extends StatelessWidget {
       const H2('오늘 운동'),
       _TodayWorkoutCard(today),
       const Disclaimer(),
+    ]);
+  }
+
+  /// 선생님 전용 홈: 오늘 일지 쓸 회원과 이번 주 미션을 먼저 보여 준다 (결정 d1030-1)
+  Widget _trainerHome() {
+    return TabBody(children: [
+      H1(demo.greeting),
+      const H2('일지 쓸 회원', top: AppSpace.xs),
+      for (final m in members) MemberLogRow(m),
+      const H2('이번 주 미션'),
+      for (final m in members)
+        LineRow(
+          onTap: () => demo.update(() => demo.tab = 3),
+          left: Text(m, style: AppText.bodyStrong),
+          right: Flexible(child: Muted(demo.missions[m] ?? '아직 없어요', bottom: 0, align: TextAlign.right)),
+          showArrow: true,
+        ),
+      AppButton('회원 관리·초대 코드', kind: ButtonKind.soft, onPressed: () => demo.update(() => demo.tab = 3)),
     ]);
   }
 

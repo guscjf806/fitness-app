@@ -169,6 +169,25 @@ class LogDetailScreen extends StatelessWidget {
   }
 }
 
+/// 회원 한 줄: 마지막 일지 날짜와 일지 작성 버튼. 회원 관리와 선생님 홈이 같이 쓴다
+class MemberLogRow extends StatelessWidget {
+  const MemberLogRow(this.member, {super.key});
+  final String member;
+
+  @override
+  Widget build(BuildContext context) => LineRow(
+        left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(member, style: AppText.bodyStrong),
+          Muted(demo.lastLogOf(member) == null ? '아직 쓴 일지가 없어요' : '마지막 일지 ${demo.lastLogOf(member)}', bottom: 0),
+        ]),
+        right: FilledButton.tonal(
+          style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+          onPressed: () => Navigator.pushNamed(context, Routes.logWrite, arguments: member),
+          child: const Text('일지 작성'),
+        ),
+      );
+}
+
 /// S18 회원 관리 (선생님)
 class MemberManageTab extends StatefulWidget {
   const MemberManageTab({super.key});
@@ -192,18 +211,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
     return TabBody(children: [
       const H1('회원 관리'),
       // 수업 끝나고 가장 자주 쓰는 회원 목록을 맨 위로, 가끔 쓰는 초대 코드는 맨 아래로 (리뷰 11/04 #3)
-      for (final m in members)
-        LineRow(
-          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(m, style: AppText.bodyStrong),
-            Muted(demo.lastLogOf(m) == null ? '아직 쓴 일지가 없어요' : '마지막 일지 ${demo.lastLogOf(m)}', bottom: 0),
-          ]),
-          right: FilledButton.tonal(
-            style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
-            onPressed: () => Navigator.pushNamed(context, Routes.logWrite, arguments: m),
-            child: const Text('일지 작성'),
-          ),
-        ),
+      for (final m in members) MemberLogRow(m),
       const SizedBox(height: AppSpace.l),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
