@@ -1,6 +1,7 @@
 import 'package:fitness_app/data/mock_data.dart';
 import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
+import 'package:fitness_app/screens/logbook.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +16,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     demo.switchRole('trainer');
     demo.sentLogs.clear();
+    clearLogDrafts();
     demo.unseenLogs
       ..clear()
       ..add(workoutLogs.first);
@@ -59,16 +61,16 @@ void main() {
 
   testWidgets('#2 횟수가 비어 있으면 저장하지 않고 알린다, 적으면 저장된다', (tester) async {
     await openRoute(tester, Routes.logWrite, args: '김지아');
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     expect(findText('종목을 골라 주세요'), findsWidgets, reason: '종목을 안 고르면 저장되지 않는다');
     expect(find.widgetWithText(AppBar, '일지 작성'), findsOneWidget);
     await pick(tester);
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     expect(findText('횟수를 적어 주세요'), findsOneWidget);
     expect(find.widgetWithText(AppBar, '일지 작성'), findsOneWidget, reason: '화면이 닫히지 않는다');
     await tester.enterText(field('횟수'), '8');
     await tester.pumpAndSettle();
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     expect(find.widgetWithText(AppBar, '일지 작성'), findsNothing);
   });
 
@@ -78,7 +80,7 @@ void main() {
     await pick(tester);
     await tester.enterText(field('횟수'), '8');
     await tester.pumpAndSettle();
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     expect(demo.lastLogOf('박서연'), '10월 12일');
     demo.update(() => demo.tab = 3);
     await tester.pumpAndSettle();
@@ -89,7 +91,7 @@ void main() {
     await pick(tester);
     await tester.enterText(field('횟수'), '10');
     await tester.pumpAndSettle();
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     demo.switchRole('member');
     await tester.pumpAndSettle();
     demo.update(() => demo.tab = 3);
@@ -109,7 +111,7 @@ void main() {
     await pick(tester);
     await tester.enterText(field('횟수'), '8');
     await tester.pumpAndSettle();
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     expect(demo.sentLogs['김지아']!.single.date, '10월 5일');
     expect(demo.lastLogOf('김지아'), '10월 6일');
     expect(demo.logsOf('김지아').map((l) => l.date).take(2), ['10월 6일', '10월 5일']);
@@ -167,11 +169,11 @@ void main() {
     await tap(tester, findText('+ 종목 추가'));
     expect(findText('종목 2'), findsOneWidget);
     await pick(tester);
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     expect(findText('2번째 줄의 횟수를 적어 주세요'), findsOneWidget);
     await tester.enterText(field('횟수').last, '10');
     await tester.pumpAndSettle();
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     expect(demo.sentLogs['이도현']!.single.items.length, 2);
     expect(demo.sentLogs['이도현']!.single.items.last.reps, '10개');
   });
@@ -182,15 +184,30 @@ void main() {
     await tester.enterText(field('세트'), '');
     await tester.enterText(field('횟수'), '0');
     await tester.pumpAndSettle();
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     expect(findText('횟수는 1 이상으로 적어 주세요'), findsOneWidget);
     await tester.enterText(field('횟수'), '8회');
     await tester.pumpAndSettle();
     expect(tester.widget<EditableText>(find.descendant(of: field('횟수'), matching: find.byType(EditableText))).controller.text, '8',
         reason: '글자는 들어가지 않는다');
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     expect(findText('세트를 적어 주세요'), findsOneWidget);
     expect(demo.sentLogs['박서연'], isNull);
+  });
+
+  testWidgets('결정 d1102-2 임시 저장은 회원에게 가지 않고, 다시 열면 이어서 쓴다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '박서연');
+    await pick(tester);
+    await tester.enterText(field('횟수'), '9');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('임시 저장'));
+    expect(demo.sentLogs['박서연'], isNull);
+    expect(hasLogDraft('박서연'), isTrue);
+    demoNavigatorKey.currentState!.pushNamed(Routes.logWrite, arguments: '박서연');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('회원님께 보내기'));
+    expect(demo.sentLogs['박서연']!.single.items.single.reps, '9개');
+    expect(hasLogDraft('박서연'), isFalse);
   });
 
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {
@@ -198,7 +215,7 @@ void main() {
     await tap(tester, findText('직접 입력'));
     await tester.enterText(field('횟수'), '8');
     await tester.pumpAndSettle();
-    await tap(tester, findText('저장하고 알림 보내기'));
+    await tap(tester, findText('회원님께 보내기'));
     expect(findText('종목 이름을 적어 주세요'), findsOneWidget);
     await tester.enterText(field('종목 이름'), 'TRX 로우');
     await tester.pumpAndSettle();

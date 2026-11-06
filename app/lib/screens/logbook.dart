@@ -179,11 +179,12 @@ class MemberLogRow extends StatelessWidget {
         left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(member, style: AppText.bodyStrong),
           Muted(demo.lastLogOf(member) == null ? '아직 쓴 일지가 없어요' : '마지막 일지 ${demo.lastLogOf(member)}', bottom: 0),
+          if (hasLogDraft(member)) const Muted('임시 저장한 일지가 있어요', bottom: 0),
         ]),
         right: FilledButton.tonal(
           style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
           onPressed: () => Navigator.pushNamed(context, Routes.logWrite, arguments: member),
-          child: const Text('일지 작성'),
+          child: Text(hasLogDraft(member) ? '이어 쓰기' : '일지 작성'),
         ),
       );
 }
@@ -284,6 +285,20 @@ class _MemberManageTabState extends State<MemberManageTab> {
   }
 }
 
+/// 회원에게 아직 보내지 않은 일지 (결정 d1102-2). 목업이라 메모리에만 둔다
+class _LogDraft {
+  const _LogDraft(this.date, this.rows, this.stamp, this.comment, this.videos);
+  final DateTime date;
+  final List<_LogRow> rows;
+  final String stamp;
+  final String comment;
+  final List<String> videos;
+}
+
+final Map<String, _LogDraft> _logDrafts = {};
+bool hasLogDraft(String member) => _logDrafts.containsKey(member);
+void clearLogDrafts() => _logDrafts.clear();
+
 /// 일지의 종목 한 줄 (결정 dd1101-logwrite: '+ 종목 추가'로 줄을 늘린다)
 class _LogRow {
   /// 고른 종목. 미리 채워 두면 다른 운동을 그대로 저장하기 쉬워서 비워 둔다 (리뷰 11/06 #1)
@@ -335,6 +350,17 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
     if (picked != null) setState(() => date = picked);
   }
 
+  /// 임시 저장: 회원에게 알림이 가지 않는다 (결정 d1102-2)
+  void _saveDraft() {
+    if (!dirty) {
+      toast(context, '적은 내용이 없어요');
+      return;
+    }
+    demo.update(() => _logDrafts[member!] = _LogDraft(date, [...rows], stamp, comment, [...videos]));
+    toast(context, '임시 저장했어요. 회원님께는 아직 가지 않았어요');
+    Navigator.pop(context);
+  }
+
   void _save() {
     // 줄이 여러 개면 몇 번째 줄인지 함께 알린다
     for (var i = 0; i < rows.length; i++) {
@@ -368,10 +394,11 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       stamp,
     );
     demo.update(() {
+      _logDrafts.remove(member);
       (demo.sentLogs[member!] ??= []).add(log);
       demo.unseenLogs.add(log);
     });
-    toast(context, '$member 회원님께 일지${videos.isEmpty ? '' : '와 영상 ${videos.length}개'}를 저장하고 알림을 보냈어요 ($dateLabel 출석 도장 완료)');
+    toast(context, '$member 회원님께 일지${videos.isEmpty ? '' : '와 영상 ${videos.length}개'}를 보내고 알림을 보냈어요 ($dateLabel 출석 도장 완료)');
     Navigator.pop(context);
   }
 
@@ -465,7 +492,22 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    member ??= (ModalRoute.of(context)?.settings.arguments as String?) ?? members.first;
+    if (member == null) {
+      member = (ModalRoute.of(context)?.settings.arguments as String?) ?? members.first;
+      // 임시 저장한 일지가 있으면 이어서 쓴다
+      final draft = _logDrafts[member];
+      if (draft != null) {
+        date = draft.date;
+        rows
+          ..clear()
+          ..addAll(draft.rows);
+        stamp = draft.stamp;
+        comment = draft.comment;
+        videos
+          ..clear()
+          ..addAll(draft.videos);
+      }
+    }
     // 수업 뒤 길게 적은 일지가 뒤로 가기로 사라지지 않게 먼저 묻는다 (리뷰 11/02 #3)
     return DiscardGuard(
       dirty: dirty,
@@ -520,7 +562,12 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       const SizedBox(height: AppSpace.m),
       const FieldLabel('응원 스탬프'),
       Seg(options: stamps, value: stamp, onChanged: (v) => setState(() => stamp = v)),
-      AppButton('저장하고 알림 보내기', onPressed: _save),
+      // 저장과 보내기를 나눠, 다 쓰기 전에 회원에게 알림이 가지 않게 (결정 d1102-2)
+      Row(children: [
+        Expanded(child: AppButton('임시 저장', kind: ButtonKind.soft, onPressed: _saveDraft)),
+        const SizedBox(width: AppSpace.s),
+        Expanded(child: AppButton('회원님께 보내기', onPressed: _save)),
+      ]),
     ]),
     );
   }
