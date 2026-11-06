@@ -101,16 +101,20 @@ class _RecordsScreenState extends State<RecordsScreen> {
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('이번 달 운동 달력 (10월)'),
-          GridView.count(
-            crossAxisCount: 7,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 6,
-            children: [
-              for (final d in dayLabels)
-                Center(child: Text(d, style: AppText.small.copyWith(color: AppColors.textSub))),
-              for (final d in cells) d == null ? const SizedBox() : _CalendarDay(d),
-            ],
+          // 칸 크기가 정해진 표라서 달력만 글자 크기에 상한을 둔다 (디자인 리뷰 11/06 #1)
+          MediaQuery.withClampedTextScaling(
+            maxScaleFactor: 1.3,
+            child: GridView.count(
+              crossAxisCount: 7,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 6,
+              children: [
+                for (final d in dayLabels)
+                  Center(child: Text(d, style: AppText.small.copyWith(color: AppColors.textSub))),
+                for (final d in cells) d == null ? const SizedBox() : _CalendarDay(d),
+              ],
+            ),
           ),
           const Muted('진한 색과 불꽃 = 운동한 날 · 연한 색 = 쉬는 날(기록으로 인정)', bottom: 0),
         ]),
