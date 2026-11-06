@@ -43,14 +43,25 @@ class HomeTab extends StatelessWidget {
         ]),
         showArrow: true,
       ),
-      const H2('오늘의 작은 목표', top: AppSpace.m),
-      for (final g in goals)
-        LineRow(
-          onTap: g.$2 ? null : g.$3,
-          left: Row(children: [CheckCircle(g.$2), const SizedBox(width: AppSpace.sPlus), Text(g.$1)]),
-          right: g.$2 ? const Muted('완료', bottom: 0) : null,
-          showArrow: !g.$2,
-        ),
+      // 쉬는 동안에는 목표로 재촉하지 않는다 (결정 d1106-4)
+      if (demo.restMode)
+        AppCard(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('쉬는 중이에요', style: AppText.bodyStrong),
+            const Muted('연속 기록은 그대로 유지돼요.', bottom: 0),
+            AppButton('쉬기 모드 끄기', kind: ButtonKind.soft, onPressed: () => demo.update(() => demo.restMode = false)),
+          ]),
+        )
+      else ...[
+        const H2('오늘의 작은 목표', top: AppSpace.m),
+        for (final g in goals)
+          LineRow(
+            onTap: g.$2 ? null : g.$3,
+            left: Row(children: [CheckCircle(g.$2), const SizedBox(width: AppSpace.sPlus), Text(g.$1)]),
+            right: g.$2 ? const Muted('완료', bottom: 0) : null,
+            showArrow: !g.$2,
+          ),
+      ],
       const SizedBox(height: 14),
       if (demo.role == 'member')
         AppCard(
