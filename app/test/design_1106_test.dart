@@ -51,4 +51,13 @@ void main() {
       expect(tester.getSize(name).height, lessThan(14 * scale * 1.6), reason: '한 줄로 들어간다');
     });
   }
+  testWidgets('결정 dd1103-font 버튼 글자도 Pretendard를 쓴다', (tester) async {
+    await start(tester, 1);
+    demo.switchRole('trainer');
+    await tester.pumpAndSettle();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    final label = tester.element(findText('일지 작성').first);
+    expect(DefaultTextStyle.of(label).style.fontFamily, 'Pretendard');
+  });
 }

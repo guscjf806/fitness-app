@@ -88,6 +88,9 @@ class AppRadius {
 
 /// 글자 크기는 여기서만 정한다 (디자인 리뷰 10/29 #4, 10/31 #4)
 class AppText {
+  /// 앱 글꼴 (결정 dd1103-font). 글꼴을 직접 지정하는 곳은 이 값을 쓴다
+  static const fontFamily = 'Pretendard';
+
   /// 데모 바·작은 안내처럼 가장 작은 글씨
   static const small = TextStyle(fontSize: 12);
   static const caption = TextStyle(fontSize: 13);
@@ -127,7 +130,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       // 앱 글꼴은 여기서만 정한다 (결정 dd1103-font)
-      fontFamily: 'Pretendard',
+      fontFamily: AppText.fontFamily,
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.background,
       textTheme: const TextTheme(
@@ -148,7 +151,8 @@ class AppTheme {
           minimumSize: const Size.fromHeight(50),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.box)),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+          // 버튼 글자 모양을 직접 정하면 글꼴이 빠지니 함께 지정한다
+          textStyle: const TextStyle(fontFamily: AppText.fontFamily, fontWeight: FontWeight.w700, fontSize: 15),
         ),
       ),
       // 테두리 버튼·글자 버튼·확인 창도 여기서 한 번만 정한다 (디자인 리뷰 10/30 #4)
