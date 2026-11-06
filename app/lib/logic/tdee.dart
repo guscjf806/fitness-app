@@ -21,7 +21,8 @@ class TdeeResult {
   final bool teen;
 }
 
-const activityFactor = {'하': 1.375, '중': 1.55, '상': 1.725};
+/// '안 함'은 운동을 거의 안 하고 앉아서 지내는 사람 (결정 d1029-no-exercise). 1.2는 트레이너 확인 필요
+const activityFactor = {'안 함': 1.2, '하': 1.375, '중': 1.55, '상': 1.725};
 const goalFactor = {'감량': 0.82, '유지': 1.0, '증량': 1.12};
 
 /// 성장기(만 14~18세) 규칙 — 초안 값, 출시 전 전문가 검토

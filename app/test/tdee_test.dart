@@ -56,4 +56,10 @@ void main() {
     expect(v('30', '50').keys, ['bodyFat'], reason: '몸무게의 60% 이상은 입력 실수');
     expect(v('30', '0').keys, ['bodyFat']);
   });
+  test('결정 d1029-no-exercise 운동 안 함은 활동 계수 1.2로 계산한다', () {
+    final none = calcTdee(sex: '남', heightCm: 175, age: 30, weightKg: 72, currentIntensity: '안 함', goal: '유지');
+    final low = calcTdee(sex: '남', heightCm: 175, age: 30, weightKg: 72, currentIntensity: '하', goal: '유지');
+    expect(none.tdee, lessThan(low.tdee));
+    expect(none.bmr, low.bmr);
+  });
 }

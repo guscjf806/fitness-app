@@ -46,11 +46,11 @@ const intensityRules = {
       repsInReserve: '1개', restSeconds: 105, restText: '90~120초'),
 };
 
-/// 지금 강도가 '하'인데 '상'을 고르면 첫 2주는 '중'으로 시작한다 (갑자기 올리면 다칠 위험)
+/// 지금 강도가 '안 함'이나 '하'인데 '상'을 고르면 첫 2주는 '중'으로 시작한다 (갑자기 올리면 다칠 위험)
 const rampUpWeeks = 2;
 
 String effectiveIntensity({required String desired, required String current, int weeksDone = 0}) =>
-    current == '하' && desired == '상' && weeksDone < rampUpWeeks ? '중' : desired;
+    (current == '안 함' || current == '하') && desired == '상' && weeksDone < rampUpWeeks ? '중' : desired;
 
 /// 맨몸 운동은 무게 대신 동작 난이도로 강도를 바꾼다: 하 → 쉬운 동작, 상 → 어려운 동작.
 /// 바꾼 동작이 내 조건에 맞지 않으면([allowed]가 false) 원래 동작을 그대로 쓴다.
