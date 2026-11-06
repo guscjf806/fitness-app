@@ -91,8 +91,12 @@ class HomeTab extends StatelessWidget {
       for (final m in members)
         LineRow(
           onTap: () => demo.update(() => demo.tab = 3),
-          left: Text(m, style: AppText.bodyStrong),
-          right: Flexible(child: Muted(demo.missions[m] ?? '아직 없어요', bottom: 0, align: TextAlign.right)),
+          // 화살표가 같은 줄에 서게 미션 글은 왼쪽 칸 안에서 오른쪽으로 붙인다
+          left: Row(children: [
+            Text(m, style: AppText.bodyStrong),
+            const SizedBox(width: AppSpace.m),
+            Expanded(child: Muted(demo.missions[m] ?? '아직 없어요', bottom: 0, align: TextAlign.right)),
+          ]),
           showArrow: true,
         ),
       AppButton('회원 관리·초대 코드', kind: ButtonKind.soft, onPressed: () => demo.update(() => demo.tab = 3)),
