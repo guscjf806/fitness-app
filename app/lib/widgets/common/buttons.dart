@@ -134,7 +134,7 @@ class DayChips extends StatelessWidget {
     final on = i == selected;
     // 칩 폭이 들쭉날쭉하지 않게 최소 폭. '오늘·휴식'처럼 길어질 수 있어 고정 폭은 쓰지 않는다
     return ConstrainedBox(
-      constraints: const BoxConstraints(minWidth: 40),
+      constraints: const BoxConstraints(minWidth: 24),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
       Text(day, style: TextStyle(color: on ? Colors.white : AppColors.text, fontWeight: on ? FontWeight.w700 : FontWeight.w400)),
       Text(notes.isEmpty ? ' ' : notes.join('·'), style: AppText.small.copyWith(color: on ? Colors.white : AppColors.textSub)),
