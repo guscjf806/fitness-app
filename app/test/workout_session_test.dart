@@ -10,4 +10,12 @@ void main() {
     ex.copyKgDown(0, '45');
     expect([for (final s in ex.sets) s.kg], ['45', '45', '50', '50']);
   });
+  test('결정 d1028-weight-prefill 지난번 무게를 채우고, 고치면 추천 표시가 사라진다', () {
+    final ex = SessionExercise('벤치프레스', '8~12개', 3)..prefillKg('60');
+    expect(ex.sets.map((s) => s.kg), ['60', '60', '60']);
+    expect(ex.hasSuggestedKg, isTrue);
+    ex.copyKgDown(0, '65');
+    expect(ex.sets.map((s) => s.kg), ['65', '65', '65']);
+    expect(ex.hasSuggestedKg, isFalse);
+  });
 }

@@ -57,7 +57,8 @@ class _WorkoutTabState extends State<WorkoutTab> {
   void _start(WorkoutDay day) {
     final rule = demo.intensityRule;
     demo.session ??= WorkoutSession([
-      for (final x in [...day.items, ..._addedAsExercises(rule)]) SessionExercise(x.name, x.amount, x.sets),
+      for (final x in [...day.items, ..._addedAsExercises(rule)])
+        SessionExercise(x.name, x.amount, x.sets)..prefillKg(demo.lastWeights[x.name] ?? ''),
     ], atHome: day.atHome);
     Navigator.pushNamed(context, Routes.session);
   }

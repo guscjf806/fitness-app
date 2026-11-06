@@ -91,7 +91,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                   final before = current;
                   final at = index;
                   final (amount, sets) = targetFor(e, _rule);
-                  setState(() => session.items[at] = SessionExercise(e.name, amount, sets));
+                  setState(() => session.items[at] = SessionExercise(e.name, amount, sets)..prefillKg(demo.lastWeights[e.name] ?? ''));
                   Navigator.pop(sheet);
                   if (!mounted) return;
                   toast(context, '${e.name}(으)로 바꿨어요', actionLabel: '되돌리기', onAction: () {
@@ -180,6 +180,11 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
     final minutes = DateTime.now().difference(session.startedAt).inMinutes;
     final sets = session.doneSets;
     demo.update(() {
+      // 다음 운동에 미리 채울 무게
+      for (final x in session.items) {
+        final kg = x.sets.where((s) => s.done && s.kg.trim().isNotEmpty).lastOrNull?.kg.trim();
+        if (kg != null) demo.lastWeights[x.name] = kg;
+      }
       demo.workoutDone = true;
       demo.checked.addAll([for (var i = 0; i < demo.week[0].items.length; i++) i]);
     });
@@ -233,6 +238,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
           child: WordText('목표 ${ex.target}${ex.bodyweight ? '' : '\n무게: 마지막 세트를 끝냈을 때 ${_rule.repsInReserve}쯤 더 할 수 있는 무게'}',
               style: AppText.body),
         ),
+        if (ex.hasSuggestedKg) const Muted('회색 무게는 지난번 기록이에요(추천). 오늘 다르면 고쳐 주세요.'),
         for (var i = 0; i < ex.sets.length; i++)
           _SetRow(
             key: ValueKey('${ex.name}-$i'),
@@ -303,8 +309,8 @@ class _SetRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 폭을 숫자로 고정하지 않아서 큰 글씨·좁은 폰에서도 줄이 넘치지 않게 (디자인 리뷰 10/30 #3)
-    Widget field(String value, String suffix, ValueChanged<String> onChanged) =>
-        Expanded(child: _NumCell(value: value, suffix: suffix, onChanged: onChanged));
+    Widget field(String value, String suffix, ValueChanged<String> onChanged, {bool suggested = false}) =>
+        Expanded(child: _NumCell(value: value, suffix: suffix, onChanged: onChanged, suggested: suggested));
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -322,7 +328,7 @@ class _SetRow extends StatelessWidget {
         if (bodyweight)
           const Expanded(child: Muted('맨몸', bottom: 0, align: TextAlign.center))
         else
-          field(entry.kg, 'kg', onKg),
+          field(entry.kg, 'kg', onKg, suggested: entry.suggested),
         const Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: Text('/')),
         field(entry.reps, unit, (v) => entry.reps = v),
         const SizedBox(width: AppSpace.xsPlus),
@@ -339,10 +345,11 @@ class _SetRow extends StatelessWidget {
 
 /// 숫자 칸. 다른 세트에서 값이 채워지면(무게 복사) 이 칸도 따라 바뀐다. 입력 중인 칸은 건드리지 않는다.
 class _NumCell extends StatefulWidget {
-  const _NumCell({required this.value, required this.suffix, required this.onChanged});
+  const _NumCell({required this.value, required this.suffix, required this.onChanged, this.suggested = false});
   final String value;
   final String suffix;
   final ValueChanged<String> onChanged;
+  final bool suggested;
 
   @override
   State<_NumCell> createState() => _NumCellState();
@@ -371,6 +378,7 @@ class _NumCellState extends State<_NumCell> {
         focusNode: focus,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         textAlign: TextAlign.center,
+        style: widget.suggested ? const TextStyle(color: AppColors.textSub) : null,
         decoration: InputDecoration(suffixText: widget.suffix, hintText: widget.suffix, isDense: true),
         onChanged: widget.onChanged,
       );
