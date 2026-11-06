@@ -128,4 +128,12 @@ void main() {
     expect(demo.weight, '72');
     expect(demo.painAreas, isEmpty);
   });
+  testWidgets('결정 d1105-3 로그인 방법이 로그아웃 뒤에도 안내된다', (tester) async {
+    addTearDown(() => demo.lastLoginProvider = null);
+    await start(tester);
+    demo.lastLoginProvider = '카카오';
+    demoNavigatorKey.currentState!.pushNamed(Routes.login);
+    await tester.pumpAndSettle();
+    expect(findText('지난번에 카카오로 로그인했어요'), findsOneWidget);
+  });
 }

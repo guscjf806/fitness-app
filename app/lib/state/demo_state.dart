@@ -90,6 +90,9 @@ class DemoState extends ChangeNotifier {
   /// 종목별 지난번 무게 (결정 d1028-weight-prefill). 선생님이 정한 시작 무게는 운동 관리 페이지를 반영할 때 더한다
   final Map<String, String> lastWeights = {};
 
+  /// 지난번 로그인 방법 (결정 d1105-3). 로그아웃해도 남긴다
+  String? lastLoginProvider;
+
   /// 찜한 운동 id. 앱을 다시 켜도 남는다 (결정 dd1104-favorite)
   final Set<String> favorites = {};
 
@@ -253,6 +256,7 @@ class DemoState extends ChangeNotifier {
     await p.setStringList('homeGear', homeGear);
     await p.setString('bodyFatUnit', bodyFatUnit);
     await p.setBool('restSound', restSound);
+    if (lastLoginProvider != null) await p.setString('lastLoginProvider', lastLoginProvider!);
     await p.setStringList('favorites', favorites.toList());
     await p.setStringList('lastWeights', [for (final e in lastWeights.entries) '${e.key}|${e.value}']);
     await p.setStringList('allergies', allergies);
@@ -294,6 +298,7 @@ class DemoState extends ChangeNotifier {
     homeGear = p.getStringList('homeGear') ?? homeGear;
     bodyFatUnit = p.getString('bodyFatUnit') ?? bodyFatUnit;
     restSound = p.getBool('restSound') ?? restSound;
+    lastLoginProvider = p.getString('lastLoginProvider') ?? lastLoginProvider;
     favorites.addAll(p.getStringList('favorites') ?? const []);
     for (final s in p.getStringList('lastWeights') ?? const <String>[]) {
       final at = s.lastIndexOf('|');

@@ -109,9 +109,11 @@ class AuthService {
     final wasEntered = demo.entered;
     final fromLogin = _fromLoginScreen;
     _fromLoginScreen = false;
+    final provider = {'kakao': '카카오', 'google': '구글', 'apple': 'Apple'}[user.appMetadata['provider']];
     demo.update(() {
       demo.role = 'user';
       demo.entered = true;
+      demo.lastLoginProvider = provider ?? demo.lastLoginProvider;
     });
     final name = _nickname(user);
     toast(nav.context, name == null ? '로그인했어요' : '$name님, 로그인했어요');
