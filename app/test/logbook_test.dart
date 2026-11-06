@@ -16,6 +16,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     demo.switchRole('trainer');
     demo.sentLogs.clear();
+    demo.removedMembers.clear();
     clearLogDrafts();
     demo.unseenLogs
       ..clear()
@@ -208,6 +209,19 @@ void main() {
     await tap(tester, findText('회원님께 보내기'));
     expect(demo.sentLogs['박서연']!.single.items.single.reps, '9개');
     expect(hasLogDraft('박서연'), isFalse);
+  });
+
+  testWidgets('결정 d1104-2 선생님이 회원과 연결을 끊으면 목록에서 빠진다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '박서연');
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    await tap(tester, find.byTooltip('박서연 회원 더 보기'));
+    await tap(tester, findText('연결 끊기'));
+    expect(findText('박서연 회원과 연결을 끊을까요?'), findsOneWidget);
+    await tap(tester, findText('연결 끊기').last);
+    expect(demo.activeMembers, isNot(contains('박서연')));
+    expect(findTextContaining('연결을 끊고 알렸어요'), findsOneWidget);
   });
 
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {

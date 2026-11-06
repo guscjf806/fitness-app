@@ -181,12 +181,48 @@ class MemberLogRow extends StatelessWidget {
           Muted(demo.lastLogOf(member) == null ? '아직 쓴 일지가 없어요' : '마지막 일지 ${demo.lastLogOf(member)}', bottom: 0),
           if (hasLogDraft(member)) const Muted('임시 저장한 일지가 있어요', bottom: 0),
         ]),
-        right: FilledButton.tonal(
-          style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
-          onPressed: () => Navigator.pushNamed(context, Routes.logWrite, arguments: member),
-          child: Text(hasLogDraft(member) ? '이어 쓰기' : '일지 작성'),
-        ),
+        right: Row(mainAxisSize: MainAxisSize.min, children: [
+          FilledButton.tonal(
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+            onPressed: () => Navigator.pushNamed(context, Routes.logWrite, arguments: member),
+            child: Text(hasLogDraft(member) ? '이어 쓰기' : '일지 작성'),
+          ),
+          IconButton(
+            tooltip: '$member 회원 더 보기',
+            icon: const Icon(Icons.more_vert),
+            onPressed: () => showMemberSheet(context, member),
+          ),
+        ]),
       );
+}
+
+/// 회원 더 보기: 보낸 일지와 연결 끊기
+void showMemberSheet(BuildContext context, String member) {
+  showAppSheet<void>(
+    context,
+    builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+      SheetTitle('$member 회원'),
+      LineRow(
+        left: const Text('연결 끊기', style: TextStyle(color: AppColors.warningText)),
+        onTap: () async {
+          // 회원과 선생님 모두 끊을 수 있고 상대에게 알린다 (결정 d1104-2)
+          final ok = await confirmDialog(sheet,
+              title: '$member 회원과 연결을 끊을까요?',
+              body: '더 이상 이 회원의 일지를 볼 수 없어요. 회원님께 알림이 가요.',
+              keepLabel: '그대로 두기',
+              okLabel: '연결 끊기',
+              danger: true);
+          if (!ok || !sheet.mounted) return;
+          demo.update(() {
+            demo.removedMembers.add(member);
+            demo.missions.remove(member);
+          });
+          Navigator.pop(sheet);
+          if (context.mounted) toast(context, '$member 회원과 연결을 끊고 알렸어요');
+        },
+      ),
+    ]),
+  );
 }
 
 /// S18 회원 관리 (선생님)
@@ -198,7 +234,14 @@ class MemberManageTab extends StatefulWidget {
 }
 
 class _MemberManageTabState extends State<MemberManageTab> {
-  String member = members.first;
+  String? selectedMember;
+
+  /// 미션 받을 회원. 연결을 끊은 회원은 고를 수 없다
+  String? get member {
+    final active = demo.activeMembers;
+    if (active.contains(selectedMember)) return selectedMember;
+    return active.isEmpty ? null : active.first;
+  }
   final missionController = TextEditingController();
   final inviteMemoController = TextEditingController();
 
@@ -211,18 +254,21 @@ class _MemberManageTabState extends State<MemberManageTab> {
 
   @override
   Widget build(BuildContext context) {
+    final member = this.member;
     return TabBody(children: [
       const H1('회원 관리'),
       // 수업 끝나고 가장 자주 쓰는 회원 목록을 맨 위로, 가끔 쓰는 초대 코드는 맨 아래로 (리뷰 11/04 #3)
-      for (final m in members) MemberLogRow(m),
+      if (demo.activeMembers.isEmpty) const Muted('연결된 회원이 없어요. 아래에서 초대 코드를 만들어 보세요.'),
+      for (final m in demo.activeMembers) MemberLogRow(m),
       const SizedBox(height: AppSpace.l),
-      AppCard(
+      if (member != null) AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('이번 주 미션', bottom: 6),
           DropdownButtonFormField<String>(
+            key: ValueKey(member),
             initialValue: member,
-            items: [for (final m in members) DropdownMenuItem(value: m, child: Text(m))],
-            onChanged: (v) => setState(() => member = v ?? member),
+            items: [for (final m in demo.activeMembers) DropdownMenuItem(value: m, child: Text(m))],
+            onChanged: (v) => setState(() => selectedMember = v),
           ),
           // 고른 회원에게 지금 보낸 미션을 보여 준다 (리뷰 11/02 #4)
           Padding(
@@ -536,7 +582,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       DropdownButtonFormField<String>(
         initialValue: member,
         decoration: const InputDecoration(labelText: '회원'),
-        items: [for (final m in members) DropdownMenuItem(value: m, child: Text(m))],
+        items: [for (final m in {...demo.activeMembers, member!}) DropdownMenuItem(value: m, child: Text(m))],
         onChanged: (v) => setState(() => member = v),
       ),
       const SizedBox(height: AppSpace.m),

@@ -109,6 +109,10 @@ class DemoState extends ChangeNotifier {
   // PT
   final Map<String, String> missions = {'김지아': '이번 주 운동 3회 + 단백질 챙기기'};
 
+  /// 선생님이 연결을 끊은 회원 (결정 d1104-2, 목업)
+  final Set<String> removedMembers = {};
+  List<String> get activeMembers => [for (final m in members) if (!removedMembers.contains(m)) m];
+
   /// 지금 로그인한 PT 회원 이름 (목업). 실제 연결 때는 계정 정보에서 가져온다 (리뷰 10/30 #7)
   String memberName = '김지아';
   final List<InviteCode> inviteCodes = [];

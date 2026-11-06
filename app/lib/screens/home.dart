@@ -97,9 +97,9 @@ class HomeTab extends StatelessWidget {
     return TabBody(children: [
       H1(demo.greeting),
       const H2('일지 쓸 회원', top: AppSpace.xs),
-      for (final m in members) MemberLogRow(m),
+      for (final m in demo.activeMembers) MemberLogRow(m),
       const H2('이번 주 미션'),
-      for (final m in members)
+      for (final m in demo.activeMembers)
         LineRow(
           onTap: () => demo.update(() => demo.tab = 3),
           // 화살표가 같은 줄에 서게 미션 글은 왼쪽 칸 안에서 오른쪽으로 붙인다
