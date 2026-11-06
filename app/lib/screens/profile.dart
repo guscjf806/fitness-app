@@ -213,7 +213,9 @@ class SubscribeScreen extends StatefulWidget {
 }
 
 class _SubscribeScreenState extends State<SubscribeScreen> {
-  String bill = '연';
+  /// 처음엔 월 요금, 연 요금 칸에 얼마나 저렴한지 표시 (결정 d1103-3)
+  String bill = '월';
+  static final _yearLabel = '연 ${((1 - AppConfig.yearlyPrice / (AppConfig.monthlyPrice * 12)) * 100).floor()}% 저렴';
 
   @override
   Widget build(BuildContext context) {
@@ -223,10 +225,10 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
       const AppCard(child: BulletList(['식단·운동 루틴 생성 횟수 확대', 'AI 식단 답변 횟수 확대', '기록 지키기권 추가'])),
       Muted('무료는 AI를 한 달에 ${AppConfig.freeMonthlyAiLimit}회 쓸 수 있어요. 구독하면 몇 회로 늘어나는지는 출시 전에 정해요.',
           bottom: AppSpace.m),
-      Seg(options: const ['월', '연'], value: bill, onChanged: (v) => setState(() => bill = v)),
+      Seg(options: ['월', _yearLabel], value: bill, onChanged: (v) => setState(() => bill = v)),
       BigNumber(bill == '월' ? '월 ${formatNumber(AppConfig.monthlyPrice)}원' : '연 ${formatNumber(AppConfig.yearlyPrice)}원'),
       // 가격 판단에 중요한 월 환산은 회색 안내와 구분되게 굵은 주황 글씨로 (디자인 리뷰 11/03 #3)
-      if (bill == '연')
+      if (bill != '월')
         Padding(
           padding: const EdgeInsets.only(bottom: AppSpace.xs),
           child: Text('월 약 ${formatNumber((AppConfig.yearlyPrice / 12 / 100).round() * 100)}원꼴이에요',
