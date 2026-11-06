@@ -276,7 +276,8 @@ class _MemberManageTabState extends State<MemberManageTab> {
 
 /// 일지의 종목 한 줄 (결정 dd1101-logwrite: '+ 종목 추가'로 줄을 늘린다)
 class _LogRow {
-  String exercise = exerciseNames.first;
+  /// 고른 종목. 미리 채워 두면 다른 운동을 그대로 저장하기 쉬워서 비워 둔다 (리뷰 11/06 #1)
+  String? exercise;
   bool custom = false;
 
   // 적은 값을 상태에 남긴다 (리뷰 11/02 #2). 직접 입력한 종목 이름은 칩을 껐다 켜도 남는다 (#7)
@@ -285,8 +286,8 @@ class _LogRow {
   String reps = '';
   String sets = '';
 
-  String get name => custom ? customName.trim() : exercise;
-  bool get hasInput => [customName, kg, reps, sets].any((v) => v.trim().isNotEmpty);
+  String get name => custom ? customName.trim() : (exercise ?? '');
+  bool get hasInput => exercise != null || [customName, kg, reps, sets].any((v) => v.trim().isNotEmpty);
 }
 
 /// S19 일지 작성 (선생님)
@@ -329,7 +330,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
     for (var i = 0; i < rows.length; i++) {
       final where = rows.length > 1 ? '${i + 1}번째 줄의 ' : '';
       if (rows[i].name.isEmpty) {
-        toast(context, '$where종목 이름을 적어 주세요');
+        toast(context, rows[i].custom ? '$where종목 이름을 적어 주세요' : '$where종목을 골라 주세요');
         return;
       }
       if (rows[i].reps.trim().isEmpty) {
@@ -404,9 +405,14 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
                     child: InputDecorator(
                       decoration: const InputDecoration(labelText: '종목'),
                       child: Row(children: [
-                        ExerciseThumb(r.exercise, size: 32),
-                        const SizedBox(width: 10),
-                        Expanded(child: Text(r.exercise)),
+                        if (r.exercise != null) ...[
+                          ExerciseThumb(r.exercise!, size: 32),
+                          const SizedBox(width: 10),
+                        ],
+                        Expanded(
+                          child: Text(r.exercise ?? '종목을 골라 주세요',
+                              style: r.exercise == null ? const TextStyle(color: AppColors.textSub) : null),
+                        ),
                         const Icon(Icons.chevron_right, color: AppColors.textSub),
                       ]),
                     ),

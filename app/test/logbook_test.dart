@@ -49,8 +49,19 @@ void main() {
 
   Finder field(String label) => find.widgetWithText(TextFormField, label);
 
+  /// 마지막 줄에 종목을 넣는다 (직접 입력)
+  Future<void> pick(WidgetTester tester) async {
+    await tap(tester, findText('직접 입력').last);
+    await tester.enterText(field('종목 이름').last, 'TRX 로우');
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('#2 횟수가 비어 있으면 저장하지 않고 알린다, 적으면 저장된다', (tester) async {
     await openRoute(tester, Routes.logWrite, args: '김지아');
+    await tap(tester, findText('저장하고 알림 보내기'));
+    expect(findText('종목을 골라 주세요'), findsWidgets, reason: '종목을 안 고르면 저장되지 않는다');
+    expect(find.widgetWithText(AppBar, '일지 작성'), findsOneWidget);
+    await pick(tester);
     await tap(tester, findText('저장하고 알림 보내기'));
     expect(findText('횟수를 적어 주세요'), findsOneWidget);
     expect(find.widgetWithText(AppBar, '일지 작성'), findsOneWidget, reason: '화면이 닫히지 않는다');
@@ -63,6 +74,7 @@ void main() {
   testWidgets('11/04 #1 저장한 일지가 마지막 일지 날짜와 회원의 일지 목록에 바로 보인다', (tester) async {
     await openRoute(tester, Routes.logWrite, args: '박서연');
     expect(demo.lastLogOf('박서연'), isNull);
+    await pick(tester);
     await tester.enterText(field('횟수'), '8');
     await tester.pumpAndSettle();
     await tap(tester, findText('저장하고 알림 보내기'));
@@ -73,6 +85,7 @@ void main() {
     // 김지아에게 쓰면 PT 회원 화면의 목록 맨 위에 보인다
     demoNavigatorKey.currentState!.pushNamed(Routes.logWrite, arguments: '김지아');
     await tester.pumpAndSettle();
+    await pick(tester);
     await tester.enterText(field('횟수'), '10');
     await tester.pumpAndSettle();
     await tap(tester, findText('저장하고 알림 보내기'));
@@ -92,6 +105,7 @@ void main() {
     await tap(tester, findText('5'));
     await tap(tester, findText('확인'));
     expect(findText('10월 5일 (월)'), findsOneWidget);
+    await pick(tester);
     await tester.enterText(field('횟수'), '8');
     await tester.pumpAndSettle();
     await tap(tester, findText('저장하고 알림 보내기'));
@@ -146,10 +160,12 @@ void main() {
 
   testWidgets('결정 dd1101-logwrite 종목 줄을 늘려 저장하고, 빈 줄은 몇 번째인지 알린다', (tester) async {
     await openRoute(tester, Routes.logWrite, args: '이도현');
+    await pick(tester);
     await tester.enterText(field('횟수'), '8');
     await tester.pumpAndSettle();
     await tap(tester, findText('+ 종목 추가'));
     expect(findText('종목 2'), findsOneWidget);
+    await pick(tester);
     await tap(tester, findText('저장하고 알림 보내기'));
     expect(findText('2번째 줄의 횟수를 적어 주세요'), findsOneWidget);
     await tester.enterText(field('횟수').last, '10');
