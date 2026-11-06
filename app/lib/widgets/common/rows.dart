@@ -87,7 +87,7 @@ class LineRow extends StatelessWidget {
 
 /// 숫자 입력칸
 class NumField extends StatelessWidget {
-  const NumField({super.key, required this.label, required this.value, required this.onChanged, this.hint, this.error, this.enabled = true, this.decimal = true});
+  const NumField({super.key, required this.label, required this.value, required this.onChanged, this.hint, this.error, this.enabled = true, this.decimal = true, this.suffix});
   final String label;
   final String value;
   final String? hint;
@@ -96,6 +96,9 @@ class NumField extends StatelessWidget {
 
   /// 소수점을 받을지. 횟수·세트처럼 정수만 받는 칸은 false (리뷰 11/06 #2)
   final bool decimal;
+
+  /// 칸 안쪽 오른쪽의 단위. 좁은 칸에서 라벨이 잘리지 않게 라벨과 나눈다 (디자인 리뷰 11/06 #4)
+  final String? suffix;
   final ValueChanged<String> onChanged;
 
   @override
@@ -105,7 +108,7 @@ class NumField extends StatelessWidget {
       enabled: enabled,
       keyboardType: decimal ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.number,
       inputFormatters: decimal ? null : [FilteringTextInputFormatter.digitsOnly],
-      decoration: InputDecoration(labelText: label, hintText: hint, errorText: error),
+      decoration: InputDecoration(labelText: label, hintText: hint, errorText: error, suffixText: suffix),
       onChanged: onChanged,
     );
   }
