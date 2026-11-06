@@ -128,12 +128,13 @@ class _MealPostScreenState extends State<MealPostScreen> {
       showQuotaExhausted(context);
       return;
     }
-    if (!photoPicked) {
-      toast(context, '사진을 먼저 선택해 주세요');
+    // 사진이나 글 중 하나만 있어도 올린다 (결정 d1101-2)
+    if (!photoPicked && note.trim().isEmpty) {
+      toast(context, '사진이나 설명을 넣어 주세요');
       return;
     }
     demo.update(() => demo.mealPosts.insert(
-        0, MealPost('오늘 $slot', note.isEmpty ? '(설명 없음)' : note, sampleMealReply, isToday: true)));
+        0, MealPost('오늘 $slot', note.isEmpty ? '(설명 없음)' : note, sampleMealReply, isToday: true, hasPhoto: photoPicked)));
     Navigator.pushReplacementNamed(context, Routes.mealReply, arguments: const MealReplyArgs(0, fresh: true));
   }
 
@@ -170,6 +171,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
         decoration: const InputDecoration(labelText: '한 줄 설명', hintText: '예: 닭가슴살 150g, 현미밥 1공기'),
         onChanged: (v) => setState(() => note = v),
       ),
+      if (!photoPicked && note.trim().isNotEmpty) const Muted('사진이 있으면 더 정확해요', top: AppSpace.xs, bottom: 0),
       const SizedBox(height: AppSpace.sPlus),
       // 실제 사용 횟수를 보여 주고, 다 썼으면 누르기 전에 알린다 (리뷰 11/01 #1)
       if (demo.quotaExhausted)
@@ -298,7 +300,7 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
     final index = args.index;
     final post = demo.mealPosts[index];
     return AppPage(title: 'AI 답변', children: [
-      const _PhotoBox(label: '식단 사진'),
+      if (post.hasPhoto) const _PhotoBox(label: '식단 사진'),
       Text(post.date, style: AppText.bodyStrong),
       Muted(post.note),
       if (waiting)

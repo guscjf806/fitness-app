@@ -134,4 +134,20 @@ void main() {
     await openPost(tester);
     expect(findText('이번 달 무료 횟수를 다 썼어요'), findsOneWidget);
   });
+  testWidgets('결정 d1101-2 사진이나 글 하나만 있어도 올리고, 글만이면 사진 안내', (tester) async {
+    await openPost(tester);
+    await tap(tester, findText('올리기'));
+    expect(findText('사진이나 설명을 넣어 주세요'), findsOneWidget);
+    await tester.enterText(find.byType(TextFormField), '닭가슴살 150g');
+    await tester.pumpAndSettle();
+    expect(findText('사진이 있으면 더 정확해요'), findsOneWidget);
+    final before = demo.mealPosts.length;
+    await tap(tester, findText('올리기'));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(demo.mealPosts.length, before + 1);
+    expect(demo.mealPosts.first.hasPhoto, isFalse);
+    expect(findText('식단 사진'), findsNothing);
+    demo.mealPosts.removeAt(0);
+  });
 }

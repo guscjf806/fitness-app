@@ -185,11 +185,14 @@ const homeDumbbellSessions = [
 ];
 
 class MealPost {
-  const MealPost(this.date, this.note, this.reply, {this.isToday = false});
+  const MealPost(this.date, this.note, this.reply, {this.isToday = false, this.hasPhoto = true});
   final String date;
   final String note;
   final String reply;
   final bool isToday;
+
+  /// 글만 올린 식단이면 false (결정 d1101-2)
+  final bool hasPhoto;
 }
 
 const sampleMealReply =
