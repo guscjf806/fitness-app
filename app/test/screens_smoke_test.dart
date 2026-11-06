@@ -332,20 +332,11 @@ void main() {
     demo.freezesLeft = 1;
     await tester.pumpAndSettle();
 
-    // #1 지키기권: 그만두면 그대로, 쓰면 1회 줄어든다
+    // 결정 d1103-1: 지키기권은 자동으로 쓰여서 누르는 버튼이 없다
     demoNavigatorKey.currentState!.pushNamed(Routes.records);
     await tester.pumpAndSettle();
-    await tester.tap(findText('사용하기'));
-    await tester.pumpAndSettle();
-    expect(findText('기록 지키기권을 쓸까요?'), findsOneWidget);
-    await tester.tap(findText('그만두기'));
-    await tester.pumpAndSettle();
-    expect(demo.freezesLeft, 1);
-    await tester.tap(findText('사용하기'));
-    await tester.pumpAndSettle();
-    await tester.tap(findText('쓰기'));
-    await tester.pumpAndSettle();
-    expect(demo.freezesLeft, 0);
+    expect(findText('사용하기'), findsNothing);
+    expect(findTextContaining('자동으로 쓰여서'), findsOneWidget);
     demoNavigatorKey.currentState!.pop();
     await tester.pumpAndSettle();
 
