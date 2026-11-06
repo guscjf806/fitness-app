@@ -271,6 +271,14 @@ const workoutLogs = [
   ),
 ];
 
+/// 회원 한 명에게 준 초대 코드 (결정 d1102-3). 1회용, 7일 유효
+class InviteCode {
+  const InviteCode(this.memo, this.code, {this.daysLeft = 7});
+  final String memo;
+  final String code;
+  final int daysLeft;
+}
+
 const members = ['김지아', '이도현', '박서연'];
 
 /// 일지 날짜('10월 6일')를 비교할 수 있는 숫자로 바꾼다. 목업이라 연도는 보지 않는다

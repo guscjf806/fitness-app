@@ -266,8 +266,8 @@ void main() {
     expect(demo.missions['김지아'], '새 미션');
   });
 
-  testWidgets('#5 초대 코드를 복사할 수 있고, 코드가 있으면 버튼 이름이 새 코드 만들기', (tester) async {
-    demo.inviteCode = null;
+  testWidgets('결정 d1102-3 회원 메모를 적어야 코드가 만들어지고, 목록에 남은 기간과 복사가 있다', (tester) async {
+    demo.inviteCodes.clear();
     String? copied;
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
       if (call.method == 'Clipboard.setData') copied = (call.arguments as Map)['text'] as String?;
@@ -279,10 +279,15 @@ void main() {
     demo.update(() => demo.tab = 3);
     await tester.pumpAndSettle();
     await tap(tester, findText('초대 코드 만들기'));
-    expect(findText('새 코드 만들기'), findsOneWidget);
+    expect(findText('회원 이름이나 메모를 적어 주세요'), findsOneWidget);
+    expect(demo.inviteCodes, isEmpty);
+    await tester.enterText(find.widgetWithText(TextField, '예: 김지아 회원님'), '최민수');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('초대 코드 만들기'));
+    expect(findText('최민수'), findsOneWidget);
+    expect(findText('1회용 · 7일 남음'), findsOneWidget);
     await tap(tester, findText('복사'));
-    expect(findText('초대 코드를 복사했어요'), findsOneWidget);
-    expect(copied, demo.inviteCode);
+    expect(copied, demo.inviteCodes.first.code);
   });
 
   test('#6 무게 → 횟수 → 세트 순서로 표기한다', () {

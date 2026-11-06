@@ -200,10 +200,12 @@ class MemberManageTab extends StatefulWidget {
 class _MemberManageTabState extends State<MemberManageTab> {
   String member = members.first;
   final missionController = TextEditingController();
+  final inviteMemoController = TextEditingController();
 
   @override
   void dispose() {
     missionController.dispose();
+    inviteMemoController.dispose();
     super.dispose();
   }
 
@@ -257,24 +259,39 @@ class _MemberManageTabState extends State<MemberManageTab> {
         ]),
       ),
       const SizedBox(height: AppSpace.s),
-      // 코드가 있으면 다시 누를 때 새 코드로 바뀐다는 걸 이름으로 알린다 (리뷰 11/02 #5)
-      AppButton(demo.inviteCode == null ? '초대 코드 만들기' : '새 코드 만들기',
-          kind: ButtonKind.soft,
-          top: 0,
-          onPressed: () => demo.update(() => demo.inviteCode = '${100000 + Random().nextInt(900000)}')),
-      const SizedBox(height: AppSpace.m),
-      if (demo.inviteCode != null)
+      // 회원 이름(또는 메모)을 먼저 적고 만든다. 어느 코드가 누구 것인지 헷갈리지 않게 (결정 d1102-3)
+      AppCard(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const FieldLabel('새 회원 초대', sub: '회원 이름이나 메모를 먼저 적어 주세요'),
+          const SizedBox(height: AppSpace.s),
+          TextField(
+            controller: inviteMemoController,
+            decoration: const InputDecoration(hintText: '예: 김지아 회원님'),
+          ),
+          AppButton('초대 코드 만들기', kind: ButtonKind.soft, onPressed: () {
+            final memo = inviteMemoController.text.trim();
+            if (memo.isEmpty) {
+              toast(context, '회원 이름이나 메모를 적어 주세요');
+              return;
+            }
+            demo.update(() => demo.inviteCodes.insert(0, InviteCode(memo, '${100000 + Random().nextInt(900000)}')));
+            inviteMemoController.clear();
+          }),
+        ]),
+      ),
+      for (final c in demo.inviteCodes)
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Muted('회원님께 알려 주세요 (1회용 · 7일 유효)', bottom: 2),
+            Text(c.memo, style: AppText.bodyStrong),
+            Muted('1회용 · ${c.daysLeft}일 남음', bottom: 2),
             Row(children: [
-              Expanded(child: BigNumber(demo.inviteCode!)),
+              Expanded(child: BigNumber(c.code)),
               // 손으로 옮겨 적지 않게 복사 버튼
               OutlinedButton.icon(
                 icon: const Icon(Icons.copy, size: 18),
                 label: const Text('복사'),
                 onPressed: () async {
-                  await Clipboard.setData(ClipboardData(text: demo.inviteCode!));
+                  await Clipboard.setData(ClipboardData(text: c.code));
                   if (context.mounted) toast(context, '초대 코드를 복사했어요');
                 },
               ),

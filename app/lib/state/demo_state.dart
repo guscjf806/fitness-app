@@ -105,7 +105,7 @@ class DemoState extends ChangeNotifier {
 
   /// 지금 로그인한 PT 회원 이름 (목업). 실제 연결 때는 계정 정보에서 가져온다 (리뷰 10/30 #7)
   String memberName = '김지아';
-  String? inviteCode;
+  final List<InviteCode> inviteCodes = [];
   final Set<String> savedVideos = {};
 
   /// 선생님이 저장한 일지 (목업, 회원별). 저장 결과가 화면에 바로 보이게 한다 (리뷰 11/04 #1)
