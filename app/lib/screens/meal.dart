@@ -151,6 +151,8 @@ class _MealPostScreenState extends State<MealPostScreen> {
       keepLabel: '계속 쓰기',
       okLabel: '지우고 나가기',
       child: AppPage(title: '식단 올리기', children: [
+      // 올린 식단은 선생님에게 보이지 않는다 (결정 d1101-1)
+      const Muted('나만 볼 수 있어요. 선생님에게는 보이지 않고, 답변을 위해 AI만 확인해요.'),
       const FieldLabel('어느 끼니인가요?'),
       Seg(options: const ['아침', '점심', '저녁', '간식'], value: slot, onChanged: (v) => setState(() => slot = v)),
       // 다시 눌러도 사진이 말없이 빠지지 않게: 누르면 바꾸기, 빼기는 따로 (리뷰 11/01 #2)
