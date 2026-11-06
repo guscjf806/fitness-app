@@ -394,9 +394,8 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
             Expanded(child: Text('종목 ${i + 1}', style: AppText.bodyStrong)),
             TextButton(onPressed: () => _removeRow(i), child: const Text('빼기', style: TextStyle(color: AppColors.warningText))),
           ]),
-        Row(children: [
-          Expanded(
-            child: r.custom
+        // 카드 안은 좁아서 글자가 잘리지 않게 종목 칸과 '직접 입력'을 두 줄로
+        r.custom
                 ? TextFormField(
                     initialValue: r.customName,
                     decoration: const InputDecoration(labelText: '종목 이름', hintText: '예: TRX 로우'),
@@ -424,18 +423,18 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
                       ]),
                     ),
                   ),
-          ),
-          const SizedBox(width: 8),
-          SelectChip('직접 입력', selected: r.custom, onSelected: (v) => setState(() => r.custom = v)),
-        ]),
+        Align(
+          alignment: Alignment.centerRight,
+          child: SelectChip('직접 입력', selected: r.custom, onSelected: (v) => setState(() => r.custom = v)),
+        ),
         const SizedBox(height: AppSpace.m),
         // 휴대폰에서 숫자 자판이 뜨게 공용 숫자 칸으로 (디자인 리뷰 11/01 #2)
         Row(children: [
-          Expanded(child: NumField(label: '무게 (kg)', hint: '60', value: r.kg, onChanged: (v) => setState(() => r.kg = v))),
+          Expanded(flex: 4, child: NumField(label: '무게 (kg)', hint: '60', value: r.kg, onChanged: (v) => setState(() => r.kg = v))),
           const SizedBox(width: 8),
-          Expanded(child: NumField(label: '횟수', hint: '8', decimal: false, value: r.reps, onChanged: (v) => setState(() => r.reps = v))),
+          Expanded(flex: 3, child: NumField(label: '횟수', hint: '8', decimal: false, value: r.reps, onChanged: (v) => setState(() => r.reps = v))),
           const SizedBox(width: 8),
-          Expanded(child: NumField(label: '세트', hint: '4', decimal: false, value: r.sets, onChanged: (v) => setState(() => r.sets = v))),
+          Expanded(flex: 3, child: NumField(label: '세트', hint: '4', decimal: false, value: r.sets, onChanged: (v) => setState(() => r.sets = v))),
         ]),
         const Align(
           alignment: Alignment.centerLeft,
