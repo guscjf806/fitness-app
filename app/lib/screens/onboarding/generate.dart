@@ -43,10 +43,14 @@ class _GenerateScreenState extends State<GenerateScreen> {
   Widget build(BuildContext context) {
     if (generating) {
       // 만드는 중에 뒤로 나가면 끝난 뒤 갑자기 홈으로 옮겨지니 막는다 (디자인 리뷰 11/05 #2)
-      return const PopScope(
+      // 뒤로 눌러도 반응이 없으면 앱이 멈춘 줄 아니 알려 준다 (리뷰 11/06 #4)
+      return PopScope(
         canPop: false,
-        child: Scaffold(
-          body: Center(child: LoadingView('AI가 식단과 운동 루틴을 만들고 있어요', sub: '잠시만 기다려 주세요')),
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) toast(context, '만드는 중이에요. 조금만 기다려 주세요');
+        },
+        child: const Scaffold(
+          body: Center(child: LoadingView('AI가 식단과 운동 루틴을 만들고 있어요', sub: '보통 1분 안에 끝나요. 잠시만 기다려 주세요')),
         ),
       );
     }
