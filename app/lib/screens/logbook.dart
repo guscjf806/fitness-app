@@ -98,6 +98,7 @@ class LogDetailScreen extends StatelessWidget {
     return AppPage(title: '${log.date} · ${log.title}', children: [
       for (final item in log.items)
         LineRow(
+          rightBelowOnLargeText: true,
           onTap: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: item.name),
           left: Row(children: [
             ExerciseThumb(item.name),

@@ -28,7 +28,7 @@ void main() {
   }
 
   for (final scale in [1.3, 2.0]) {
-    testWidgets('#1 글씨 \${scale}배에서 달력이 넘치지 않는다', (tester) async {
+    testWidgets('#1 글씨 $scale배에서 달력이 넘치지 않는다', (tester) async {
       await start(tester, scale);
       demoNavigatorKey.currentState!.pushNamed(Routes.records);
       await tester.pumpAndSettle();
@@ -36,6 +36,19 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(workoutLogs, isNotEmpty);
+    });
+  }
+  for (final scale in [1.3, 2.0]) {
+    testWidgets('#2 글씨 $scale배에서 운동 탭·일지 상세가 넘치지 않고 이름이 쪼개지지 않는다', (tester) async {
+      await start(tester, scale);
+      demo.update(() => demo.tab = 2);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      demoNavigatorKey.currentState!.pushNamed(Routes.logDetail, arguments: workoutLogs.first);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      final name = findText(workoutLogs.first.items.first.name);
+      expect(tester.getSize(name).height, lessThan(14 * scale * 1.6), reason: '한 줄로 들어간다');
     });
   }
 }

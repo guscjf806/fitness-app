@@ -184,6 +184,7 @@ class _ExerciseRow extends StatelessWidget {
     final info = exerciseByName(name);
     final painHit = info == null ? const <String>[] : info.avoidFor.where(demo.painAreas.contains).toList();
     return LineRow(
+      rightBelowOnLargeText: true,
       onTap: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: name),
       left: Row(children: [
         // 손가락으로 누르기 쉽게 누르는 자리를 48px로 (디자인 리뷰 10/28 #1)

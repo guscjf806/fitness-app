@@ -120,6 +120,7 @@ class _TodayMealRows extends StatelessWidget {
   Widget build(BuildContext context) => Column(children: [
         for (final m in mealDays[0])
           LineRow(
+            rightBelowOnLargeText: true,
             onTap: () => demo.update(() => demo.tab = 1),
             left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(m.title, style: AppText.bodyStrong),

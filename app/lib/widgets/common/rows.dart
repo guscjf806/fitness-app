@@ -44,7 +44,7 @@ class RestModeSwitch extends StatelessWidget {
 
 /// 아래 구분선이 있는 한 줄
 class LineRow extends StatelessWidget {
-  const LineRow({super.key, required this.left, this.right, this.onTap, this.showArrow = false});
+  const LineRow({super.key, required this.left, this.right, this.onTap, this.showArrow = false, this.rightBelowOnLargeText = false});
   final Widget left;
   final Widget? right;
   final VoidCallback? onTap;
@@ -52,8 +52,12 @@ class LineRow extends StatelessWidget {
   /// 오른쪽 끝에 누를 수 있다는 화살표를 붙인다 (디자인 리뷰 10/29 #3)
   final bool showArrow;
 
+  /// 글자가 크면(1.3배 이상) 오른쪽 글을 왼쪽 글 아래 줄로 내린다. 왼쪽 이름이 좁아져 쪼개지지 않게 (디자인 리뷰 11/06 #2)
+  final bool rightBelowOnLargeText;
+
   @override
   Widget build(BuildContext context) {
+    final below = rightBelowOnLargeText && right != null && MediaQuery.textScalerOf(context).scale(1) >= 1.3;
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -64,8 +68,12 @@ class LineRow extends StatelessWidget {
             border: Border(bottom: BorderSide(color: AppColors.line))),
         child: Row(
           children: [
-            Expanded(child: left),
-            if (right != null) ...[const SizedBox(width: 10), right!],
+            Expanded(
+              child: below
+                  ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [left, const SizedBox(height: AppSpace.xs), right!])
+                  : left,
+            ),
+            if (right != null && !below) ...[const SizedBox(width: 10), right!],
             if (showArrow) ...[
               const SizedBox(width: 4),
               const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
