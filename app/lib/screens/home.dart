@@ -30,7 +30,7 @@ class HomeTab extends StatelessWidget {
         onTap: () => Navigator.pushNamed(context, Routes.records),
         left: Row(children: [
           const Icon(Icons.local_fire_department, size: 20, color: AppColors.streakFire),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppSpace.xsPlus),
           Text('연속 ${demo.streak}일째', style: AppText.bodyStrong),
           const SizedBox(width: 8),
           Expanded(
@@ -45,7 +45,7 @@ class HomeTab extends StatelessWidget {
       for (final g in goals)
         LineRow(
           onTap: g.$2 ? null : g.$3,
-          left: Row(children: [CheckCircle(g.$2), const SizedBox(width: 10), Text(g.$1)]),
+          left: Row(children: [CheckCircle(g.$2), const SizedBox(width: AppSpace.sPlus), Text(g.$1)]),
           right: g.$2 ? const Muted('완료', bottom: 0) : null,
           showArrow: !g.$2,
         ),

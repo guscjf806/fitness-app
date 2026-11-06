@@ -28,6 +28,9 @@ class AppColors {
   /// 운동한 날 달력의 불꽃 색
   static const streakFire = Color(0xFFFF7A45);
 
+  /// 진한 청록 위의 작은 불꽃 (달력 전용). 잘 보이게 밝은 색
+  static const streakFireOnDark = Color(0xFFFFD9C2);
+
   /// 동작 그림의 팔다리 색 (배경은 primaryDark)
   static const figureLimb = Color(0xFFA7DCD3);
 
@@ -57,7 +60,9 @@ class AppSpace {
   static const double sheet = 20;
 
   static const double xs = 4;
+  static const double xsPlus = 6;
   static const double s = 8;
+  static const double sPlus = 10;
   static const double m = 12;
   static const double l = 16;
   static const double xl = 24;

@@ -58,14 +58,14 @@ class Seg extends StatelessWidget {
       padding: const EdgeInsets.only(top: 6, bottom: 12),
       child: Row(
         children: [
-          for (final o in options)
+          // 버튼 사이만 띄워서 양 끝이 카드·입력 칸과 줄이 맞게 (디자인 리뷰 11/06 #7)
+          for (var i = 0; i < options.length; i++) ...[
+            if (i > 0) const SizedBox(width: AppSpace.xsPlus),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 3),
-                child: _SegButton(
-                    label: o, selected: o == value, onTap: () => onChanged(o)),
-              ),
+              child: _SegButton(
+                  label: options[i], selected: options[i] == value, onTap: () => onChanged(options[i])),
             ),
+          ],
         ],
       ),
     );

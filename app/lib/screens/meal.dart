@@ -166,7 +166,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
         decoration: const InputDecoration(labelText: '한 줄 설명', hintText: '예: 닭가슴살 150g, 현미밥 1공기'),
         onChanged: (v) => setState(() => note = v),
       ),
-      const SizedBox(height: 10),
+      const SizedBox(height: AppSpace.sPlus),
       // 실제 사용 횟수를 보여 주고, 다 썼으면 누르기 전에 알린다 (리뷰 11/01 #1)
       if (demo.quotaExhausted)
         const WarningBox('이번 달 무료 횟수를 다 썼어요', top: 0)

@@ -111,7 +111,7 @@ class _RestTimerState extends State<_RestTimer> {
         const SizedBox(height: 20),
         Row(children: [
           Expanded(child: AppButton('− 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(-10))),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpace.sPlus),
           Expanded(child: AppButton('+ 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(10))),
         ]),
         const SizedBox(height: AppSpace.m),

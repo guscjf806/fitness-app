@@ -32,7 +32,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
       context,
       builder: (_) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           SheetTitle(title), // 다른 시트 제목과 같게 (디자인 리뷰 10/30 #6)
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpace.sPlus),
           const Muted('이 자리에는 전문가 검토를 마친 약관·동의서 원문이 들어가요. 목업에서는 비워 두었어요.'),
         ]),
     );
@@ -70,7 +70,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
             : agreed.addAll([for (var i = 0; i < items.length; i++) i])),
         child: Row(children: [
           CheckCircle(agreed.length == items.length),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpace.sPlus),
           // 선택 항목까지 동의된다는 걸 이름으로 알린다. 약관·동의 원문은 그대로 (리뷰 11/04 #5)
           const Expanded(child: Text('전체 동의 (선택 항목 포함)', style: AppText.bodyStrong)),
         ]),
@@ -80,7 +80,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
           onTap: () => setState(() => agreed.contains(i) ? agreed.remove(i) : agreed.add(i)),
           left: Row(children: [
             CheckCircle(agreed.contains(i)),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSpace.sPlus),
             Expanded(child: Text('[${items[i].$2 ? '필수' : '선택'}] ${items[i].$1}')),
           ]),
           right: i == 0 ? null : TextButton(onPressed: () => _showDraft(items[i].$1), child: const Text('보기')),

@@ -195,7 +195,7 @@ class _ExerciseRow extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         ExerciseThumb(name),
-        const SizedBox(width: 10),
+        const SizedBox(width: AppSpace.sPlus),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(name),

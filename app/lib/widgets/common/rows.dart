@@ -73,7 +73,7 @@ class LineRow extends StatelessWidget {
                   ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [left, const SizedBox(height: AppSpace.xs), right!])
                   : left,
             ),
-            if (right != null && !below) ...[const SizedBox(width: 10), right!],
+            if (right != null && !below) ...[const SizedBox(width: AppSpace.sPlus), right!],
             if (showArrow) ...[
               const SizedBox(width: 4),
               const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),

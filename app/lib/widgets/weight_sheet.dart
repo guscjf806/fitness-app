@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../screens/onboarding.dart';
 import '../state/demo_state.dart';
+import '../theme/app_theme.dart';
 import 'common.dart';
 
 /// 이번 주 몸무게 기록 (기획서 B4: 몸무게 재입력 → TDEE 재계산 → 식단·운동 루틴 재생성 제안).
@@ -49,7 +50,7 @@ class _WeightFormState extends State<_WeightForm> {
       final changed = (result.$2 - result.$1).abs() >= 50;
       return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SheetTitle('이번 주 몸무게를 기록했어요'),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpace.sPlus),
         Muted(result.$1 == result.$2
             ? '목표 칼로리는 ${formatNumber(result.$2)} kcal 그대로예요.'
             : '목표 칼로리가 ${formatNumber(result.$1)} → ${formatNumber(result.$2)} kcal로 바뀌었어요.'),
@@ -66,7 +67,7 @@ class _WeightFormState extends State<_WeightForm> {
     final last = demo.weightLogs.isEmpty ? null : demo.weightLogs.last;
     return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
       const SheetTitle('이번 주 몸무게'),
-      const SizedBox(height: 6),
+      const SizedBox(height: AppSpace.xsPlus),
       Muted(last == null ? '일주일에 한 번, 같은 시간대(예: 아침 공복)에 재면 좋아요.' : '지난 기록: ${last.date} ${last.kg}kg'),
       TextField(
         controller: widget.controller,

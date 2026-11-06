@@ -54,7 +54,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
                         ? AppText.small.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)
                         : AppText.small.copyWith(color: AppColors.textSub)),
               ]),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppSpace.xsPlus),
             ],
           ]),
           const SizedBox(height: AppSpace.s),
@@ -191,7 +191,7 @@ class _CalendarDay extends StatelessWidget {
                             ? AppColors.textSub
                             : AppColors.text,
               )),
-          if (done) const Icon(Icons.local_fire_department, color: AppColors.streakFire, size: 11),
+          if (done) const Icon(Icons.local_fire_department, color: AppColors.streakFireOnDark, size: 11),
           ]),
         ),
       ),

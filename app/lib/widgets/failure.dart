@@ -47,9 +47,9 @@ class FailureView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 24),
       child: Column(children: [
         const Icon(Icons.error_outline, size: 44, color: AppColors.warning),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpace.sPlus),
         Text(title, textAlign: TextAlign.center, style: AppText.title),
-        const SizedBox(height: 6),
+        const SizedBox(height: AppSpace.xsPlus),
         const Muted('잠시 후 다시 시도해 주세요. 이번 시도는 사용 횟수에서 빠지지 않았어요.', align: TextAlign.center),
         AppButton('다시 시도', onPressed: onRetry),
         if (onLater != null) AppButton('나중에 하기', kind: ButtonKind.soft, onPressed: onLater),
@@ -65,7 +65,7 @@ void showQuotaExhausted(BuildContext context) {
     context,
     builder: (sheetContext) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SheetTitle('이번 달 무료 횟수를 모두 썼어요'),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpace.sPlus),
         Row(children: [
           const Expanded(child: Text('이번 달 AI 사용')),
           Muted('${AppConfig.freeMonthlyAiLimit} / ${AppConfig.freeMonthlyAiLimit}회', bottom: 0),

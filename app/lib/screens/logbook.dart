@@ -103,7 +103,7 @@ class LogDetailScreen extends StatelessWidget {
           onTap: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: item.name),
           left: Row(children: [
             ExerciseThumb(item.name),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSpace.sPlus),
             Expanded(child: WordText(item.name)),
           ]),
           right: Muted(item.dose, bottom: 0),
@@ -415,7 +415,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
                       child: Row(children: [
                         if (r.exercise != null) ...[
                           ExerciseThumb(r.exercise!, size: 32),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: AppSpace.sPlus),
                         ],
                         Expanded(
                           child: WordText(r.exercise ?? '종목을 골라 주세요',
@@ -487,7 +487,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       const Muted('이 날짜에 출석 도장이 찍혀요', top: AppSpace.xs, bottom: AppSpace.m),
       for (var i = 0; i < rows.length; i++) _rowEditor(i),
       AppButton('+ 종목 추가', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => rows.add(_LogRow()))),
-      const SizedBox(height: 10),
+      const SizedBox(height: AppSpace.sPlus),
       // 촬영 동의 안내가 묻히지 않게 제목·규칙·동의를 나눈다. 문구는 그대로 (디자인 리뷰 11/01 #4)
       H2('운동 영상 ${videos.length}/5', top: 0),
       const Text('회원님 촬영 동의 후 올려 주세요', style: AppText.bodyStrong),
@@ -506,7 +506,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       TextFormField(
         initialValue: comment,
         maxLines: 3,
-        decoration: const InputDecoration(labelText: '코멘트', hintText: '자세, 다음 목표 등'),
+        decoration: const InputDecoration(labelText: '코멘트', hintText: '자세, 다음 목표 등', alignLabelWithHint: true),
         onChanged: (v) => setState(() => comment = v),
       ),
       const SizedBox(height: AppSpace.m),

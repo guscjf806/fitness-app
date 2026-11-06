@@ -100,7 +100,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                 },
                 left: Row(children: [
                   ExerciseFigureView(e.id, size: 44, radius: AppRadius.small),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpace.sPlus),
                   Expanded(child: Text(e.name)),
                 ]),
                 right: Muted(e.equipment, bottom: 0),
@@ -197,7 +197,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
       appBar: AppBar(
         title: Row(children: [
           const Icon(Icons.timer_outlined, size: 20, color: AppColors.primaryDark),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppSpace.xsPlus),
           Text(elapsed),
         ]),
         // 같은 창을 여는 버튼이 두 개라 헷갈려서 하나로 (디자인 리뷰 10/30 #7)
@@ -226,7 +226,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
           ),
           ActionChip(avatar: const Icon(Icons.swap_horiz, size: 18), label: const Text('운동 대체'), onPressed: _swap),
         ]),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpace.sPlus),
         // 세트 칸이 화면 위쪽에 오도록 그림을 줄이고, 무게 고르는 법은 쉬운 말과 본문 글씨로 (리뷰 10/28 #7)
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
@@ -257,7 +257,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                     });
                   }),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpace.sPlus),
           Expanded(
             child: AppButton('+ 세트 추가', kind: ButtonKind.soft, onPressed: () => setState(() {
               final prev = ex.sets.last;
@@ -270,7 +270,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
           child: Row(children: [
             if (index > 0) ...[
               Expanded(child: AppButton('이전', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => index--))),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSpace.sPlus),
             ],
             Expanded(
               flex: 2,
@@ -325,7 +325,7 @@ class _SetRow extends StatelessWidget {
           field(entry.kg, 'kg', onKg),
         const Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: Text('/')),
         field(entry.reps, unit, (v) => entry.reps = v),
-        const SizedBox(width: 6),
+        const SizedBox(width: AppSpace.xsPlus),
         IconButton(
           tooltip: '$number세트 완료',
           onPressed: onToggle,

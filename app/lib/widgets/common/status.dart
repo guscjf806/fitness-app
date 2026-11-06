@@ -96,7 +96,7 @@ class WarningBox extends StatelessWidget {
       ),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 26),
-        const SizedBox(width: 10),
+        const SizedBox(width: AppSpace.sPlus),
         Expanded(
           child: Text(text,
               style: AppText.warning.copyWith(color: AppColors.warningText)),
