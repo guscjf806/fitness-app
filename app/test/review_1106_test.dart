@@ -50,4 +50,19 @@ void main() {
     expect(demo.continueToGenerate, isTrue);
     demo.continueToGenerate = false;
   });
+  testWidgets('#7 글씨를 2배로 키워도 달력이 넘치지 않고, 안 연 일지 배지는 받지 않은 상태', (tester) async {
+    demo.switchRole('member');
+    demo.firstLogSeen = false;
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await start(tester);
+    await open(tester, Routes.records);
+    expect(tester.takeException(), isNull);
+    await tester.scrollUntilVisible(findText('PT 일지를 처음 열어 보면 받아요'), 200, scrollable: find.byType(Scrollable).first);
+    expect(findText('PT 일지를 처음 열어 보면 받아요'), findsOneWidget);
+    await tester.scrollUntilVisible(findText('통계'), -200, scrollable: find.byType(Scrollable).first);
+    await tester.tap(findText('통계'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
 }

@@ -31,10 +31,10 @@ class _RecordsScreenState extends State<RecordsScreen> {
     final monthCount = monthDoneDays.length + (demo.workoutDone ? 1 : 0);
     final longest = math.max(pastLongestStreak, demo.streak);
     final badges = [
-      ('첫 식단', demo.mealPosts.isNotEmpty, ''),
+      ('첫 식단', demo.mealPosts.isNotEmpty, '식단을 처음 올리면 받아요'),
       ('7일 연속', demo.streak >= 7, '연속 7일을 기록하면 받아요'),
-      ('첫 PT 일지 확인', demo.role == 'member' || demo.firstLogSeen, 'PT 일지를 처음 열어 보면 받아요'),
-      ('한 달 운동 20회', false, '이번 달 $monthCount / 20회'),
+      ('첫 PT 일지 확인', demo.firstLogSeen, 'PT 일지를 처음 열어 보면 받아요'),
+      ('한 달 운동 20회', monthCount >= 20, '이번 달 $monthCount / 20회'),
     ];
     return [
       AppCard(
@@ -171,7 +171,10 @@ class _CalendarDay extends StatelessWidget {
           border: day == demoToday ? Border.all(color: AppColors.text, width: 2) : null,
         ),
         // 운동한 날: 청록 동그라미에 흰 숫자, 불꽃은 숫자 아래 작게 (결정 dd1030-calendar-done)
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        // 폰 글씨를 크게 키워도 칸을 넘지 않게 줄여서 그린다 (리뷰 11/06 #7)
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text('$day',
               style: AppText.caption.copyWith(
                 height: 1,
@@ -185,7 +188,8 @@ class _CalendarDay extends StatelessWidget {
                             : AppColors.text,
               )),
           if (done) const Icon(Icons.local_fire_department, color: AppColors.streakFire, size: 11),
-        ]),
+          ]),
+        ),
       ),
     );
   }
@@ -211,7 +215,7 @@ class _BadgeRow extends StatelessWidget {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(name, style: AppText.bodyStrong),
-            Muted(earned ? '획득했어요' : how, bottom: 0),
+            Muted(earned ? '받았어요' : how, bottom: 0),
           ]),
         ),
       ]),
