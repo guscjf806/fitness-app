@@ -183,7 +183,11 @@ class DemoState extends ChangeNotifier {
   int get workoutDaysThisWeek => week.where((d) => !d.isRest).length;
 
   bool get weightLoggedThisWeek => weightLogs.isNotEmpty;
-  bool get mealPostedToday => mealPosts.any((p) => p.isToday);
+  /// 오늘 식단표에서 '먹었어요'를 누른 끼니 (결정 d1101-3)
+  final Set<String> eatenMeals = {};
+
+  /// 올렸거나 '먹었어요'를 눌렀으면 오늘 식단을 기록한 것으로 본다
+  bool get mealPostedToday => mealPosts.any((p) => p.isToday) || eatenMeals.isNotEmpty;
   bool get recordedToday => mealPostedToday || workoutDone;
   int get streak => 6 + (recordedToday ? 1 : 0);
   /// 이번 달 무료 횟수를 다 썼는지 (실제로 다 쓴 경우와 목업의 '횟수 소진' 미리 보기)

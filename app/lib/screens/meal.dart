@@ -38,7 +38,7 @@ class _MealTabState extends State<MealTab> {
       const H1('식단'),
       DayChips(labels: dayLabels, selected: day, today: 0, onSelect: (i) => setState(() => day = i)),
       const Muted("g(그램) 수와 칼로리는 AI가 추정한 값이에요. 같은 음식이 없으면 '없으면 →' 뒤의 음식으로 바꿔 드세요.", bottom: 10),
-      for (final m in meals) _MealCard(m),
+      for (final m in meals) _MealCard(m, canCheck: day == 0),
       LineRow(
         left: const Text('합계', style: AppText.bodyStrong),
         // 목표와 비교할 수 있게 (리뷰 11/01 #7)
@@ -63,8 +63,11 @@ class _MealTabState extends State<MealTab> {
 }
 
 class _MealCard extends StatelessWidget {
-  const _MealCard(this.meal);
+  const _MealCard(this.meal, {this.canCheck = false});
   final Meal meal;
+
+  /// 오늘 식단이면 끼니마다 '먹었어요'를 누를 수 있다 (결정 d1101-3)
+  final bool canCheck;
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +96,22 @@ class _MealCard extends StatelessWidget {
                   child: WordText('없으면 → ${f.altName} ${f.altGrams}g', style: AppText.body.copyWith(color: AppColors.textSub)),
                 ),
               ]),
+            ),
+          ),
+        if (canCheck)
+          Align(
+            alignment: Alignment.centerRight,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(AppRadius.small),
+              onTap: () => demo.update(() => demo.eatenMeals.contains(meal.title) ? demo.eatenMeals.remove(meal.title) : demo.eatenMeals.add(meal.title)),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  CheckCircle(demo.eatenMeals.contains(meal.title)),
+                  const SizedBox(width: AppSpace.s),
+                  const Text('먹었어요'),
+                ]),
+              ),
             ),
           ),
       ]),

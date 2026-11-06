@@ -150,4 +150,16 @@ void main() {
     expect(findText('식단 사진'), findsNothing);
     demo.mealPosts.removeAt(0);
   });
+  testWidgets('결정 d1101-3 먹었어요를 누르면 홈 작은 목표에도 반영된다', (tester) async {
+    await openPost(tester);
+    demo.eatenMeals.clear();
+    addTearDown(demo.eatenMeals.clear);
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 1);
+    await tester.pumpAndSettle();
+    expect(demo.mealPostedToday, isFalse);
+    await tap(tester, findText('먹었어요').first);
+    expect(demo.eatenMeals, isNotEmpty);
+    expect(demo.mealPostedToday, isTrue);
+  });
 }
