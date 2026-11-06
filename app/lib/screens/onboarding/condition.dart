@@ -15,7 +15,7 @@ class ConditionScreen extends StatelessWidget {
     return AppPage(title: '운동 강도와 조건', children: [
       // 고르기 전에 기준을 먼저 보게 맨 위에, 본문 글씨로 (리뷰 10/29 #5)
       const AppCard(
-        child: Text('안 함: 거의 앉아서 지내요 · 하: 주 1~3회 가볍게 · 중: 주 3~5회 · 상: 주 6회 이상 또는 고강도',
+        child: WordText('안 함: 거의 앉아서 지내요 · 하: 주 1~3회 가볍게 · 중: 주 3~5회 · 상: 주 6회 이상 또는 고강도',
             style: AppText.body),
       ),
       const FieldLabel('지금 하고 있는 강도', sub: '칼로리 계산에 쓰여요'),
