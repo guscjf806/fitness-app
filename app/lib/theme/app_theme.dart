@@ -126,6 +126,8 @@ class AppTheme {
     );
     return ThemeData(
       useMaterial3: true,
+      // 앱 글꼴은 여기서만 정한다 (결정 dd1103-font)
+      fontFamily: 'Pretendard',
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.background,
       textTheme: const TextTheme(

@@ -81,7 +81,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
           left: Row(children: [
             CheckCircle(agreed.contains(i)),
             const SizedBox(width: AppSpace.sPlus),
-            Expanded(child: Text('[${items[i].$2 ? '필수' : '선택'}] ${items[i].$1}')),
+            Expanded(child: WordText('[${items[i].$2 ? '필수' : '선택'}] ${items[i].$1}')),
           ]),
           right: i == 0 ? null : TextButton(onPressed: () => _showDraft(items[i].$1), child: const Text('보기')),
         ),
