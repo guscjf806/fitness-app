@@ -205,7 +205,7 @@ void main() {
     expect(findText('운동 추가하기'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, '버피');
     await tester.pumpAndSettle();
-    await tester.tap(findText('전신 · 맨몸')); // 검색창에도 '버피'가 있어서 목록 줄의 설명을 누른다
+    await tester.tap(findTextContaining('전신 · 맨몸')); // 검색창에도 '버피'가 있어서 목록 줄의 설명을 누른다
     await tester.pumpAndSettle();
     await tester.tap(findText('추가 완료 (1)'));
     await tester.pumpAndSettle();

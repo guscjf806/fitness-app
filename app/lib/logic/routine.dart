@@ -14,6 +14,9 @@ const _gearAnswer = {
   '튼튼한 의자·계단': '튼튼한 의자',
 };
 
+/// 지금 강도가 낮은 사람인지
+bool isBeginner(String currentIntensity) => currentIntensity == '안 함' || currentIntensity == '하';
+
 /// 이 종목을 이 조건에서 써도 되는지 (기획서 6번 '홈트 조건 필터', 16번 안전 규칙).
 /// - 아픈 부위에 무리가 가는 종목은 장소와 상관없이 뺀다
 /// - 집에서 하는 날: 헬스장 전용 종목, 가진 장비가 아닌 종목, (조용히일 때) 점프·소음 종목을 뺀다
@@ -23,8 +26,11 @@ bool exerciseAllowed(
   required List<String> homeGear,
   required bool quiet,
   required List<String> painAreas,
+  bool beginner = false,
 }) {
   if (e.avoidFor.any(painAreas.contains)) return false;
+  // 지금 강도가 낮으면 루틴·대체 후보에서 상급은 뺀다. 직접 고르는 목록에는 '상급' 표시만 (결정 d1027-level)
+  if (beginner && e.level == 3) return false;
   if (!atHome) return true;
   if (e.place == 'gym') return false;
   if (quiet && (e.impact == 'high' || e.noise == 'loud')) return false;
@@ -47,11 +53,12 @@ WorkoutDay enforceConditions(
   required bool quiet,
   required List<String> painAreas,
   required String minutes,
+  bool beginner = false,
 }) {
   final kept = [
     for (final x in day.items)
       if (exerciseByName(x.name) case final info?)
-        if (exerciseAllowed(info, atHome: day.atHome, homeGear: homeGear, quiet: quiet, painAreas: painAreas)) x,
+        if (exerciseAllowed(info, atHome: day.atHome, homeGear: homeGear, quiet: quiet, painAreas: painAreas, beginner: beginner)) x,
   ];
   final trimmed = kept.take(maxExercisesFor(minutes)).toList();
   return WorkoutDay(day.title, trimmed, atHome: day.atHome, removed: day.items.length - kept.length);
@@ -100,7 +107,8 @@ List<WorkoutDay> demoWeek({
     for (var weekday = 0; weekday < 7; weekday++)
       days.contains(weekday)
           ? _build(session(days.indexOf(weekday)),
-              intensity: intensity, homeGear: homeGear, quiet: quiet, painAreas: painAreas, minutes: minutes)
+              intensity: intensity, homeGear: homeGear, quiet: quiet, painAreas: painAreas, minutes: minutes,
+              beginner: isBeginner(currentIntensity))
           : const WorkoutDay('휴식', []),
   ];
 }
@@ -113,12 +121,13 @@ WorkoutDay _build(
   required bool quiet,
   required List<String> painAreas,
   required String minutes,
+  bool beginner = false,
 }) {
   bool allowed(ExerciseInfo e) =>
-      exerciseAllowed(e, atHome: day.atHome, homeGear: homeGear, quiet: quiet, painAreas: painAreas);
+      exerciseAllowed(e, atHome: day.atHome, homeGear: homeGear, quiet: quiet, painAreas: painAreas, beginner: beginner);
   final varied = WorkoutDay(
       day.title, [for (final x in day.items) Exercise(variantFor(x.name, intensity, allowed), x.amount, x.sets)],
       atHome: day.atHome);
-  final safe = enforceConditions(varied, homeGear: homeGear, quiet: quiet, painAreas: painAreas, minutes: minutes);
+  final safe = enforceConditions(varied, homeGear: homeGear, quiet: quiet, painAreas: painAreas, minutes: minutes, beginner: beginner);
   return applyIntensity(safe, intensity: intensity, minutes: minutes);
 }

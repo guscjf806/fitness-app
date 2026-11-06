@@ -135,4 +135,14 @@ void main() {
     expect(ok(const ['밴드', '문 고정 고리']), isTrue);
     expect(ok(const []), isFalse);
   });
+  test('결정 d1027-level 지금 강도가 낮으면 루틴에 상급 운동이 없다', () {
+    for (final current in ['안 함', '하']) {
+      final week = demoWeek(place: '헬스장', homeGear: const [], noise: '아니오', minutes: '45분', painAreas: const [], daysPerWeek: '6일', currentIntensity: current);
+      for (final d in week) {
+        for (final x in d.items) {
+          expect(exerciseByName(x.name)!.level, lessThan(3), reason: x.name);
+        }
+      }
+    }
+  });
 }
