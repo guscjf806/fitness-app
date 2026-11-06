@@ -60,4 +60,11 @@ void main() {
     final label = tester.element(findText('일지 작성').first);
     expect(DefaultTextStyle.of(label).style.fontFamily, 'Pretendard');
   });
+  testWidgets('결정 dd1103-font 화면 위 제목도 Pretendard를 쓴다', (tester) async {
+    await start(tester, 1);
+    demoNavigatorKey.currentState!.pushNamed(Routes.condition);
+    await tester.pumpAndSettle();
+    final title = tester.element(findText('운동 강도와 조건'));
+    expect(DefaultTextStyle.of(title).style.fontFamily, 'Pretendard');
+  });
 }

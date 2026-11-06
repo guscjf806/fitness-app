@@ -92,27 +92,27 @@ class AppText {
   static const fontFamily = 'Pretendard';
 
   /// 데모 바·작은 안내처럼 가장 작은 글씨
-  static const small = TextStyle(fontSize: 12);
-  static const caption = TextStyle(fontSize: 13);
-  static const body = TextStyle(fontSize: 14);
-  static const bodyStrong = TextStyle(fontSize: 14, fontWeight: FontWeight.w700);
-  static const title = TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
-  static const number = TextStyle(fontSize: 22, fontWeight: FontWeight.w700);
+  static const small = TextStyle(fontFamily: fontFamily, fontSize: 12);
+  static const caption = TextStyle(fontFamily: fontFamily, fontSize: 13);
+  static const body = TextStyle(fontFamily: fontFamily, fontSize: 14);
+  static const bodyStrong = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700);
+  static const title = TextStyle(fontFamily: fontFamily, fontSize: 18, fontWeight: FontWeight.w700);
+  static const number = TextStyle(fontFamily: fontFamily, fontSize: 22, fontWeight: FontWeight.w700);
 
   /// 큰 경고 상자 글씨
-  static const warning = TextStyle(fontSize: 16, fontWeight: FontWeight.w700, height: 1.4);
+  static const warning = TextStyle(fontFamily: fontFamily, fontSize: 16, fontWeight: FontWeight.w700, height: 1.4);
 
   /// 화면 제목(H1), 운동 진행의 운동 이름
-  static const h1 = TextStyle(fontSize: 24, fontWeight: FontWeight.w700, height: 1.3);
+  static const h1 = TextStyle(fontFamily: fontFamily, fontSize: 24, fontWeight: FontWeight.w700, height: 1.3);
 
   /// 큰 숫자(BigNumber)
-  static const bigNumber = TextStyle(fontSize: 28, fontWeight: FontWeight.w700);
+  static const bigNumber = TextStyle(fontFamily: fontFamily, fontSize: 28, fontWeight: FontWeight.w700);
 
   /// 시작 화면의 큰 문구
-  static const display = TextStyle(fontSize: 28, fontWeight: FontWeight.w700, height: 1.3);
+  static const display = TextStyle(fontFamily: fontFamily, fontSize: 28, fontWeight: FontWeight.w700, height: 1.3);
 
   /// 휴식 타이머 숫자
-  static const timer = TextStyle(fontSize: 38, fontWeight: FontWeight.w700);
+  static const timer = TextStyle(fontFamily: fontFamily, fontSize: 38, fontWeight: FontWeight.w700);
 }
 
 class AppTheme {
