@@ -41,6 +41,8 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
     final errors = tried ? _check() : const <String, String>{};
     final teen = (int.tryParse(demo.age) ?? 99) >= minAge && (int.tryParse(demo.age) ?? 99) <= teenMaxAge;
     return AppPage(title: '몸 정보', children: [
+      // 로그인 전에 넣은 정보가 어디에 있는지 알린다 (결정 d1029-local-notice)
+      if (demo.isGuest) const Muted('입력한 정보는 이 폰에만 저장돼요. 로그인하기 전엔 어디에도 보내지 않아요'),
       const FieldLabel('성별'),
       Seg(options: const ['남', '여'], value: demo.sex, onChanged: (v) => demo.update(() => demo.sex = v)),
       // 폰에서 라벨이 잘리지 않게 한 줄에 한 칸씩 (리뷰 10/29 #2)
