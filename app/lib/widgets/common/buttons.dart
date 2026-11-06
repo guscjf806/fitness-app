@@ -132,10 +132,14 @@ class DayChips extends StatelessWidget {
     final day = parts.first;
     final notes = [if (i == today) '오늘', ...parts.skip(1)];
     final on = i == selected;
-    return Column(mainAxisSize: MainAxisSize.min, children: [
+    // 칩 폭이 들쭉날쭉하지 않게 최소 폭. '오늘·휴식'처럼 길어질 수 있어 고정 폭은 쓰지 않는다
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 40),
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
       Text(day, style: TextStyle(color: on ? Colors.white : AppColors.text, fontWeight: on ? FontWeight.w700 : FontWeight.w400)),
       Text(notes.isEmpty ? ' ' : notes.join('·'), style: AppText.small.copyWith(color: on ? Colors.white : AppColors.textSub)),
-    ]);
+      ]),
+    );
   }
 
   const DayChips({super.key, required this.labels, required this.selected, required this.onSelect, this.today});
@@ -161,7 +165,8 @@ class DayChips extends StatelessWidget {
                   label: _label(i),
                   selected: i == selected,
                   showCheckmark: false,
-                  selectedColor: AppColors.primary,
+                  // 흰 글씨가 잘 읽히게 진한 청록으로 (디자인 리뷰 11/06 #5)
+                  selectedColor: AppColors.primaryDark,
                   shape: const StadiumBorder(),
                   onSelected: (_) => onSelect(i),
                 ),
