@@ -37,6 +37,8 @@ class ProfileTab extends StatelessWidget {
           : role == 'member'
               ? 'PT 회원 · 담당 선생님 연결됨'
               : '일반 회원'),
+      // 선생님 계정에는 회원용 항목을 숨기고 회원 관리·초대 코드·알림만 (결정 d1103-4)
+      if (role != 'trainer') ...[
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
@@ -51,6 +53,7 @@ class ProfileTab extends StatelessWidget {
       // 묶음 제목으로 나눠 찾기 쉽게 (결정 dd1029-profile-head)
       const H2('내 몸·조건'),
       const _ConditionRows(),
+      ],
       const H2('알림'),
       SwitchRow(
         title: '매일 알림',
@@ -72,8 +75,9 @@ class ProfileTab extends StatelessWidget {
         ),
       ),
       // 알림 스위치 값은 그대로 두고, 쉬는 동안 멈춘다는 것만 알린다 (리뷰 11/03 #4)
-      if (demo.restMode && demo.pushOn)
+      if (role != 'trainer' && demo.restMode && demo.pushOn)
         const Muted('쉬기 모드 중이라 알림이 잠시 멈췄어요', top: AppSpace.s, bottom: 0),
+      if (role != 'trainer') ...[
       const H2('기록'),
       const RestModeSwitch(),
       LineRow(
@@ -82,12 +86,14 @@ class ProfileTab extends StatelessWidget {
         showArrow: true,
         onTap: () => Navigator.pushNamed(context, Routes.records),
       ),
+      ],
       const H2('계정'),
       if (role == 'user')
         LineRow(left: const Text('PT 코드 입력'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.ptCode)),
       if (role == 'trainer')
-        LineRow(left: const Text('회원 관리'), showArrow: true, onTap: () => demo.update(() => demo.tab = 3)),
-      LineRow(left: const Text('구독'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.subscribe)),
+        LineRow(left: const Text('회원 관리·초대 코드'), showArrow: true, onTap: () => demo.update(() => demo.tab = 3)),
+      if (role != 'trainer')
+        LineRow(left: const Text('구독'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.subscribe)),
       // 위험한 줄은 실수로 누르지 않게 떼어서 맨 아래에 (디자인 리뷰 10/29 #6)
       const SizedBox(height: AppSpace.m),
       // 잘못 눌러 다시 로그인하는 일이 없게 한 번 묻는다 (리뷰 11/03 #2)
