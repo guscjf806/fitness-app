@@ -18,7 +18,8 @@ class HomeTab extends StatelessWidget {
     final today = demo.week[0];
     final goals = [
       ('식단 1끼 올리기', demo.mealPostedToday, () => Navigator.pushNamed(context, Routes.mealPost)),
-      ('오늘 운동 완료', demo.workoutDone, () => demo.update(() => demo.tab = 2)),
+      // 쉬는 날에는 끝낼 방법이 없는 목표라 뺀다 (리뷰 11/06 #3)
+      if (!today.isRest) ('오늘 운동 완료', demo.workoutDone, () => demo.update(() => demo.tab = 2)),
       ('이번 주 몸무게 기록', demo.weightLoggedThisWeek, () => showWeightSheet(context)),
     ];
     if (demo.isGuest) return _guestHome(context, target, today);
