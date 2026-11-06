@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 import 'common.dart';
 
@@ -42,7 +43,9 @@ class _RestTimerState extends State<_RestTimer> {
     if (!mounted) return;
     if (remaining <= 1) {
       ticker?.cancel();
+      // 진동 + 짧은 알림음. 소리는 내 정보에서 끌 수 있다 (결정 d1028-rest-alert)
       HapticFeedback.heavyImpact();
+      if (demo.restSound) SystemSound.play(SystemSoundType.alert);
       final messenger = ScaffoldMessenger.of(context);
       Navigator.pop(context);
       toastOn(messenger, '휴식 끝! 다음 세트를 시작하세요');

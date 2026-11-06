@@ -74,6 +74,13 @@ class ProfileTab extends StatelessWidget {
           child: Text(demo.pushTime.format(context)),
         ),
       ),
+      if (role != 'trainer')
+        SwitchRow(
+          title: '휴식 끝 알림음',
+          subtitle: '휴식이 끝나면 진동과 함께 짧은 소리로 알려요',
+          value: demo.restSound,
+          onChanged: (v) => demo.update(() => demo.restSound = v),
+        ),
       // 알림 스위치 값은 그대로 두고, 쉬는 동안 멈춘다는 것만 알린다 (리뷰 11/03 #4)
       if (role != 'trainer' && demo.restMode && demo.pushOn)
         const Muted('쉬기 모드 중이라 알림이 잠시 멈췄어요', top: AppSpace.s, bottom: 0),
