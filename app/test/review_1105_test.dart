@@ -116,4 +116,16 @@ void main() {
     final flame = tester.getRect(find.byIcon(Icons.local_fire_department).first);
     expect(flame.top, greaterThanOrEqualTo(number.bottom));
   });
+  testWidgets('결정 d1104-4 로그아웃하면 몸 정보가 지워진다', (tester) async {
+    await start(tester);
+    demo.switchRole('user');
+    demo.update(() {
+      demo.weight = '88';
+      demo.painAreas = ['무릎'];
+    });
+    demo.logout();
+    await tester.pumpAndSettle();
+    expect(demo.weight, '72');
+    expect(demo.painAreas, isEmpty);
+  });
 }

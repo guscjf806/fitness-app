@@ -203,6 +203,22 @@ class DemoState extends ChangeNotifier {
   /// 동의도 처음으로 돌린다 (리뷰 11/05 #4). 데모 바로 역할을 바꾸는 건 switchRole
   void logout() {
     consented = false;
+    // 폰에 남은 몸 정보를 지운다 (결정 d1104-4). 계정에서 다시 불러오는 건 회원 정보 표를 만들 때
+    sex = '남';
+    height = '175';
+    age = '30';
+    weight = '72';
+    muscle = '';
+    muscleUnknown = false;
+    bodyFat = '';
+    bodyFatUnknown = false;
+    bodyFatUnit = 'kg';
+    goal = '감량';
+    calorieCalculated = false;
+    allergies = [];
+    allergyNote = '';
+    painAreas = [];
+    weightLogs = [];
     switchRole('guest');
   }
 
