@@ -146,7 +146,8 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          // 흰 글씨가 잘 읽히게 글씨가 올라가는 버튼만 짙은 청록 (결정 dd1104-button-contrast)
+          backgroundColor: AppColors.primaryDark,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(50),
           shape:
