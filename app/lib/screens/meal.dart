@@ -87,7 +87,11 @@ class _MealCard extends StatelessWidget {
                   TextSpan(text: '${f.name} '),
                   TextSpan(text: '${f.grams}g', style: AppText.bodyStrong),
                 ])),
-                Muted('없으면 → ${f.altName} ${f.altGrams}g', top: 2, bottom: 0),
+                // 장 볼 때 보는 정보라 50대 이상도 읽기 쉽게 본문 크기로 (리뷰 11/06 #5, 사용자 선택 14px)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: WordText('없으면 → ${f.altName} ${f.altGrams}g', style: AppText.body.copyWith(color: AppColors.textSub)),
+                ),
               ]),
             ),
           ),
