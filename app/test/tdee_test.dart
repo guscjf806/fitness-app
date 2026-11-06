@@ -62,4 +62,8 @@ void main() {
     expect(none.tdee, lessThan(low.tdee));
     expect(none.bmr, low.bmr);
   });
+  test('결정 d1029-bodyfat-unit 체지방률 입력은 % 범위로 확인한다', () {
+    expect(validateBody(height: '175', age: '30', weight: '72', bodyFat: '20', bodyFatPercent: true), isEmpty);
+    expect(validateBody(height: '175', age: '30', weight: '72', bodyFat: '70', bodyFatPercent: true), contains('bodyFat'));
+  });
 }

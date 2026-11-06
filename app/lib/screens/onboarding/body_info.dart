@@ -23,7 +23,8 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
       age: demo.age,
       weight: demo.weight,
       muscle: demo.muscleUnknown ? '' : demo.muscle,
-      bodyFat: demo.bodyFatUnknown ? '' : demo.bodyFat);
+      bodyFat: demo.bodyFatUnknown ? '' : demo.bodyFat,
+      bodyFatPercent: demo.bodyFatUnit == '%',);
 
   void _next() {
     final errors = _check();
@@ -64,14 +65,17 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
         onUnknown: () => demo.update(() => demo.muscleUnknown = !demo.muscleUnknown),
       ),
       _OptionalField(
-        label: '체지방량 (kg, 선택)',
+        label: demo.bodyFatUnit == '%' ? '체지방률 (%, 선택)' : '체지방량 (kg, 선택)',
         value: demo.bodyFat,
         unknown: demo.bodyFatUnknown,
         error: errors['bodyFat'],
         onChanged: (v) => demo.update(() => demo.bodyFat = v),
         onUnknown: () => demo.update(() => demo.bodyFatUnknown = !demo.bodyFatUnknown),
       ),
-      const Muted("체지방량을 알면 더 정확한 공식으로 계산해요. 모르면 '잘 모르겠음'을 눌러 주세요."),
+      // 인바디 결과지에 따라 kg이나 %로 적는다 (결정 d1029-bodyfat-unit)
+      if (!demo.bodyFatUnknown)
+        Seg(options: const ['kg', '%'], value: demo.bodyFatUnit, onChanged: (v) => demo.update(() => demo.bodyFatUnit = v)),
+      const Muted("체지방을 알면 더 정확한 공식으로 계산해요. 모르면 '잘 모르겠음'을 눌러 주세요."),
       const FieldLabel('목표'),
       Seg(options: const ['감량', '유지', '증량'], value: demo.goal, onChanged: (v) => demo.update(() => demo.goal = v)),
       if (teen && demo.goal == '감량')

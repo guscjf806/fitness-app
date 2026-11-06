@@ -43,6 +43,16 @@ class DemoState extends ChangeNotifier {
   bool muscleUnknown = false;
   String bodyFat = '';
   bool bodyFatUnknown = false;
+
+  /// 체지방 단위 'kg' 또는 '%' (결정 d1029-bodyfat-unit)
+  String bodyFatUnit = 'kg';
+
+  /// 계산에 쓰는 체지방량(kg). %로 적었으면 몸무게로 바꾼다
+  double? get bodyFatKg {
+    final v = double.tryParse(bodyFat);
+    if (bodyFatUnknown || v == null) return null;
+    return bodyFatUnit == '%' ? (double.tryParse(weight) ?? 0) * v / 100 : v;
+  }
   String goal = '감량';
 
   /// 칼로리 결과(S04)를 한 번이라도 봤는지
@@ -141,7 +151,7 @@ class DemoState extends ChangeNotifier {
         heightCm: double.tryParse(height) ?? 175,
         age: int.tryParse(age) ?? 30,
         weightKg: double.tryParse(weight) ?? 72,
-        bodyFatKg: bodyFatUnknown ? null : double.tryParse(bodyFat),
+        bodyFatKg: bodyFatKg,
         currentIntensity: currentIntensity,
         goal: goal,
       );
@@ -212,6 +222,7 @@ class DemoState extends ChangeNotifier {
       daysPerWeek, allergyNote,
     ]);
     await p.setStringList('homeGear', homeGear);
+    await p.setString('bodyFatUnit', bodyFatUnit);
     await p.setStringList('allergies', allergies);
     await p.setStringList('painAreas', painAreas);
     await p.setStringList('weightLogs', [for (final w in weightLogs) '${w.date}|${w.kg}']);
@@ -249,6 +260,7 @@ class DemoState extends ChangeNotifier {
       allergyNote = f[17];
     }
     homeGear = p.getStringList('homeGear') ?? homeGear;
+    bodyFatUnit = p.getString('bodyFatUnit') ?? bodyFatUnit;
     allergies = p.getStringList('allergies') ?? allergies;
     painAreas = p.getStringList('painAreas') ?? painAreas;
     weightLogs = [
