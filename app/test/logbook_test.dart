@@ -242,6 +242,18 @@ void main() {
     expect(findTextContaining('계속 볼 수 있어요'), findsOneWidget);
   });
 
+  testWidgets('결정 d1106-1 영상은 종목 줄마다 올리고 그 종목 이름이 붙는다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '박서연');
+    await pick(tester);
+    await tester.enterText(field('횟수'), '8');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('영상 추가'));
+    await tap(tester, findText('촬영하기'));
+    expect(findTextContaining('TRX 로우 영상'), findsOneWidget);
+    await tap(tester, findText('회원님께 보내기'));
+    expect(demo.sentLogs['박서연']!.single.videos.single.name, startsWith('TRX 로우 영상'));
+  });
+
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {
     await openRoute(tester, Routes.logWrite, args: '김지아');
     await tap(tester, findText('직접 입력'));

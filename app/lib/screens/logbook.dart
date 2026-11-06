@@ -355,12 +355,11 @@ class _MemberManageTabState extends State<MemberManageTab> {
 
 /// 회원에게 아직 보내지 않은 일지 (결정 d1102-2). 목업이라 메모리에만 둔다
 class _LogDraft {
-  const _LogDraft(this.date, this.rows, this.stamp, this.comment, this.videos);
+  const _LogDraft(this.date, this.rows, this.stamp, this.comment);
   final DateTime date;
   final List<_LogRow> rows;
   final String stamp;
   final String comment;
-  final List<String> videos;
 }
 
 final Map<String, _LogDraft> _logDrafts = {};
@@ -379,8 +378,11 @@ class _LogRow {
   String reps = '';
   String sets = '';
 
+  /// 이 종목에 붙인 영상 (결정 d1106-1)
+  final List<String> videos = [];
+
   String get name => custom ? customName.trim() : (exercise ?? '');
-  bool get hasInput => exercise != null || [customName, kg, reps, sets].any((v) => v.trim().isNotEmpty);
+  bool get hasInput => exercise != null || videos.isNotEmpty || [customName, kg, reps, sets].any((v) => v.trim().isNotEmpty);
 }
 
 /// S19 일지 작성 (선생님)
@@ -398,12 +400,13 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   DateTime date = demoTodayDate;
   final List<_LogRow> rows = [_LogRow()];
   String stamp = stamps.first;
-  final List<String> videos = [];
   String comment = '';
+
+  int get videoCount => rows.fold(0, (n, r) => n + r.videos.length);
 
   /// 적은 게 있는지 (뒤로 갈 때 버릴지 묻는 기준)
   bool get dirty =>
-      rows.length > 1 || rows.any((r) => r.hasInput) || comment.trim().isNotEmpty || videos.isNotEmpty || date != demoTodayDate;
+      rows.length > 1 || rows.any((r) => r.hasInput) || comment.trim().isNotEmpty || date != demoTodayDate;
 
   String get dateLabel => '${date.month}월 ${date.day}일';
 
@@ -424,7 +427,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       toast(context, '적은 내용이 없어요');
       return;
     }
-    demo.update(() => _logDrafts[member!] = _LogDraft(date, [...rows], stamp, comment, [...videos]));
+    demo.update(() => _logDrafts[member!] = _LogDraft(date, [...rows], stamp, comment));
     toast(context, '임시 저장했어요. 회원님께는 아직 가지 않았어요');
     Navigator.pop(context);
   }
@@ -457,7 +460,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         for (final r in rows)
           LogItem(r.name, r.kg.trim().isEmpty ? '체중' : '${r.kg.trim()}kg', '${int.parse(r.reps.trim())}개', int.parse(r.sets.trim())),
       ],
-      [for (final v in videos) LogVideo(v, 30)], // 기획서 6번 초안: 올린 날부터 30일
+      [for (final r in rows) for (final v in r.videos) LogVideo(v, 30)], // 기획서 6번 초안: 올린 날부터 30일
       comment.trim(),
       stamp,
     );
@@ -466,18 +469,39 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       (demo.sentLogs[member!] ??= []).add(log);
       demo.unseenLogs.add(log);
     });
-    toast(context, '$member 회원님께 일지${videos.isEmpty ? '' : '와 영상 ${videos.length}개'}를 보내고 알림을 보냈어요 ($dateLabel 출석 도장 완료)');
+    toast(context, '$member 회원님께 일지${videoCount == 0 ? '' : '와 영상 $videoCount개'}를 보내고 알림을 보냈어요 ($dateLabel 출석 도장 완료)');
     Navigator.pop(context);
   }
 
-  void _addVideo(String source) {
-    if (videos.length >= 5) {
+  /// 영상은 어느 종목인지 알 수 있게 줄마다 올린다 (결정 d1106-1)
+  void _addVideo(_LogRow r, String source) {
+    if (videoCount >= 5) {
       toast(context, '영상은 일지당 최대 5개까지 올릴 수 있어요');
       return;
     }
-    final name = rows.last.name;
-    setState(() => videos.add('${name.isEmpty ? '직접 입력' : name} 영상 · 0:1${videos.length + 1}'));
+    if (r.name.isEmpty) {
+      toast(context, '종목을 먼저 골라 주세요');
+      return;
+    }
+    setState(() => r.videos.add('${r.name} 영상 · 0:1${videoCount + 1}'));
     toast(context, source == '촬영' ? '15초가 되면 촬영이 자동으로 끝나요' : '15초보다 긴 영상은 앞 15초만 올라가요');
+  }
+
+  void _chooseVideo(_LogRow r) {
+    showAppSheet<void>(
+      context,
+      builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const SheetTitle('영상 추가'),
+        LineRow(left: const Text('촬영하기'), showArrow: true, onTap: () {
+          Navigator.pop(sheet);
+          _addVideo(r, '촬영');
+        }),
+        LineRow(left: const Text('앨범에서 선택'), showArrow: true, onTap: () {
+          Navigator.pop(sheet);
+          _addVideo(r, '앨범');
+        }),
+      ]),
+    );
   }
 
   /// 줄을 빼고 되돌릴 수 있게 한다
@@ -545,16 +569,29 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
           alignment: Alignment.centerLeft,
           child: Muted('맨몸이면 무게 칸을 비워 두세요', top: AppSpace.xs, bottom: 0),
         ),
+        for (var j = 0; j < r.videos.length; j++)
+          LineRow(
+            left: Text(r.videos[j]),
+            right: TextButton(onPressed: () => _removeVideo(r, j), child: const Text('빼기', style: TextStyle(color: AppColors.warningText))),
+          ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            icon: const Icon(Icons.videocam_outlined, size: 18),
+            label: const Text('영상 추가'),
+            onPressed: () => _chooseVideo(r),
+          ),
+        ),
       ]),
     );
   }
 
   /// 영상을 빼고, 지운 자리에 되돌릴 수 있게 한다 (디자인 리뷰 11/01 #3)
-  void _removeVideo(int i) {
-    final removed = videos[i];
-    setState(() => videos.removeAt(i));
+  void _removeVideo(_LogRow r, int i) {
+    final removed = r.videos[i];
+    setState(() => r.videos.removeAt(i));
     toast(context, '영상을 뺐어요', actionLabel: '되돌리기', onAction: () {
-      if (mounted) setState(() => videos.insert(i.clamp(0, videos.length), removed));
+      if (mounted) setState(() => r.videos.insert(i.clamp(0, r.videos.length), removed));
     });
   }
 
@@ -571,9 +608,6 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
           ..addAll(draft.rows);
         stamp = draft.stamp;
         comment = draft.comment;
-        videos
-          ..clear()
-          ..addAll(draft.videos);
       }
     }
     // 수업 뒤 길게 적은 일지가 뒤로 가기로 사라지지 않게 먼저 묻는다 (리뷰 11/02 #3)
@@ -607,19 +641,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       AppButton('+ 종목 추가', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => rows.add(_LogRow()))),
       const SizedBox(height: AppSpace.sPlus),
       // 촬영 동의 안내가 묻히지 않게 제목·규칙·동의를 나눈다. 문구는 그대로 (디자인 리뷰 11/01 #4)
-      H2('운동 영상 ${videos.length}/5', top: 0),
+      H2('운동 영상 $videoCount/5', top: 0),
       const Text('회원님 촬영 동의 후 올려 주세요', style: AppText.bodyStrong),
-      const Muted('영상당 15초 이내 · 회원님 본인에게만 보여요'),
-      for (var i = 0; i < videos.length; i++)
-        LineRow(
-          left: Text(videos[i]),
-          right: TextButton(onPressed: () => _removeVideo(i), child: const Text('빼기', style: TextStyle(color: AppColors.warningText))),
-        ),
-      Row(children: [
-        Expanded(child: AppButton('촬영하기', kind: ButtonKind.soft, onPressed: () => _addVideo('촬영'))),
-        const SizedBox(width: 8),
-        Expanded(child: AppButton('앨범에서 선택', kind: ButtonKind.soft, onPressed: () => _addVideo('앨범'))),
-      ]),
+      const Muted('영상당 15초 이내 · 회원님 본인에게만 보여요. 종목 칸의 영상 추가로 올려요.'),
       const SizedBox(height: AppSpace.m),
       TextFormField(
         initialValue: comment,
