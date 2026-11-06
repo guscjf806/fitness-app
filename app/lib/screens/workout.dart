@@ -231,13 +231,21 @@ class _IntensityGuide extends StatelessWidget {
   Widget build(BuildContext context) {
     final applied = effectiveIntensity(desired: demo.desiredIntensity, current: demo.currentIntensity);
     final rule = intensityRules[applied]!;
+    // 평소엔 한 줄로 접어 두고 누르면 펼친다 (결정 d1030-3). 강도를 낮춰 시작한다는 안내는 늘 보인다
     return AppCard(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('강도 $applied', style: AppText.bodyStrong),
-        if (applied != demo.desiredIntensity)
-          Muted('지금 강도가 낮아서 첫 $rampUpWeeks주는 \'중\'으로 시작해요. 그다음 \'${demo.desiredIntensity}\'로 올려요.', bottom: AppSpace.xs),
-        Muted('무게: 마지막 세트 뒤에 ${rule.repsInReserve} 더 할 수 있을 만큼\n세트 사이 휴식: ${rule.restText}', bottom: 0),
-      ]),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          title: Text('강도 $applied · 세트 사이 휴식 ${rule.restText}', style: AppText.bodyStrong),
+          subtitle: applied != demo.desiredIntensity
+              ? Muted('지금 강도가 낮아서 첫 $rampUpWeeks주는 \'중\'으로 시작해요. 그다음 \'${demo.desiredIntensity}\'로 올려요.', bottom: 0)
+              : null,
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: EdgeInsets.zero,
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          children: [Muted('무게: 마지막 세트 뒤에 ${rule.repsInReserve} 더 할 수 있을 만큼', bottom: 0)],
+        ),
+      ),
     );
   }
 }
