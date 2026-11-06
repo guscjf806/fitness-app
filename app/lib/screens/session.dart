@@ -216,7 +216,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         if (info != null)
           Padding(
             padding: const EdgeInsets.only(top: 12),
-            child: AppCard(child: Text(info.caution, textAlign: TextAlign.center)),
+            child: AppCard(child: WordText(info.caution, textAlign: TextAlign.center)),
           ),
         Wrap(spacing: 6, runSpacing: 6, children: [
           ActionChip(
@@ -230,7 +230,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         // 세트 칸이 화면 위쪽에 오도록 그림을 줄이고, 무게 고르는 법은 쉬운 말과 본문 글씨로 (리뷰 10/28 #7)
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
-          child: Text('목표 ${ex.target}${ex.bodyweight ? '' : '\n무게: 마지막 세트를 끝냈을 때 ${_rule.repsInReserve}쯤 더 할 수 있는 무게'}',
+          child: WordText('목표 ${ex.target}${ex.bodyweight ? '' : '\n무게: 마지막 세트를 끝냈을 때 ${_rule.repsInReserve}쯤 더 할 수 있는 무게'}',
               style: AppText.body),
         ),
         for (var i = 0; i < ex.sets.length; i++)

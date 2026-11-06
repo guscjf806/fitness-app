@@ -139,7 +139,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(e.name, style: AppText.bodyStrong),
+                      WordText(e.name, style: AppText.bodyStrong),
                       Muted('${e.part} · ${e.equipment}', bottom: 0),
                       // '내 조건 맞춤'을 꺼도 아픈 부위와 겹치면 표시한다 (리뷰 10/27 #2)
                       if (e.avoidFor.any(demo.painAreas.contains))

@@ -103,7 +103,7 @@ class LogDetailScreen extends StatelessWidget {
           left: Row(children: [
             ExerciseThumb(item.name),
             const SizedBox(width: 10),
-            Expanded(child: Text(item.name)),
+            Expanded(child: WordText(item.name)),
           ]),
           right: Muted(item.dose, bottom: 0),
         ),
@@ -132,7 +132,7 @@ class LogDetailScreen extends StatelessWidget {
             child: Row(children: [
               // '서버 보관 만료' 대신 쉬운 말로, 3일 이하면 경고색 (리뷰 11/02 #7)
               Expanded(
-                child: Text('${log.videos[j].daysLeft}일 뒤 사라져요. 남기려면 내 폰에 저장하세요',
+                child: WordText('${log.videos[j].daysLeft}일 뒤 사라져요. 남기려면 내 폰에 저장하세요',
                     style: AppText.caption.copyWith(color: log.videos[j].daysLeft <= 3 ? AppColors.warningText : AppColors.textSub)),
               ),
               if (demo.savedVideos.contains(videoKey(j)))
@@ -417,7 +417,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
                           const SizedBox(width: 10),
                         ],
                         Expanded(
-                          child: Text(r.exercise ?? '종목을 골라 주세요',
+                          child: WordText(r.exercise ?? '종목을 골라 주세요',
                               style: r.exercise == null ? const TextStyle(color: AppColors.textSub) : null),
                         ),
                         const Icon(Icons.chevron_right, color: AppColors.textSub),

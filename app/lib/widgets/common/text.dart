@@ -9,6 +9,17 @@ import '../../theme/app_theme.dart';
 /// 보이지 않는 '줄바꿈 금지' 표시(U+2060)를 넣는다. 띄어쓰기에서만 줄이 바뀐다 (디자인 리뷰 11/03 #1)
 String keepWords(String text) => text.split(' ').map((w) => w.characters.join('\u2060')).join(' ');
 
+/// 단어 중간에서 줄이 바뀌지 않는 글 (디자인 리뷰 11/06 #3). 화면 낭독은 원문으로 읽는다
+class WordText extends StatelessWidget {
+  const WordText(this.text, {super.key, this.style, this.textAlign});
+  final String text;
+  final TextStyle? style;
+  final TextAlign? textAlign;
+
+  @override
+  Widget build(BuildContext context) => Text(keepWords(text), semanticsLabel: text, style: style, textAlign: textAlign);
+}
+
 class H1 extends StatelessWidget {
   const H1(this.text, {super.key});
   final String text;
