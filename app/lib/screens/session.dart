@@ -223,10 +223,19 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
       body: TabBody(top: AppSpace.xs, children: [
         // 끝까지 하고 나서야 저장 안 된다는 걸 알지 않게 처음부터 알린다 (리뷰 10/28 #6)
         if (demo.isGuest) const GuestBanner('체크해 볼 수 있지만 저장되지 않아요. 로그인하면 기록이 쌓여요.'),
-        Muted('${index + 1} / ${session.items.length}', bottom: 2),
-        Text(ex.name, style: AppText.h1),
-        const SizedBox(height: AppSpace.m),
-        if (info != null) Center(child: ExerciseFigureView(info.id, size: 120, radius: AppRadius.medium)),
+        // 세트 칸이 위로 오게 그림을 작게 이름 옆에 (결정 dd1104-session-layout). 자세히는 '운동 방법'에서
+        Row(children: [
+          if (info != null) ...[
+            ExerciseFigureView(info.id, size: 64, radius: AppRadius.medium),
+            const SizedBox(width: AppSpace.m),
+          ],
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Muted('${index + 1} / ${session.items.length}', bottom: 2),
+              WordText(ex.name, style: AppText.h1),
+            ]),
+          ),
+        ]),
         // 아픈 부위와 겹치면 운동 상세와 같은 경고 상자를 그림 바로 아래에 (리뷰 10/28 #3)
         if (info != null && info.avoidFor.any(demo.painAreas.contains))
           WarningBox(painPhrase(info.avoidFor.where(demo.painAreas.contains).toList())),
