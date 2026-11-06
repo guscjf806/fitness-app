@@ -75,4 +75,20 @@ void main() {
     expect(findText('오늘의 작은 목표'), findsNothing);
     expect(findText('김지아'), findsWidgets);
   });
+  testWidgets('결정 dd1104-favorite 찜한 운동은 앱을 다시 켜도 남고 모아 볼 수 있다', (tester) async {
+    demo.favorites
+      ..clear()
+      ..add('deadlift');
+    addTearDown(demo.favorites.clear);
+    await demo.save();
+    demo.favorites.clear();
+    await demo.load();
+    expect(demo.favorites, contains('deadlift'));
+    await start(tester, 1);
+    demoNavigatorKey.currentState!.pushNamed(Routes.exercisePick);
+    await tester.pumpAndSettle();
+    await tester.tap(findText('즐겨찾기'));
+    await tester.pumpAndSettle();
+    expect(findTextContaining('전체 1개'), findsOneWidget);
+  });
 }

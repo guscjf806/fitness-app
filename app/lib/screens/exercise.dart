@@ -40,7 +40,8 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
   bool fitOnly = demo.role != 'trainer';
   final List<String> selected = [];
 
-  static final Set<String> favorites = {'deadlift'};
+  /// 찜한 운동만 모아 보기 (결정 dd1104-favorite)
+  bool favoriteOnly = false;
 
   int get maxPick => (ModalRoute.of(context)?.settings.arguments as int?) ?? AppConfig.maxExercisePick;
 
@@ -49,6 +50,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
           if ((part == '전체' || e.part == part) &&
               (equipment == '전체' || e.equipment == equipment) &&
               (_squash(query).isEmpty || _squash(e.name).contains(_squash(query))) &&
+              (!favoriteOnly || demo.favorites.contains(e.id)) &&
               (!fitOnly || fitsMyCondition(e)))
             e,
       ];
@@ -95,8 +97,10 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
       appBar: AppBar(title: const Text('운동 추가하기')),
       body: TabBody(top: AppSpace.s, children: [
         Row(children: [
-          const Expanded(child: FieldLabel('운동을 골라 주세요')),
+          const Expanded(child: FieldLabel('운동 고르기')),
           SelectChip('내 조건 맞춤', selected: fitOnly, onSelected: (v) => setState(() => fitOnly = v)),
+          const SizedBox(width: AppSpace.xsPlus),
+          SelectChip('즐겨찾기', selected: favoriteOnly, onSelected: (v) => setState(() => favoriteOnly = v)),
         ]),
         if (fitOnly)
           Padding(
@@ -154,9 +158,9 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
                   ),
                   IconButton(
                     tooltip: '즐겨찾기',
-                    icon: Icon(favorites.contains(e.id) ? Icons.favorite : Icons.favorite_border,
-                        color: favorites.contains(e.id) ? AppColors.primaryDark : AppColors.textSub),
-                    onPressed: () => setState(() => favorites.contains(e.id) ? favorites.remove(e.id) : favorites.add(e.id)),
+                    icon: Icon(demo.favorites.contains(e.id) ? Icons.favorite : Icons.favorite_border,
+                        color: demo.favorites.contains(e.id) ? AppColors.primaryDark : AppColors.textSub),
+                    onPressed: () => setState(() => demo.update(() => demo.favorites.contains(e.id) ? demo.favorites.remove(e.id) : demo.favorites.add(e.id))),
                   ),
                   // 고른 운동은 색뿐 아니라 체크 표시로도 알린다 (리뷰 10/27 #3)
                   CheckCircle(selected.contains(e.id)),
