@@ -17,6 +17,7 @@ void main() {
     demo.switchRole('trainer');
     demo.sentLogs.clear();
     demo.removedMembers.clear();
+    demo.ptEnded = false;
     clearLogDrafts();
     demo.unseenLogs
       ..clear()
@@ -222,6 +223,23 @@ void main() {
     await tap(tester, findText('연결 끊기').last);
     expect(demo.activeMembers, isNot(contains('박서연')));
     expect(findTextContaining('연결을 끊고 알렸어요'), findsOneWidget);
+  });
+
+  testWidgets('결정 d1104-1 회원이 연결을 끊어도 받은 일지를 계속 본다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    demo.switchRole('member');
+    await tester.pumpAndSettle();
+    demo.update(() => demo.tab = 4);
+    await tester.pumpAndSettle();
+    await tap(tester, findText('선생님과 연결 끊기'));
+    await tap(tester, findText('연결 끊기').last);
+    expect(demo.role, 'user');
+    expect(demo.ptEnded, isTrue);
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    expect(findTextContaining('10월 6일 · '), findsOneWidget);
+    expect(findTextContaining('계속 볼 수 있어요'), findsOneWidget);
   });
 
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {

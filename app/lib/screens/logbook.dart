@@ -54,7 +54,12 @@ class LogListTab extends StatelessWidget {
     final logs = demo.logsOf(demo.memberName);
     return TabBody(children: [
       const H1('운동일지'),
-      const Muted('담당 선생님이 작성한 내 일지예요. 나만 볼 수 있어요.'),
+      if (demo.ptEnded) ...[
+        const Muted('선생님과 연결이 끊겼어요. 받은 일지와 영상은 계속 볼 수 있어요.'),
+        AppButton('PT 코드가 있어요', kind: ButtonKind.soft, top: 0, onPressed: () => Navigator.pushNamed(context, Routes.ptCode)),
+        const SizedBox(height: AppSpace.m),
+      ] else
+        const Muted('담당 선생님이 작성한 내 일지예요. 나만 볼 수 있어요.'),
       if (logs.isEmpty) const AppCard(child: Text('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
       for (final log in logs)
         AppCard(

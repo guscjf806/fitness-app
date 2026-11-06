@@ -97,6 +97,26 @@ class ProfileTab extends StatelessWidget {
       const H2('계정'),
       if (role == 'user')
         LineRow(left: const Text('PT 코드 입력'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.ptCode)),
+      // 회원도 끊을 수 있고 선생님께 알린다 (결정 d1104-2). 받은 일지는 남는다 (결정 d1104-1)
+      if (role == 'member')
+        LineRow(
+          left: const Text('선생님과 연결 끊기'),
+          showArrow: true,
+          onTap: () async {
+            final ok = await confirmDialog(context,
+                title: '선생님과 연결을 끊을까요?',
+                body: '받은 일지와 영상은 계속 볼 수 있어요. 선생님은 더 이상 내 일지를 볼 수 없고, 선생님께 알림이 가요.',
+                keepLabel: '그대로 두기',
+                okLabel: '연결 끊기',
+                danger: true);
+            if (!ok || !context.mounted) return;
+            demo.update(() {
+              demo.role = 'user';
+              demo.ptEnded = true;
+            });
+            toast(context, '선생님과 연결을 끊고 알렸어요');
+          },
+        ),
       if (role == 'trainer')
         LineRow(left: const Text('회원 관리·초대 코드'), showArrow: true, onTap: () => demo.update(() => demo.tab = 3)),
       if (role != 'trainer')
@@ -208,6 +228,7 @@ class _PtCodeScreenState extends State<PtCodeScreen> {
         }
         demo.update(() {
           demo.role = 'member';
+          demo.ptEnded = false;
           demo.tab = 3;
         });
         Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);

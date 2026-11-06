@@ -113,6 +113,9 @@ class DemoState extends ChangeNotifier {
   final Set<String> removedMembers = {};
   List<String> get activeMembers => [for (final m in members) if (!removedMembers.contains(m)) m];
 
+  /// 회원이 PT 연결을 끊었는지. 받은 일지는 계속 볼 수 있다 (결정 d1104-1)
+  bool ptEnded = false;
+
   /// 지금 로그인한 PT 회원 이름 (목업). 실제 연결 때는 계정 정보에서 가져온다 (리뷰 10/30 #7)
   String memberName = '김지아';
   final List<InviteCode> inviteCodes = [];
@@ -294,6 +297,7 @@ class DemoState extends ChangeNotifier {
     await p.setStringList('homeGear', homeGear);
     await p.setString('bodyFatUnit', bodyFatUnit);
     await p.setBool('restSound', restSound);
+    await p.setBool('ptEnded', ptEnded);
     if (lastLoginProvider != null) await p.setString('lastLoginProvider', lastLoginProvider!);
     await p.setStringList('favorites', favorites.toList());
     await p.setStringList('lastWeights', [for (final e in lastWeights.entries) '${e.key}|${e.value}']);
@@ -336,6 +340,7 @@ class DemoState extends ChangeNotifier {
     homeGear = p.getStringList('homeGear') ?? homeGear;
     bodyFatUnit = p.getString('bodyFatUnit') ?? bodyFatUnit;
     restSound = p.getBool('restSound') ?? restSound;
+    ptEnded = p.getBool('ptEnded') ?? ptEnded;
     lastLoginProvider = p.getString('lastLoginProvider') ?? lastLoginProvider;
     favorites.addAll(p.getStringList('favorites') ?? const []);
     for (final s in p.getStringList('lastWeights') ?? const <String>[]) {
