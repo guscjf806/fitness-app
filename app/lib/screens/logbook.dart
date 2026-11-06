@@ -382,6 +382,9 @@ class _LogRow {
   final List<String> videos = [];
 
   String get name => custom ? customName.trim() : (exercise ?? '');
+
+  /// 플랭크처럼 시간으로 하는 운동이면 칸 이름과 단위가 바뀐다 (결정 d1106-2)
+  bool get isHold => !custom && exercise != null && exerciseByName(exercise!)?.kind == 'hold';
   bool get hasInput => exercise != null || videos.isNotEmpty || [customName, kg, reps, sets].any((v) => v.trim().isNotEmpty);
 }
 
@@ -443,7 +446,8 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       // 횟수·세트는 1 이상의 정수만. 비었거나 0이면 말없이 저장하지 않는다 (리뷰 11/06 #2)
       final reps = int.tryParse(rows[i].reps.trim());
       if (reps == null || reps < 1) {
-        toast(context, rows[i].reps.trim().isEmpty ? '$where횟수를 적어 주세요' : '$where횟수는 1 이상으로 적어 주세요');
+        final what = rows[i].isHold ? '시간' : '횟수';
+        toast(context, rows[i].reps.trim().isEmpty ? '$where$what를 적어 주세요' : '$where$what는 1 이상으로 적어 주세요');
         return;
       }
       final sets = int.tryParse(rows[i].sets.trim());
@@ -458,7 +462,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       {for (final r in rows) exerciseByName(r.name)?.part ?? '수업'}.join(' · '),
       [
         for (final r in rows)
-          LogItem(r.name, r.kg.trim().isEmpty ? '체중' : '${r.kg.trim()}kg', '${int.parse(r.reps.trim())}개', int.parse(r.sets.trim())),
+          LogItem(r.name, r.kg.trim().isEmpty ? '체중' : '${r.kg.trim()}kg', '${int.parse(r.reps.trim())}${r.isHold ? '초' : '개'}', int.parse(r.sets.trim())),
       ],
       [for (final r in rows) for (final v in r.videos) LogVideo(v, 30)], // 기획서 6번 초안: 올린 날부터 30일
       comment.trim(),
@@ -561,7 +565,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         Row(children: [
           Expanded(child: NumField(label: '무게', suffix: 'kg', hint: '60', value: r.kg, onChanged: (v) => setState(() => r.kg = v))),
           const SizedBox(width: 8),
-          Expanded(child: NumField(label: '횟수', hint: '8', decimal: false, value: r.reps, onChanged: (v) => setState(() => r.reps = v))),
+          Expanded(child: NumField(key: ValueKey('${r.hashCode}-${r.isHold}'), label: r.isHold ? '시간(초)' : '횟수', hint: r.isHold ? '30' : '8', decimal: false, value: r.reps, onChanged: (v) => setState(() => r.reps = v))),
           const SizedBox(width: 8),
           Expanded(child: NumField(label: '세트', hint: '4', decimal: false, value: r.sets, onChanged: (v) => setState(() => r.sets = v))),
         ]),

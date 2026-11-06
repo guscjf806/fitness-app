@@ -254,6 +254,19 @@ void main() {
     expect(demo.sentLogs['박서연']!.single.videos.single.name, startsWith('TRX 로우 영상'));
   });
 
+  testWidgets('결정 d1106-2 시간 운동을 고르면 칸 이름이 시간(초)로 바뀐다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '박서연');
+    await tap(tester, findText('종목을 골라 주세요'));
+    await tester.enterText(find.byType(TextField).first, '플랭크');
+    await tester.pumpAndSettle();
+    await tester.tap(findText('코어 · 맨몸').first);
+    await tester.pumpAndSettle();
+    await tester.tap(findTextContaining('추가 완료 ('));
+    await tester.pumpAndSettle();
+    expect(findText('시간(초)'), findsOneWidget);
+    expect(field('횟수'), findsNothing);
+  });
+
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {
     await openRoute(tester, Routes.logWrite, args: '김지아');
     await tap(tester, findText('직접 입력'));
