@@ -333,8 +333,15 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         toast(context, rows[i].custom ? '$where종목 이름을 적어 주세요' : '$where종목을 골라 주세요');
         return;
       }
-      if (rows[i].reps.trim().isEmpty) {
-        toast(context, '$where횟수를 적어 주세요');
+      // 횟수·세트는 1 이상의 정수만. 비었거나 0이면 말없이 저장하지 않는다 (리뷰 11/06 #2)
+      final reps = int.tryParse(rows[i].reps.trim());
+      if (reps == null || reps < 1) {
+        toast(context, rows[i].reps.trim().isEmpty ? '$where횟수를 적어 주세요' : '$where횟수는 1 이상으로 적어 주세요');
+        return;
+      }
+      final sets = int.tryParse(rows[i].sets.trim());
+      if (sets == null || sets < 1) {
+        toast(context, rows[i].sets.trim().isEmpty ? '$where세트를 적어 주세요' : '$where세트는 1 이상으로 적어 주세요');
         return;
       }
     }
@@ -344,7 +351,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       {for (final r in rows) exerciseByName(r.name)?.part ?? '수업'}.join(' · '),
       [
         for (final r in rows)
-          LogItem(r.name, r.kg.trim().isEmpty ? '체중' : '${r.kg.trim()}kg', '${r.reps.trim()}개', int.tryParse(r.sets.trim()) ?? 1),
+          LogItem(r.name, r.kg.trim().isEmpty ? '체중' : '${r.kg.trim()}kg', '${int.parse(r.reps.trim())}개', int.parse(r.sets.trim())),
       ],
       [for (final v in videos) LogVideo(v, 30)], // 기획서 6번 초안: 올린 날부터 30일
       comment.trim(),
@@ -426,10 +433,14 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         Row(children: [
           Expanded(child: NumField(label: '무게 (kg)', hint: '60', value: r.kg, onChanged: (v) => setState(() => r.kg = v))),
           const SizedBox(width: 8),
-          Expanded(child: NumField(label: '횟수', hint: '8', value: r.reps, onChanged: (v) => setState(() => r.reps = v))),
+          Expanded(child: NumField(label: '횟수', hint: '8', decimal: false, value: r.reps, onChanged: (v) => setState(() => r.reps = v))),
           const SizedBox(width: 8),
-          Expanded(child: NumField(label: '세트', hint: '4', value: r.sets, onChanged: (v) => setState(() => r.sets = v))),
+          Expanded(child: NumField(label: '세트', hint: '4', decimal: false, value: r.sets, onChanged: (v) => setState(() => r.sets = v))),
         ]),
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Muted('맨몸이면 무게 칸을 비워 두세요', top: AppSpace.xs, bottom: 0),
+        ),
       ]),
     );
   }

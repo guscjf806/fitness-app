@@ -53,6 +53,7 @@ void main() {
   Future<void> pick(WidgetTester tester) async {
     await tap(tester, findText('직접 입력').last);
     await tester.enterText(field('종목 이름').last, 'TRX 로우');
+    await tester.enterText(field('세트').last, '3');
     await tester.pumpAndSettle();
   }
 
@@ -173,6 +174,23 @@ void main() {
     await tap(tester, findText('저장하고 알림 보내기'));
     expect(demo.sentLogs['이도현']!.single.items.length, 2);
     expect(demo.sentLogs['이도현']!.single.items.last.reps, '10개');
+  });
+
+  testWidgets('11/06 #2 세트가 비었거나 0이면 저장하지 않고, 횟수·세트에는 정수만 들어간다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '박서연');
+    await pick(tester);
+    await tester.enterText(field('세트'), '');
+    await tester.enterText(field('횟수'), '0');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('저장하고 알림 보내기'));
+    expect(findText('횟수는 1 이상으로 적어 주세요'), findsOneWidget);
+    await tester.enterText(field('횟수'), '8회');
+    await tester.pumpAndSettle();
+    expect(tester.widget<EditableText>(find.descendant(of: field('횟수'), matching: find.byType(EditableText))).controller.text, '8',
+        reason: '글자는 들어가지 않는다');
+    await tap(tester, findText('저장하고 알림 보내기'));
+    expect(findText('세트를 적어 주세요'), findsOneWidget);
+    expect(demo.sentLogs['박서연'], isNull);
   });
 
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {

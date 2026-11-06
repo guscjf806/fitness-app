@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
@@ -78,12 +79,15 @@ class LineRow extends StatelessWidget {
 
 /// 숫자 입력칸
 class NumField extends StatelessWidget {
-  const NumField({super.key, required this.label, required this.value, required this.onChanged, this.hint, this.error, this.enabled = true});
+  const NumField({super.key, required this.label, required this.value, required this.onChanged, this.hint, this.error, this.enabled = true, this.decimal = true});
   final String label;
   final String value;
   final String? hint;
   final String? error;
   final bool enabled;
+
+  /// 소수점을 받을지. 횟수·세트처럼 정수만 받는 칸은 false (리뷰 11/06 #2)
+  final bool decimal;
   final ValueChanged<String> onChanged;
 
   @override
@@ -91,7 +95,8 @@ class NumField extends StatelessWidget {
     return TextFormField(
       initialValue: value,
       enabled: enabled,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      keyboardType: decimal ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.number,
+      inputFormatters: decimal ? null : [FilteringTextInputFormatter.digitsOnly],
       decoration: InputDecoration(labelText: label, hintText: hint, errorText: error),
       onChanged: onChanged,
     );
