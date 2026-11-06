@@ -3,13 +3,24 @@ import '../data/exercise_models.dart';
 import '../data/mock_data.dart';
 import 'intensity.dart';
 
+/// 집에 있는지 물어보는 장비 (결정 d1027-home-gear)
+const homeGearOptions = ['덤벨', '밴드', '문 고정 고리', '튼튼한 의자'];
+
+/// 운동 데이터의 필요 기구 → 집 장비 질문의 답. 벽은 어느 집에나 있어서 묻지 않는다
+const _gearAnswer = {
+  '덤벨': '덤벨',
+  '저항 밴드': '밴드',
+  '밴드 고정 고리(문·기둥)': '문 고정 고리',
+  '튼튼한 의자·계단': '튼튼한 의자',
+};
+
 /// 이 종목을 이 조건에서 써도 되는지 (기획서 6번 '홈트 조건 필터', 16번 안전 규칙).
 /// - 아픈 부위에 무리가 가는 종목은 장소와 상관없이 뺀다
 /// - 집에서 하는 날: 헬스장 전용 종목, 가진 장비가 아닌 종목, (조용히일 때) 점프·소음 종목을 뺀다
 bool exerciseAllowed(
   ExerciseInfo e, {
   required bool atHome,
-  required String equipment,
+  required List<String> homeGear,
   required bool quiet,
   required List<String> painAreas,
 }) {
@@ -17,8 +28,8 @@ bool exerciseAllowed(
   if (!atHome) return true;
   if (e.place == 'gym') return false;
   if (quiet && (e.impact == 'high' || e.noise == 'loud')) return false;
-  final allowed = equipment == '맨몸' ? const {'맨몸'} : const {'맨몸', '덤벨', '밴드'};
-  return allowed.contains(e.equipment);
+  // 꼭 필요한 기구를 모두 가졌을 때만 (없는 장비로 하는 운동이 추천되지 않게)
+  return e.gear.every((g) => g == '벽' || homeGear.contains(_gearAnswer[g]));
 }
 
 /// 한 번에 운동할 시간에 맞는 종목 수 (기획서 초안: 15분 3종목, 30분 4~5종목, 45분 6~7종목)
@@ -32,7 +43,7 @@ int maxExercisesFor(String minutes) => switch (minutes) {
 /// AI가 만든 루틴도 저장하기 전에 반드시 이 함수를 거친다. 목록에 없는 종목도 뺀다.
 WorkoutDay enforceConditions(
   WorkoutDay day, {
-  required String equipment,
+  required List<String> homeGear,
   required bool quiet,
   required List<String> painAreas,
   required String minutes,
@@ -40,7 +51,7 @@ WorkoutDay enforceConditions(
   final kept = [
     for (final x in day.items)
       if (exerciseByName(x.name) case final info?)
-        if (exerciseAllowed(info, atHome: day.atHome, equipment: equipment, quiet: quiet, painAreas: painAreas)) x,
+        if (exerciseAllowed(info, atHome: day.atHome, homeGear: homeGear, quiet: quiet, painAreas: painAreas)) x,
   ];
   final trimmed = kept.take(maxExercisesFor(minutes)).toList();
   return WorkoutDay(day.title, trimmed, atHome: day.atHome, removed: day.items.length - kept.length);
@@ -60,7 +71,7 @@ const trainingDays = {
 /// (실제 앱에서는 AI가 만든 루틴이 이 자리에 들어간다)
 List<WorkoutDay> demoWeek({
   required String place,
-  required String equipment,
+  required List<String> homeGear,
   required String noise,
   required String minutes,
   required List<String> painAreas,
@@ -70,7 +81,7 @@ List<WorkoutDay> demoWeek({
 }) {
   final quiet = noise == '예';
   final intensity = effectiveIntensity(desired: desiredIntensity, current: currentIntensity);
-  final homeBase = equipment == '맨몸' ? homeBodyweightSessions : homeDumbbellSessions;
+  final homeBase = homeGear.contains('덤벨') ? homeDumbbellSessions : homeBodyweightSessions;
   // 층간소음 걱정이 없으면 맨몸 루틴의 일부를 점프 동작으로 바꾼다
   final home = [
     for (final d in homeBase)
@@ -89,7 +100,7 @@ List<WorkoutDay> demoWeek({
     for (var weekday = 0; weekday < 7; weekday++)
       days.contains(weekday)
           ? _build(session(days.indexOf(weekday)),
-              intensity: intensity, equipment: equipment, quiet: quiet, painAreas: painAreas, minutes: minutes)
+              intensity: intensity, homeGear: homeGear, quiet: quiet, painAreas: painAreas, minutes: minutes)
           : const WorkoutDay('휴식', []),
   ];
 }
@@ -98,16 +109,16 @@ List<WorkoutDay> demoWeek({
 WorkoutDay _build(
   WorkoutDay day, {
   required String intensity,
-  required String equipment,
+  required List<String> homeGear,
   required bool quiet,
   required List<String> painAreas,
   required String minutes,
 }) {
   bool allowed(ExerciseInfo e) =>
-      exerciseAllowed(e, atHome: day.atHome, equipment: equipment, quiet: quiet, painAreas: painAreas);
+      exerciseAllowed(e, atHome: day.atHome, homeGear: homeGear, quiet: quiet, painAreas: painAreas);
   final varied = WorkoutDay(
       day.title, [for (final x in day.items) Exercise(variantFor(x.name, intensity, allowed), x.amount, x.sets)],
       atHome: day.atHome);
-  final safe = enforceConditions(varied, equipment: equipment, quiet: quiet, painAreas: painAreas, minutes: minutes);
+  final safe = enforceConditions(varied, homeGear: homeGear, quiet: quiet, painAreas: painAreas, minutes: minutes);
   return applyIntensity(safe, intensity: intensity, minutes: minutes);
 }

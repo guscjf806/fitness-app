@@ -52,7 +52,9 @@ class DemoState extends ChangeNotifier {
   String currentIntensity = '중';
   String desiredIntensity = '중';
   String place = '헬스장';
-  String equipment = '맨몸';
+  /// 집에 있는 장비 (결정 d1027-home-gear). 비어 있으면 맨몸 운동만
+  List<String> homeGear = [];
+  String get homeGearText => homeGear.isEmpty ? '맨몸' : homeGear.join('·');
   String noise = '예';
   String minutes = '30분';
   String period = '일주일';
@@ -149,14 +151,14 @@ class DemoState extends ChangeNotifier {
 
   /// 조건(장소·장비·소음·시간·통증)을 반영한 이번 주 루틴
   List<WorkoutDay> get week => demoWeek(
-      place: place, equipment: equipment, noise: noise, minutes: minutes, painAreas: painAreas, daysPerWeek: daysPerWeek,
+      place: place, homeGear: homeGear, noise: noise, minutes: minutes, painAreas: painAreas, daysPerWeek: daysPerWeek,
       desiredIntensity: desiredIntensity, currentIntensity: currentIntensity);
 
   String get conditionText {
     final where = switch (place) {
       '헬스장' => '헬스장',
-      '둘 다' => '헬스장+집 $equipment${noise == '예' ? ' · 조용히' : ''}',
-      _ => '집 $equipment${noise == '예' ? ' · 조용히' : ''}',
+      '둘 다' => '헬스장+집 $homeGearText${noise == '예' ? ' · 조용히' : ''}',
+      _ => '집 $homeGearText${noise == '예' ? ' · 조용히' : ''}',
     };
     return '$where · $minutes · 주 $daysPerWeek';
   }
@@ -206,9 +208,10 @@ class DemoState extends ChangeNotifier {
     await p.setBool('continueToGenerate', continueToGenerate);
     await p.setStringList('profile', [
       sex, height, age, weight, muscle, '$muscleUnknown', bodyFat, '$bodyFatUnknown', goal,
-      '$calorieCalculated', currentIntensity, desiredIntensity, place, equipment, noise, minutes,
+      '$calorieCalculated', currentIntensity, desiredIntensity, place, '', noise, minutes,
       daysPerWeek, allergyNote,
     ]);
+    await p.setStringList('homeGear', homeGear);
     await p.setStringList('allergies', allergies);
     await p.setStringList('painAreas', painAreas);
     await p.setStringList('weightLogs', [for (final w in weightLogs) '${w.date}|${w.kg}']);
@@ -238,12 +241,14 @@ class DemoState extends ChangeNotifier {
       currentIntensity = f[10];
       desiredIntensity = f[11];
       place = f[12];
-      equipment = f[13];
+      // 예전 저장값(맨몸 / 밴드·덤벨)도 이어 받는다
+      if (f[13] == '밴드·덤벨') homeGear = ['덤벨', '밴드'];
       noise = f[14];
       minutes = f[15];
       daysPerWeek = f[16];
       allergyNote = f[17];
     }
+    homeGear = p.getStringList('homeGear') ?? homeGear;
     allergies = p.getStringList('allergies') ?? allergies;
     painAreas = p.getStringList('painAreas') ?? painAreas;
     weightLogs = [

@@ -18,7 +18,7 @@ const _levelLabel = {1: '초급', 2: '중급', 3: '상급'};
 /// 내 조건(장소·장비·층간소음·아픈 부위)에 맞는 종목인지 (기획서 6번 '홈트 조건 필터', 16번 안전 규칙)
 /// 장소가 '둘 다'면 헬스장 종목도 고를 수 있다
 bool fitsMyCondition(ExerciseInfo e) => exerciseAllowed(e,
-    atHome: demo.place == '집', equipment: demo.equipment, quiet: demo.noise == '예', painAreas: demo.painAreas);
+    atHome: demo.place == '집', homeGear: demo.homeGear, quiet: demo.noise == '예', painAreas: demo.painAreas);
 
 /// 검색할 때 띄어쓰기를 무시한다: '벤치 프레스'로도 '벤치프레스'를 찾는다 (리뷰 10/27 #4)
 String _squash(String s) => s.replaceAll(RegExp(r'\s+'), '');

@@ -67,7 +67,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
             e.part == info.part &&
             !names.contains(e.name) &&
             exerciseAllowed(e,
-                atHome: session.atHome, equipment: demo.equipment, quiet: demo.noise == '예', painAreas: demo.painAreas))
+                atHome: session.atHome, homeGear: demo.homeGear, quiet: demo.noise == '예', painAreas: demo.painAreas))
           e,
     ];
     showAppSheet<void>(

@@ -4,7 +4,7 @@ import 'package:fitness_app/logic/routine.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 List<WorkoutDay> week(String desired, {String current = '중', String minutes = '45분', String place = '헬스장'}) => demoWeek(
-    place: place, equipment: '맨몸', noise: '예', minutes: minutes, painAreas: [], daysPerWeek: '5일',
+    place: place, homeGear: const [], noise: '예', minutes: minutes, painAreas: [], daysPerWeek: '5일',
     desiredIntensity: desired, currentIntensity: current);
 
 Exercise find(List<WorkoutDay> w, String name) =>

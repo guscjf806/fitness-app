@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../logic/routine.dart';
 import '../../routes.dart';
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
@@ -24,8 +25,17 @@ class ConditionScreen extends StatelessWidget {
       const FieldLabel('운동 장소'),
       Seg(options: const ['헬스장', '집', '둘 다'], value: demo.place, onChanged: (v) => demo.update(() => demo.place = v)),
       if (demo.place != '헬스장') ...[
-        const FieldLabel('집에 있는 장비'),
-        Seg(options: const ['맨몸', '밴드·덤벨'], value: demo.equipment, onChanged: (v) => demo.update(() => demo.equipment = v)),
+        // 가진 것만 추천되게 여러 개 고른다 (결정 d1027-home-gear)
+        const FieldLabel('집에 있는 장비', sub: '있는 것을 모두 골라 주세요. 없으면 맨몸 운동으로 짜요'),
+        Padding(
+          padding: const EdgeInsets.only(top: AppSpace.xsPlus, bottom: AppSpace.m),
+          child: Wrap(spacing: AppSpace.xsPlus, runSpacing: AppSpace.xsPlus, children: [
+            for (final g in homeGearOptions)
+              SelectChip(g,
+                  selected: demo.homeGear.contains(g),
+                  onSelected: (_) => demo.update(() => demo.homeGear.contains(g) ? demo.homeGear.remove(g) : demo.homeGear.add(g))),
+          ]),
+        ),
         const FieldLabel('층간소음이 걱정돼요', sub: '예를 고르면 점프 동작을 빼요'),
         Seg(options: const ['예', '아니오'], value: demo.noise, onChanged: (v) => demo.update(() => demo.noise = v)),
       ],
