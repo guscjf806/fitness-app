@@ -1,4 +1,5 @@
 import 'package:fitness_app/main.dart';
+import 'package:fitness_app/routes.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,6 +31,23 @@ void main() {
   testWidgets('#3 쉬는 날이 아니면 오늘 운동 완료가 목표에 있다', (tester) async {
     await start(tester);
     expect(findText('오늘 운동 완료'), demo.week[0].isRest ? findsNothing : findsOneWidget);
-    expect(open, isNotNull);
+  });
+  testWidgets('#6 로그인 화면을 뒤로 나가면 이어 가기가 지워지고, 로그인 쪽으로 가면 남는다', (tester) async {
+    demo.switchRole('guest');
+    demo.consented = false;
+    await start(tester);
+    demo.continueToGenerate = true;
+    await open(tester, Routes.login);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(demo.continueToGenerate, isFalse);
+
+    demo.continueToGenerate = true;
+    await open(tester, Routes.login);
+    await tester.tap(findText('카카오로 시작하기'));
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(AppBar, '시작하기 전에'), findsOneWidget);
+    expect(demo.continueToGenerate, isTrue);
+    demo.continueToGenerate = false;
   });
 }

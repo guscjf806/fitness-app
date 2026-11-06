@@ -89,7 +89,12 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
             ]),
           ),
         );
-    return AppPage(title: '로그인', children: [
+    // 로그인 화면을 뒤로 나가면 만들던 식단·루틴으로 이어 가지 않는다. 다른 창으로 나갔다 오는 실제 로그인은 pop이 아니라 그대로 (리뷰 11/06 #6)
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop && demo.continueToGenerate) demo.update(() => demo.continueToGenerate = false);
+      },
+      child: AppPage(title: '로그인', children: [
       const H1('간편하게 시작해요'),
       const Muted('로그인하면 식단·운동 루틴 생성, 식단 올리기를 쓸 수 있어요.'),
       // 다른 창으로 나갔다 오니 앱이 꺼진 줄 알지 않게 미리 알린다 (리뷰 11/05 #5)
@@ -99,7 +104,8 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
       // Apple 로고는 공식 자료를 받으려면 라이선스 동의가 필요해 아직 비워 둔다 (assets/logos/README.md)
       social('Apple로 시작하기', Colors.black, Colors.white),
       Disclaimer(text: AuthService.enabled ? '카카오·구글은 실제 로그인이에요. Apple은 준비 중이라 누르면 일반 회원 데모로 들어가요.' : '목업이라 실제 로그인은 하지 않아요. 누르면 일반 회원으로 들어가요.'),
-    ]);
+    ]),
+    );
   }
 }
 
