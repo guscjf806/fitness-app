@@ -168,7 +168,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
     );
   }
 
-  void _finish() {
+  Future<void> _finish() async {
     if (session.doneSets == 0) {
       toast(context, '체크한 세트가 없어요. 세트를 마치면 ✓를 눌러 주세요');
       return;
@@ -177,8 +177,19 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
       requireLogin(context, '운동 기록과 연속 기록은 계정에 저장돼요. 로그인하면 오늘부터 기록이 쌓여요.');
       return;
     }
+    // 일부만 했으면 끝내기 전에 묻고, 한 운동만 체크한다. 연속 기록은 인정 (결정 d1028-partial-finish)
+    final doneNames = {for (final x in session.items) if (x.sets.any((s) => s.done)) x.name};
+    if (doneNames.length < session.items.length) {
+      final ok = await confirmDialog(context,
+          title: '${session.items.length}개 중 ${doneNames.length}개 했어요. 이대로 끝낼까요?',
+          body: '한 운동만 완료로 기록돼요. 연속 기록은 그대로 이어져요.',
+          keepLabel: '계속 하기',
+          okLabel: '이대로 끝내기');
+      if (!ok || !mounted) return;
+    }
     final minutes = DateTime.now().difference(session.startedAt).inMinutes;
     final sets = session.doneSets;
+    final todayItems = demo.week[0].items;
     demo.update(() {
       // 다음 운동에 미리 채울 무게
       for (final x in session.items) {
@@ -186,7 +197,8 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         if (kg != null) demo.lastWeights[x.name] = kg;
       }
       demo.workoutDone = true;
-      demo.checked.addAll([for (var i = 0; i < demo.week[0].items.length; i++) i]);
+      demo.checked.addAll([for (var i = 0; i < todayItems.length; i++) if (doneNames.contains(todayItems[i].name)) i]);
+      demo.checkedAdded.addAll(demo.addedExercises.where(doneNames.contains));
     });
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);

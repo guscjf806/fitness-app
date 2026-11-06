@@ -324,7 +324,12 @@ void main() {
     await step(tester);
     await tester.tap(findText('운동 완료'));
     await step(tester);
+    // 결정 d1028-partial-finish: 일부만 했으면 묻고, 한 운동만 체크한다
+    expect(findTextContaining('이대로 끝낼까요?'), findsOneWidget);
+    await tester.tap(findText('이대로 끝내기'));
+    await step(tester);
     expect(demo.workoutDone, isTrue);
+    expect(demo.checked.length, lessThan(demo.week[0].items.length));
   });
   testWidgets('리뷰 11/03 #1·#2·#7: 지키기권·로그아웃은 한 번 묻고, PT 코드는 숫자 6자리여야 연결된다', (tester) async {
     await start(tester);
