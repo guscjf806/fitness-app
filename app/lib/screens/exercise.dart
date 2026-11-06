@@ -36,7 +36,8 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
   String query = '';
   String part = '전체';
   String equipment = '전체';
-  bool fitOnly = false;
+  /// 처음부터 내 조건에 맞는 운동만, 끄면 전체 (결정 d1027-fit-default). 선생님은 회원 일지용으로 고르니 전체로 시작
+  bool fitOnly = demo.role != 'trainer';
   final List<String> selected = [];
 
   static final Set<String> favorites = {'deadlift'};
