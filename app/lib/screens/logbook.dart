@@ -437,6 +437,19 @@ class _LogRow {
   }
   _LogRow();
 
+  /// 임시 저장과 화면이 같은 줄을 쓰지 않게 복사한다 (리뷰 11/07 #4)
+  _LogRow copy() => _LogRow()
+    ..exercise = exercise
+    ..custom = custom
+    ..customName = customName
+    ..kg = kg
+    ..reps = reps
+    ..sets = sets
+    ..videos.addAll(videos);
+
+  /// 바뀌었는지 비교할 값
+  String get fingerprint => [exercise, custom, customName, kg, reps, sets, ...videos].join('|');
+
   /// 이 종목에 붙인 영상 (결정 d1106-1)
   final List<String> videos = [];
 
@@ -470,8 +483,22 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   int get videoCount => rows.fold(0, (n, r) => n + r.videos.length);
 
   /// 적은 게 있는지 (뒤로 갈 때 버릴지 묻는 기준)
-  bool get dirty =>
-      rows.length > 1 || rows.any((r) => r.hasInput) || comment.trim().isNotEmpty || date != demoTodayDate;
+  /// 처음 열었을 때(또는 임시 저장을 불러왔을 때)에서 바뀌었는지
+  String get fingerprint => [date, stamp, comment.trim(), ...rows.map((r) => r.fingerprint)].join('//');
+  String? baseFingerprint;
+  bool get dirty => baseFingerprint != null && fingerprint != baseFingerprint;
+  bool get hasOwnDraft => member != null && hasLogDraft(member!);
+
+  /// 임시 저장을 지운다 (리뷰 11/07 #4)
+  Future<void> _deleteDraft() async {
+    final ok = await confirmDialog(context,
+        title: '임시 저장을 지울까요?', body: '지우면 되돌릴 수 없어요.', keepLabel: '그대로 두기', okLabel: '지우기', danger: true);
+    if (!ok || !mounted) return;
+    demo.update(() => _logDrafts.remove(member));
+    baseFingerprint = fingerprint;
+    toast(context, '임시 저장을 지웠어요');
+    Navigator.pop(context);
+  }
 
   String get dateLabel => '${date.month}월 ${date.day}일';
 
@@ -509,7 +536,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       toast(context, '적은 내용이 없어요');
       return;
     }
-    demo.update(() => _logDrafts[member!] = _LogDraft(date, [...rows], stamp, comment));
+    demo.update(() => _logDrafts[member!] = _LogDraft(date, [for (final r in rows) r.copy()], stamp, comment));
     toast(context, '임시 저장했어요. 회원님께는 아직 가지 않았어요');
     Navigator.pop(context);
   }
@@ -710,16 +737,17 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         date = draft.date;
         rows
           ..clear()
-          ..addAll(draft.rows);
+          ..addAll(draft.rows.map((r) => r.copy()));
         stamp = draft.stamp;
         comment = draft.comment;
       }
+      baseFingerprint = fingerprint;
     }
     // 수업 뒤 길게 적은 일지가 뒤로 가기로 사라지지 않게 먼저 묻는다 (리뷰 11/02 #3)
     return DiscardGuard(
       dirty: dirty,
       title: '작성 중인 일지를 버릴까요?',
-      body: '나가면 적은 내용과 영상이 사라져요.',
+      body: hasOwnDraft ? '고친 내용만 사라지고 임시 저장은 남아요.' : '나가면 적은 내용과 영상이 사라져요.',
       keepLabel: '계속 쓰기',
       okLabel: '버리고 나가기',
       child: AppPage(title: '일지 작성', children: [
@@ -772,6 +800,10 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         ],
         Expanded(child: AppButton(editing == null ? '회원님께 보내기' : '고쳐서 보내기', onPressed: _save)),
       ]),
+      if (editing == null && hasOwnDraft)
+        Center(
+          child: TextButton(onPressed: _deleteDraft, child: const Text('임시 저장 지우기', style: TextStyle(color: AppColors.warningText))),
+        ),
     ]),
     );
   }

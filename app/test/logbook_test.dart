@@ -295,6 +295,33 @@ void main() {
     expect(demo.sentLogs['박서연'], isEmpty);
   });
 
+  testWidgets('11/07 #4 임시 저장을 그냥 나가면 묻지 않고, 고쳤다 버리면 초안은 그대로, 지울 수 있다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '박서연');
+    await pick(tester);
+    await tester.enterText(field('횟수'), '9');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('임시 저장'));
+    demoNavigatorKey.currentState!.pushNamed(Routes.logWrite, arguments: '박서연');
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(AppBar, '일지 작성'), findsNothing, reason: '안 고쳤으면 묻지 않는다');
+    demoNavigatorKey.currentState!.pushNamed(Routes.logWrite, arguments: '박서연');
+    await tester.pumpAndSettle();
+    await tester.enterText(field('횟수'), '20');
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(findText('고친 내용만 사라지고 임시 저장은 남아요.'), findsOneWidget);
+    await tap(tester, findText('버리고 나가기'));
+    demoNavigatorKey.currentState!.pushNamed(Routes.logWrite, arguments: '박서연');
+    await tester.pumpAndSettle();
+    expect(tester.widget<EditableText>(find.descendant(of: field('횟수'), matching: find.byType(EditableText))).controller.text, '9');
+    await tap(tester, findText('임시 저장 지우기'));
+    await tap(tester, findText('지우기'));
+    expect(hasLogDraft('박서연'), isFalse);
+  });
+
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {
     await openRoute(tester, Routes.logWrite, args: '김지아');
     await tap(tester, findText('직접 입력'));
