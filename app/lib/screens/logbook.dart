@@ -284,12 +284,10 @@ class MemberManageTab extends StatefulWidget {
 }
 
 class _MemberManageTabState extends State<MemberManageTab> {
-  String? selectedMember;
-
   /// 미션 받을 회원. 연결을 끊은 회원은 고를 수 없다
   String? get member {
     final active = demo.activeMembers;
-    if (active.contains(selectedMember)) return selectedMember;
+    if (active.contains(demo.missionMember)) return demo.missionMember;
     return active.isEmpty ? null : active.first;
   }
   final missionController = TextEditingController();
@@ -318,7 +316,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
             key: ValueKey(member),
             initialValue: member,
             items: [for (final m in demo.activeMembers) DropdownMenuItem(value: m, child: Text(m))],
-            onChanged: (v) => setState(() => selectedMember = v),
+            onChanged: (v) => setState(() => demo.missionMember = v),
           ),
           // 고른 회원에게 지금 보낸 미션을 보여 준다 (리뷰 11/02 #4)
           Padding(

@@ -96,12 +96,20 @@ class HomeTab extends StatelessWidget {
   Widget _trainerHome() {
     return TabBody(children: [
       H1(demo.greeting),
+      if (demo.activeMembers.isEmpty) ...[
+        const Muted('연결된 회원이 없어요. 초대 코드를 만들어 보세요.'),
+        AppButton('초대 코드 만들기', onPressed: () => demo.update(() => demo.tab = 3)),
+      ] else ...[
       const H2('일지 쓸 회원', top: AppSpace.xs),
       for (final m in demo.activeMembers) MemberLogRow(m),
       const H2('이번 주 미션'),
       for (final m in demo.activeMembers)
         LineRow(
-          onTap: () => demo.update(() => demo.tab = 3),
+          // 누른 회원을 미리 골라 다른 회원의 미션을 바꾸지 않게 (리뷰 11/07 #6)
+          onTap: () => demo.update(() {
+            demo.missionMember = m;
+            demo.tab = 3;
+          }),
           // 화살표가 같은 줄에 서게 미션 글은 왼쪽 칸 안에서 오른쪽으로 붙인다
           left: Row(children: [
             Text(m, style: AppText.bodyStrong),
@@ -111,6 +119,7 @@ class HomeTab extends StatelessWidget {
           showArrow: true,
         ),
       AppButton('회원 관리·초대 코드', kind: ButtonKind.soft, onPressed: () => demo.update(() => demo.tab = 3)),
+      ],
     ]);
   }
 

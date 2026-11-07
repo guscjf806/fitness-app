@@ -1,3 +1,4 @@
+import 'package:fitness_app/data/mock_data.dart';
 import 'package:fitness_app/main.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:fitness_app/widgets/common.dart';
@@ -76,5 +77,26 @@ void main() {
     expect(demo.homeGear, isEmpty);
     expect(demo.restMode, isFalse);
     expect(demo.lastLoginProvider, '카카오');
+  });
+  testWidgets('#6 선생님 홈에서 고른 회원이 미션 칸에 미리 골라지고, 회원이 없으면 안내만', (tester) async {
+    await start(tester);
+    demo.switchRole('trainer');
+    addTearDown(() {
+      demo.removedMembers.clear();
+      demo.missionMember = null;
+    });
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(findText('이도현').last, 100, scrollable: find.byType(Scrollable).first);
+    await tester.tap(findText('이도현').last);
+    await tester.pumpAndSettle();
+    expect(demo.tab, 3);
+    expect(findText('이도현 회원님께 보내기'), findsOneWidget);
+    demo.update(() {
+      demo.removedMembers.addAll(members);
+      demo.tab = 0;
+    });
+    await tester.pumpAndSettle();
+    expect(findTextContaining('연결된 회원이 없어요'), findsOneWidget);
+    expect(findText('이번 주 미션'), findsNothing);
   });
 }
