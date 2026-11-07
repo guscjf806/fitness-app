@@ -101,7 +101,8 @@ class _WorkoutTabState extends State<WorkoutTab> {
           _ExerciseRow(
             name: day.items[i].name,
             amount: '${day.items[i].amount} × ${day.items[i].sets}세트',
-            checked: isToday && (demo.workoutDone || demo.checked.contains(i)),
+            // 한 운동만 체크로 보인다. 완료하면 잠그기만 한다 (리뷰 11/07 #2)
+            checked: isToday && demo.checked.contains(i),
             onCheck: isToday && !demo.workoutDone
                 ? () => demo.update(() => demo.checked.contains(i) ? demo.checked.remove(i) : demo.checked.add(i))
                 : null,
@@ -111,7 +112,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
           _ExerciseRow(
             name: name,
             amount: _addedAmount(name),
-            checked: demo.workoutDone || demo.checkedAdded.contains(name),
+            checked: demo.checkedAdded.contains(name),
             onCheck: demo.workoutDone
                 ? null
                 : () => demo.update(() => demo.checkedAdded.contains(name) ? demo.checkedAdded.remove(name) : demo.checkedAdded.add(name)),

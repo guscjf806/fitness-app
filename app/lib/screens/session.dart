@@ -91,7 +91,9 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                   final before = current;
                   final at = index;
                   final (amount, sets) = targetFor(e, _rule);
-                  setState(() => session.items[at] = SessionExercise(e.name, amount, sets)..prefillKg(demo.lastWeights[e.name] ?? ''));
+                  setState(() => session.items[at] = SessionExercise(e.name, amount, sets)
+                    ..originName = before.originName
+                    ..prefillKg(demo.lastWeights[e.name] ?? ''));
                   Navigator.pop(sheet);
                   if (!mounted) return;
                   toast(context, '${e.name}(으)로 바꿨어요', actionLabel: '되돌리기', onAction: () {
@@ -178,7 +180,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
       return;
     }
     // 일부만 했으면 끝내기 전에 묻고, 한 운동만 체크한다. 연속 기록은 인정 (결정 d1028-partial-finish)
-    final doneNames = {for (final x in session.items) if (x.sets.any((s) => s.done)) x.name};
+    final doneNames = {for (final x in session.items) if (x.sets.any((s) => s.done)) x.originName};
     if (doneNames.length < session.items.length) {
       final ok = await confirmDialog(context,
           title: '${session.items.length}개 중 ${doneNames.length}개 했어요. 이대로 끝낼까요?',

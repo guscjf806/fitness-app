@@ -20,6 +20,9 @@ class SessionExercise {
 
   String name;
 
+  /// 오늘 루틴의 원래 종목. 대체해도 어느 줄인지 알 수 있게 (리뷰 11/07 #2)
+  late String originName = name;
+
   /// 목표 개수 (예: '8~12개', '30~40초')
   String target;
   final List<SetEntry> sets;

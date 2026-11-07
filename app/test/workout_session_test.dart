@@ -18,4 +18,9 @@ void main() {
     expect(ex.sets.map((s) => s.kg), ['65', '65', '65']);
     expect(ex.hasSuggestedKg, isFalse);
   });
+  test('리뷰 11/07 #2 대체한 종목도 원래 줄을 기억한다', () {
+    final before = SessionExercise('벤치프레스', '8~12개', 3);
+    final after = SessionExercise('푸시업', '8~12개', 3)..originName = before.originName;
+    expect(after.originName, '벤치프레스');
+  });
 }

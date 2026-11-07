@@ -1,5 +1,6 @@
 import 'package:fitness_app/main.dart';
 import 'package:fitness_app/state/demo_state.dart';
+import 'package:fitness_app/widgets/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,5 +39,24 @@ void main() {
     await tester.pumpAndSettle();
     expect(findText('PT 문의하기'), findsOneWidget);
     expect(findTextContaining('연결이 끊겼어요'), findsNothing);
+  });
+  testWidgets('#2 일부만 끝내면 운동 탭에 한 운동만 체크로 보인다', (tester) async {
+    await start(tester);
+    final items = demo.week[0].items;
+    demo.update(() {
+      demo.workoutDone = true;
+      demo.checked
+        ..clear()
+        ..add(0);
+      demo.tab = 2;
+    });
+    addTearDown(() {
+      demo.workoutDone = false;
+      demo.checked.clear();
+    });
+    await tester.pumpAndSettle();
+    final on = tester.widgetList<CheckCircle>(find.byType(CheckCircle)).where((c) => c.on).length;
+    expect(on, 1);
+    expect(items.length, greaterThan(1));
   });
 }
