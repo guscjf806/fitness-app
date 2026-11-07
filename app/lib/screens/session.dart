@@ -184,7 +184,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
     if (doneNames.length < session.items.length) {
       final ok = await confirmDialog(context,
           title: '${session.items.length}개 중 ${doneNames.length}개 했어요. 이대로 끝낼까요?',
-          body: '한 운동만 완료로 기록돼요. 연속 기록은 그대로 이어져요.',
+          body: '체크한 운동만 완료로 기록돼요. 연속 기록은 그대로 이어져요.',
           keepLabel: '계속 하기',
           okLabel: '이대로 끝내기');
       if (!ok || !mounted) return;

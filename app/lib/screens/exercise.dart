@@ -123,9 +123,9 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
           Muted('전체 ${list.length}개', bottom: AppSpace.xs),
         ]),
         if (list.isEmpty)
-          const Padding(
-            padding: EdgeInsets.only(top: 30),
-            child: Muted('조건에 맞는 운동이 없어요', align: TextAlign.center),
+          Padding(
+            padding: const EdgeInsets.only(top: 30),
+            child: Muted(favoriteOnly && demo.favorites.isEmpty ? '찜한 운동이 없어요. 하트를 눌러 모아 보세요' : '조건에 맞는 운동이 없어요', align: TextAlign.center),
           ),
         for (final e in list)
           Material(

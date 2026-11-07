@@ -448,6 +448,12 @@ class _LogRow {
   /// 바뀌었는지 비교할 값
   String get fingerprint => [exercise, custom, customName, kg, reps, sets, ...videos].join('|');
 
+  /// 종목을 바꾸면 영상 이름도 따라 바뀐다 (리뷰 11/07 #7)
+  String videoLabel(String v) {
+    final at = v.indexOf(' 영상');
+    return at < 0 ? v : '$name${v.substring(at)}';
+  }
+
   /// 이 종목에 붙인 영상 (결정 d1106-1)
   final List<String> videos = [];
 
@@ -547,7 +553,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
     if (logs.isEmpty) return;
     if (rows.any((r) => r.hasInput)) {
       final ok = await confirmDialog(context,
-          title: '지난 수업을 불러올까요?', body: '지금 적은 종목은 지난 수업 내용으로 바뀌어요.', keepLabel: '그대로 두기', okLabel: '불러오기');
+          title: '지난 수업을 불러올까요?', body: videoCount > 0 ? '지금 적은 종목은 지난 수업 내용으로 바뀌고, 붙여 둔 영상도 빠져요.' : '지금 적은 종목은 지난 수업 내용으로 바뀌어요.', keepLabel: '그대로 두기', okLabel: '불러오기');
       if (!ok || !mounted) return;
     }
     setState(() {
@@ -580,8 +586,8 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       // 횟수·세트는 1 이상의 정수만. 비었거나 0이면 말없이 저장하지 않는다 (리뷰 11/06 #2)
       final reps = int.tryParse(rows[i].reps.trim());
       if (reps == null || reps < 1) {
-        final what = rows[i].isHold ? '시간' : '횟수';
-        toast(context, rows[i].reps.trim().isEmpty ? '$where$what를 적어 주세요' : '$where$what는 1 이상으로 적어 주세요');
+        final hold = rows[i].isHold;
+        toast(context, rows[i].reps.trim().isEmpty ? '$where${hold ? '시간을' : '횟수를'} 적어 주세요' : '$where${hold ? '시간은' : '횟수는'} 1 이상으로 적어 주세요');
         return;
       }
       final sets = int.tryParse(rows[i].sets.trim());
@@ -598,7 +604,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         for (final r in rows)
           LogItem(r.name, r.kg.trim().isEmpty ? '체중' : '${r.kg.trim()}kg', '${int.parse(r.reps.trim())}${r.isHold ? '초' : '개'}', int.parse(r.sets.trim())),
       ],
-      [for (final r in rows) for (final v in r.videos) LogVideo(v, 30)], // 기획서 6번 초안: 올린 날부터 30일
+      [for (final r in rows) for (final v in r.videos) LogVideo(r.videoLabel(v), 30)], // 기획서 6번 초안: 올린 날부터 30일
       comment.trim(),
       stamp,
       edited: editing != null,
@@ -636,6 +642,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       context,
       builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SheetTitle('영상 추가'),
+        // 누르기 전에 보이게 같은 안내를 시트에도 (문구는 약관 검토 대기라 그대로)
+        const Text('회원님 촬영 동의 후 올려 주세요', style: AppText.bodyStrong),
+        const Muted('영상당 15초 이내 · 회원님 본인에게만 보여요'),
         LineRow(left: const Text('촬영하기'), showArrow: true, onTap: () {
           Navigator.pop(sheet);
           _addVideo(r, '촬영');
@@ -715,7 +724,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         ),
         for (var j = 0; j < r.videos.length; j++)
           LineRow(
-            left: Text(r.videos[j]),
+            left: Text(r.videoLabel(r.videos[j])),
             right: TextButton(onPressed: () => _removeVideo(r, j), child: const Text('빼기', style: TextStyle(color: AppColors.warningText))),
           ),
         Align(
