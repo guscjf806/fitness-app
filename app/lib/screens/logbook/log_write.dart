@@ -261,7 +261,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SheetTitle('영상 추가'),
         // 누르기 전에 보이게 같은 안내를 시트에도 (문구는 약관 검토 대기라 그대로)
-        const Text('회원님 촬영 동의 후 올려 주세요', style: AppText.bodyStrong),
+        const WordText('회원님 촬영 동의 후 올려 주세요', style: AppText.bodyStrong),
         const Muted('영상당 15초 이내 · 회원님 본인에게만 보여요'),
         LineRow(left: const Text('촬영하기'), showArrow: true, onTap: () {
           Navigator.pop(sheet);
@@ -427,7 +427,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       ),
       const Muted('이 날짜에 출석 도장이 찍혀요', top: AppSpace.xs, bottom: AppSpace.m),
       // 영상은 종목 칸에서 올리니 동의 안내를 첫 종목 위에 둔다. 문구는 그대로 (디자인 리뷰 11/07 #5)
-      const Text('회원님 촬영 동의 후 올려 주세요', style: AppText.bodyStrong),
+      const WordText('회원님 촬영 동의 후 올려 주세요', style: AppText.bodyStrong),
       const Muted('영상당 15초 이내 · 회원님 본인에게만 보여요. 종목 칸의 영상 추가로 올려요.'),
       ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 48),
