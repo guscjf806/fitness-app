@@ -222,13 +222,16 @@ class LogVideo {
 
 class WorkoutLog {
   const WorkoutLog(this.date, this.title, this.items, this.videos, this.comment,
-      this.stamp);
+      this.stamp, {this.edited = false});
   final String date;
   final String title;
   final List<LogItem> items;
   final List<LogVideo> videos;
   final String comment;
   final String stamp;
+
+  /// 보낸 뒤 선생님이 고쳤는지 (결정 d1104-3)
+  final bool edited;
 }
 
 const workoutLogs = [

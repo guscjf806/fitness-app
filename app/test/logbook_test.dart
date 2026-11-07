@@ -276,6 +276,25 @@ void main() {
     expect(demo.sentLogs['김지아']!.single.items.first.dose, workoutLogs.first.items.first.dose);
   });
 
+  testWidgets('결정 d1104-3 보낸 일지를 고치면 수정됨이 붙고, 지울 수 있다', (tester) async {
+    demo.sentLogs['박서연'] = [const WorkoutLog('10월 11일', '수업', [LogItem('TRX 로우', '체중', '8개', 3)], [], '좋아요', '꾸준해요')];
+    await openRoute(tester, Routes.logWrite, args: LogEditArgs('박서연', demo.sentLogs['박서연']!.single));
+    await tester.enterText(field('횟수'), '12');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('고쳐서 보내기'));
+    final edited = demo.sentLogs['박서연']!.single;
+    expect(edited.edited, isTrue);
+    expect(edited.items.single.reps, '12개');
+    expect(edited.date, '10월 11일');
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    await tap(tester, find.byTooltip('박서연 회원 더 보기'));
+    expect(findTextContaining('수정됨'), findsOneWidget);
+    await tap(tester, findText('지우기'));
+    await tap(tester, findText('지우기').last);
+    expect(demo.sentLogs['박서연'], isEmpty);
+  });
+
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {
     await openRoute(tester, Routes.logWrite, args: '김지아');
     await tap(tester, findText('직접 입력'));

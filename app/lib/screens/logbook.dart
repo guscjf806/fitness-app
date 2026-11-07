@@ -75,6 +75,8 @@ class LogListTab extends StatelessWidget {
             Row(children: [
               Expanded(child: Text('${log.date} · ${log.title}', style: AppText.bodyStrong)),
               // 안 본 일지를 구분한다 (리뷰 11/04 #7)
+              if (log.edited) const Muted('수정됨', bottom: 0),
+              if (log.edited && demo.unseenLogs.contains(log)) const SizedBox(width: AppSpace.s),
               if (demo.unseenLogs.contains(log))
                 Text('새 일지', style: AppText.caption.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
             ]),
@@ -155,6 +157,7 @@ class LogDetailScreen extends StatelessWidget {
           ),
         ],
       ],
+      if (log.edited) const Muted('선생님이 보낸 뒤에 고친 일지예요.', top: AppSpace.s),
       // 다른 강조 카드와 같은 모양 (디자인 리뷰 10/28 #6)
       Padding(
         padding: const EdgeInsets.only(top: 10),
@@ -201,12 +204,54 @@ class MemberLogRow extends StatelessWidget {
       );
 }
 
+/// 보낸 일지를 고칠 때 일지 작성 화면에 넘기는 값
+class LogEditArgs {
+  const LogEditArgs(this.member, this.log);
+  final String member;
+  final WorkoutLog log;
+}
+
 /// 회원 더 보기: 보낸 일지와 연결 끊기
 void showMemberSheet(BuildContext context, String member) {
   showAppSheet<void>(
     context,
     builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
       SheetTitle('$member 회원'),
+      // 보낸 일지를 다시 보고 고치거나 지운다 (결정 d1104-3)
+      const H2('보낸 일지'),
+      if ((demo.sentLogs[member] ?? const []).isEmpty) const Muted('앱에서 보낸 일지가 아직 없어요.'),
+      for (final log in demo.sentLogs[member] ?? const <WorkoutLog>[])
+        LineRow(
+          left: WordText('${log.date} · ${log.title}${log.edited ? ' · 수정됨' : ''}'),
+          right: Row(mainAxisSize: MainAxisSize.min, children: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(sheet);
+                Navigator.pushNamed(context, Routes.logWrite, arguments: LogEditArgs(member, log));
+              },
+              child: const Text('고치기'),
+            ),
+            TextButton(
+              onPressed: () async {
+                final ok = await confirmDialog(sheet,
+                    title: '${log.date} 일지를 지울까요?',
+                    body: '회원님 화면에서도 사라지고 되돌릴 수 없어요.',
+                    keepLabel: '그대로 두기',
+                    okLabel: '지우기',
+                    danger: true);
+                if (!ok || !sheet.mounted) return;
+                demo.update(() {
+                  demo.sentLogs[member]?.remove(log);
+                  demo.unseenLogs.remove(log);
+                });
+                Navigator.pop(sheet);
+                if (context.mounted) toast(context, '일지를 지웠어요');
+              },
+              child: const Text('지우기', style: TextStyle(color: AppColors.warningText)),
+            ),
+          ]),
+        ),
+      const SizedBox(height: AppSpace.m),
       LineRow(
         left: const Text('연결 끊기', style: TextStyle(color: AppColors.warningText)),
         onTap: () async {
@@ -419,6 +464,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   String stamp = stamps.first;
   String comment = '';
 
+  /// 보낸 일지를 고치는 중이면 그 일지 (결정 d1104-3)
+  WorkoutLog? editing;
+
   int get videoCount => rows.fold(0, (n, r) => n + r.videos.length);
 
   /// 적은 게 있는지 (뒤로 갈 때 버릴지 묻는 기준)
@@ -498,10 +546,16 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       [for (final r in rows) for (final v in r.videos) LogVideo(v, 30)], // 기획서 6번 초안: 올린 날부터 30일
       comment.trim(),
       stamp,
+      edited: editing != null,
     );
     demo.update(() {
       _logDrafts.remove(member);
-      (demo.sentLogs[member!] ??= []).add(log);
+      final sent = demo.sentLogs[member!] ??= [];
+      if (editing != null) {
+        sent.remove(editing);
+        demo.unseenLogs.remove(editing);
+      }
+      sent.add(log);
       demo.unseenLogs.add(log);
     });
     toast(context, '$member 회원님께 일지${videoCount == 0 ? '' : '와 영상 $videoCount개'}를 보내고 알림을 보냈어요 ($dateLabel 출석 도장 완료)');
@@ -633,7 +687,23 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   @override
   Widget build(BuildContext context) {
     if (member == null) {
-      member = (ModalRoute.of(context)?.settings.arguments as String?) ?? members.first;
+      final arg = ModalRoute.of(context)?.settings.arguments;
+      if (arg is LogEditArgs) {
+        member = arg.member;
+        editing = arg.log;
+        final m = RegExp(r'(\d+)월 (\d+)일').firstMatch(arg.log.date);
+        if (m != null) date = DateTime(demoTodayDate.year, int.parse(m[1]!), int.parse(m[2]!));
+        rows
+          ..clear()
+          ..addAll(arg.log.items.map(_LogRow.fromItem));
+        for (final v in arg.log.videos) {
+          rows.firstWhere((r) => v.name.startsWith('${r.name} 영상'), orElse: () => rows.first).videos.add(v.name);
+        }
+        stamp = arg.log.stamp;
+        comment = arg.log.comment;
+      } else {
+        member = arg as String? ?? members.first;
+      }
       // 임시 저장한 일지가 있으면 이어서 쓴다
       final draft = _logDrafts[member];
       if (draft != null) {
@@ -696,9 +766,11 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       Seg(options: stamps, value: stamp, onChanged: (v) => setState(() => stamp = v)),
       // 저장과 보내기를 나눠, 다 쓰기 전에 회원에게 알림이 가지 않게 (결정 d1102-2)
       Row(children: [
-        Expanded(child: AppButton('임시 저장', kind: ButtonKind.soft, onPressed: _saveDraft)),
-        const SizedBox(width: AppSpace.s),
-        Expanded(child: AppButton('회원님께 보내기', onPressed: _save)),
+        if (editing == null) ...[
+          Expanded(child: AppButton('임시 저장', kind: ButtonKind.soft, onPressed: _saveDraft)),
+          const SizedBox(width: AppSpace.s),
+        ],
+        Expanded(child: AppButton(editing == null ? '회원님께 보내기' : '고쳐서 보내기', onPressed: _save)),
       ]),
     ]),
     );
