@@ -59,4 +59,22 @@ void main() {
     expect(on, 1);
     expect(items.length, greaterThan(1));
   });
+  testWidgets('#3 로그아웃하면 앞사람 기록이 남지 않고, 로그인 방법 안내만 남는다', (tester) async {
+    await start(tester);
+    demo.lastWeights['벤치프레스'] = '60';
+    demo.favorites.add('deadlift');
+    demo.eatenMeals.add('아침');
+    demo.homeGear = ['덤벨'];
+    demo.restMode = true;
+    demo.lastLoginProvider = '카카오';
+    addTearDown(() => demo.lastLoginProvider = null);
+    demo.logout();
+    await tester.pumpAndSettle();
+    expect(demo.lastWeights, isEmpty);
+    expect(demo.favorites, isEmpty);
+    expect(demo.eatenMeals, isEmpty);
+    expect(demo.homeGear, isEmpty);
+    expect(demo.restMode, isFalse);
+    expect(demo.lastLoginProvider, '카카오');
+  });
 }

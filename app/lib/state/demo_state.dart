@@ -264,6 +264,34 @@ class DemoState extends ChangeNotifier {
     allergyNote = '';
     painAreas = [];
     weightLogs = [];
+    // 다음 사람에게 앞사람 기록이 보이지 않게 계정에 속한 값을 모두 지운다 (리뷰 11/07 #3). 로그인 방법 안내는 남긴다
+    currentIntensity = '중';
+    desiredIntensity = '중';
+    place = '헬스장';
+    homeGear = [];
+    noise = '예';
+    minutes = '30분';
+    period = '일주일';
+    daysPerWeek = '3일';
+    lastWeights.clear();
+    favorites.clear();
+    mealPosts
+      ..clear()
+      ..addAll(initialMealPosts);
+    eatenMeals.clear();
+    checked.clear();
+    checkedAdded.clear();
+    addedExercises.clear();
+    session = null;
+    workoutDone = false;
+    restMode = false;
+    firstLogSeen = false;
+    freezesLeft = 1;
+    aiUsed = 2;
+    missions.clear();
+    sentLogs.clear();
+    inviteCodes.clear();
+    removedMembers.clear();
     switchRole('guest');
   }
 

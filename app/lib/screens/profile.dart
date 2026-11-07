@@ -6,6 +6,7 @@ import '../routes.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import 'logbook.dart';
 
 /// S15 내 정보
 class ProfileTab extends StatelessWidget {
@@ -132,7 +133,10 @@ class ProfileTab extends StatelessWidget {
               body: '다시 쓰려면 카카오·구글·애플로 로그인해야 해요. 기록은 계정에 그대로 남아 있어요.',
               keepLabel: '그만두기',
               okLabel: '로그아웃');
-          if (ok) demo.logout();
+          if (ok) {
+            clearLogDrafts();
+            demo.logout();
+          }
         },
       ),
       LineRow(
