@@ -2,6 +2,7 @@ import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:fitness_app/state/workout_session.dart';
+import 'package:fitness_app/widgets/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,6 +45,15 @@ void main() {
       expect(check.height, greaterThanOrEqualTo(48));
     });
   }
+
+  testWidgets('#3 제목과 버튼 글자는 단어 중간에서 끊기지 않는다', (tester) async {
+    await open(tester, 2.0, Routes.main);
+    final h1 = tester.widget<Text>(find.descendant(of: find.byType(H1), matching: find.byType(Text)).first);
+    expect(h1.data, keepWords(demo.greeting));
+    expect(h1.semanticsLabel, demo.greeting);
+    await tester.pumpWidget(MaterialApp(home: Scaffold(body: AppButton('임시 저장', onPressed: () {}))));
+    expect(tester.widget<Text>(find.byType(Text)).data, keepWords('임시 저장'));
+  });
 
   testWidgets('#2 1세트와 10세트의 숫자 칸 시작 위치가 같다', (tester) async {
     demo.session = WorkoutSession([SessionExercise('벤치프레스', '8~12개', 10)], atHome: false);

@@ -27,8 +27,7 @@ class H1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(top: 6, bottom: 8),
-        child: Text(text,
-            style: AppText.h1),
+        child: WordText(text, style: AppText.h1),
       );
 }
 
@@ -38,8 +37,7 @@ class SheetTitle extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) =>
-      Text(text, style: AppText.title);
+  Widget build(BuildContext context) => WordText(text, style: AppText.title);
 }
 
 class H2 extends StatelessWidget {
@@ -50,8 +48,7 @@ class H2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: EdgeInsets.only(top: top, bottom: 8),
-        child: Text(text,
-            style: AppText.title),
+        child: WordText(text, style: AppText.title),
       );
 }
 

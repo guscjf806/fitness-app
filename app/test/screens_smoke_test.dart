@@ -350,10 +350,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '482-91');
     await tester.pump();
-    expect(tester.widget<FilledButton>(find.widgetWithText(FilledButton, '연결하기')).onPressed, isNull);
+    expect(tester.widget<FilledButton>(find.ancestor(of: findText('연결하기'), matching: find.byType(FilledButton))).onPressed, isNull);
     await tester.enterText(find.byType(TextField), '482-915');
     await tester.pump();
-    expect(tester.widget<FilledButton>(find.widgetWithText(FilledButton, '연결하기')).onPressed, isNotNull);
+    expect(tester.widget<FilledButton>(find.ancestor(of: findText('연결하기'), matching: find.byType(FilledButton))).onPressed, isNotNull);
     demoNavigatorKey.currentState!.pop();
     await tester.pumpAndSettle();
 

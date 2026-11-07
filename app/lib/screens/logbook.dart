@@ -724,7 +724,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         ),
         for (var j = 0; j < r.videos.length; j++)
           LineRow(
-            left: Text(r.videoLabel(r.videos[j])),
+            left: WordText(r.videoLabel(r.videos[j])),
             right: TextButton(onPressed: () => _removeVideo(r, j), child: const Text('빼기', style: TextStyle(color: AppColors.warningText))),
           ),
         Align(

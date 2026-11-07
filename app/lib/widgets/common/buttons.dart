@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
+import 'text.dart';
 
 enum ButtonKind { primary, soft }
 
@@ -26,7 +27,8 @@ class AppButton extends StatelessWidget {
                 backgroundColor: AppColors.primarySoft,
                 foregroundColor: AppColors.primaryDark)
             : null,
-        child: Text(label),
+        // 큰 글씨에서 단어 중간에 끊기지 않게 (디자인 리뷰 11/07 #3)
+        child: WordText(label, textAlign: TextAlign.center),
       ),
     );
   }
