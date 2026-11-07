@@ -378,6 +378,20 @@ class _LogRow {
   String reps = '';
   String sets = '';
 
+  /// 보낸 일지의 한 줄에서 만든다 (지난 수업 불러오기, 일지 고치기)
+  _LogRow.fromItem(LogItem item) {
+    if (exerciseByName(item.name) != null) {
+      exercise = item.name;
+    } else {
+      custom = true;
+      customName = item.name;
+    }
+    kg = item.weight == '체중' ? '' : item.weight.replaceAll('kg', '');
+    reps = item.reps.replaceAll(RegExp(r'[^0-9]'), '');
+    sets = '${item.sets}';
+  }
+  _LogRow();
+
   /// 이 종목에 붙인 영상 (결정 d1106-1)
   final List<String> videos = [];
 
@@ -422,6 +436,23 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       helpText: '수업 날짜',
     );
     if (picked != null) setState(() => date = picked);
+  }
+
+  /// 지난 수업의 종목·무게·횟수를 불러온다. 코멘트와 영상은 가져오지 않는다 (결정 d1106-3)
+  Future<void> _loadLast() async {
+    final logs = demo.logsOf(member!);
+    if (logs.isEmpty) return;
+    if (rows.any((r) => r.hasInput)) {
+      final ok = await confirmDialog(context,
+          title: '지난 수업을 불러올까요?', body: '지금 적은 종목은 지난 수업 내용으로 바뀌어요.', keepLabel: '그대로 두기', okLabel: '불러오기');
+      if (!ok || !mounted) return;
+    }
+    setState(() {
+      rows
+        ..clear()
+        ..addAll(logs.first.items.map(_LogRow.fromItem));
+    });
+    toast(context, '${logs.first.date} 수업을 불러왔어요. 오늘 값으로 고쳐 주세요');
   }
 
   /// 임시 저장: 회원에게 알림이 가지 않는다 (결정 d1102-2)
@@ -641,6 +672,11 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         ),
       ),
       const Muted('이 날짜에 출석 도장이 찍혀요', top: AppSpace.xs, bottom: AppSpace.m),
+      if (demo.logsOf(member!).isNotEmpty)
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(onPressed: _loadLast, child: const Text('지난 수업 불러오기')),
+        ),
       for (var i = 0; i < rows.length; i++) _rowEditor(i),
       AppButton('+ 종목 추가', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => rows.add(_LogRow()))),
       const SizedBox(height: AppSpace.sPlus),
