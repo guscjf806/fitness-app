@@ -217,7 +217,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
         title: Row(children: [
           const Icon(Icons.timer_outlined, size: 20, color: AppColors.primaryDark),
           const SizedBox(width: AppSpace.xsPlus),
-          Text(elapsed),
+          Flexible(child: Text(elapsed, softWrap: false)),
         ]),
         // 같은 창을 여는 버튼이 두 개라 헷갈려서 하나로 (디자인 리뷰 10/30 #7)
         actions: [TextButton(onPressed: _showList, child: const Text('목록·순서'))],
@@ -334,6 +334,24 @@ class _SetRow extends StatelessWidget {
     // 폭을 숫자로 고정하지 않아서 큰 글씨·좁은 폰에서도 줄이 넘치지 않게 (디자인 리뷰 10/30 #3)
     Widget field(String value, String suffix, ValueChanged<String> onChanged, {bool suggested = false}) =>
         Expanded(child: _NumCell(value: value, suffix: suffix, onChanged: onChanged, suggested: suggested));
+    // '1세트'와 '10세트'의 칸 시작 위치가 맞게 글씨 크기에 비례한 고정 폭 (디자인 리뷰 11/07 #2)
+    final scaler = MediaQuery.textScalerOf(context);
+    final label = Text('$number세트', softWrap: false, style: AppText.bodyStrong);
+    final check = IconButton(
+      tooltip: '$number세트 완료',
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      onPressed: onToggle,
+      icon: Icon(entry.done ? Icons.check_circle : Icons.check_circle_outline,
+          color: entry.done ? AppColors.primary : AppColors.textSub, size: 30),
+    );
+    final fields = <Widget>[
+      if (bodyweight)
+        const Expanded(child: Muted('맨몸', bottom: 0, align: TextAlign.center))
+      else
+        field(entry.kg, 'kg', onKg, suggested: entry.suggested),
+      const Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: Text('/')),
+      field(entry.reps, unit, (v) => entry.reps = v),
+    ];
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -342,26 +360,19 @@ class _SetRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.box),
         border: Border.all(color: entry.done ? AppColors.primary : Colors.transparent),
       ),
-      child: Row(children: [
-        ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 44),
-          child: Text('$number세트', softWrap: false, style: AppText.bodyStrong),
-        ),
-        const SizedBox(width: 8),
-        if (bodyweight)
-          const Expanded(child: Muted('맨몸', bottom: 0, align: TextAlign.center))
-        else
-          field(entry.kg, 'kg', onKg, suggested: entry.suggested),
-        const Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: Text('/')),
-        field(entry.reps, unit, (v) => entry.reps = v),
-        const SizedBox(width: AppSpace.xsPlus),
-        IconButton(
-          tooltip: '$number세트 완료',
-          onPressed: onToggle,
-          icon: Icon(entry.done ? Icons.check_circle : Icons.check_circle_outline,
-              color: entry.done ? AppColors.primary : AppColors.textSub, size: 30),
-        ),
-      ]),
+      // 아주 큰 글씨에서는 한 줄에 다 넣으면 숫자가 잘려서 두 줄로 나눈다
+      child: scaler.scale(1) >= 1.6
+          ? Column(children: [
+              Row(children: [Expanded(child: label), check]),
+              Row(children: fields),
+            ])
+          : Row(children: [
+              SizedBox(width: scaler.scale(48), child: label),
+              const SizedBox(width: 8),
+              ...fields,
+              const SizedBox(width: AppSpace.xsPlus),
+              check,
+            ]),
     );
   }
 }
@@ -402,7 +413,11 @@ class _NumCellState extends State<_NumCell> {
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         textAlign: TextAlign.center,
         style: widget.suggested ? const TextStyle(color: AppColors.textSub) : null,
-        decoration: InputDecoration(suffixText: widget.suffix, hintText: widget.suffix, isDense: true),
+        decoration: InputDecoration(
+            suffixText: widget.suffix,
+            hintText: widget.suffix,
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: AppSpace.xs, vertical: 14)),
         onChanged: widget.onChanged,
       );
 }
