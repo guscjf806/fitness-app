@@ -489,6 +489,36 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   bool get dirty => baseFingerprint != null && fingerprint != baseFingerprint;
   bool get hasOwnDraft => member != null && hasLogDraft(member!);
 
+  /// 적은 내용이 다른 회원 일지가 되지 않게 묻고, 그 회원의 임시 저장이 있으면 연다 (리뷰 11/07 #5)
+  Future<void> _changeMember(String? next) async {
+    if (next == null || next == member) return;
+    if (dirty) {
+      final hasDraft = hasLogDraft(next);
+      final ok = await confirmDialog(context,
+          title: '$next 회원 일지로 바꿀까요?',
+          body: hasDraft ? '$next 회원의 임시 저장을 열어요. 지금 적은 내용은 사라져요.' : '지금 적은 내용이 $next 회원 일지가 돼요.',
+          keepLabel: '그대로 두기',
+          okLabel: '바꾸기');
+      if (!ok || !mounted) {
+        setState(() {}); // 고르는 칸을 원래 회원으로 되돌린다
+        return;
+      }
+    }
+    setState(() {
+      member = next;
+      final draft = _logDrafts[next];
+      if (draft != null) {
+        date = draft.date;
+        rows
+          ..clear()
+          ..addAll(draft.rows.map((r) => r.copy()));
+        stamp = draft.stamp;
+        comment = draft.comment;
+        baseFingerprint = fingerprint;
+      }
+    });
+  }
+
   /// 임시 저장을 지운다 (리뷰 11/07 #4)
   Future<void> _deleteDraft() async {
     final ok = await confirmDialog(context,
@@ -754,8 +784,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       DropdownButtonFormField<String>(
         initialValue: member,
         decoration: const InputDecoration(labelText: '회원'),
+        key: ValueKey('member-$member'),
         items: [for (final m in {...demo.activeMembers, member!}) DropdownMenuItem(value: m, child: Text(m))],
-        onChanged: (v) => setState(() => member = v),
+        onChanged: editing != null ? null : (v) => _changeMember(v),
       ),
       const SizedBox(height: AppSpace.m),
       InkWell(
@@ -798,7 +829,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
           Expanded(child: AppButton('임시 저장', kind: ButtonKind.soft, onPressed: _saveDraft)),
           const SizedBox(width: AppSpace.s),
         ],
-        Expanded(child: AppButton(editing == null ? '회원님께 보내기' : '고쳐서 보내기', onPressed: _save)),
+        Expanded(child: AppButton(editing == null ? '$member 회원님께 보내기' : '고쳐서 보내기', onPressed: _save)),
       ]),
       if (editing == null && hasOwnDraft)
         Center(
