@@ -34,6 +34,20 @@ class AppButton extends StatelessWidget {
   }
 }
 
+/// 지우기·빼기 글자 버튼. 글자색만 바꾸면 눌림 물결이 초록이라 물결까지 경고색으로 (디자인 리뷰 11/07 #7)
+class DangerTextButton extends StatelessWidget {
+  const DangerTextButton(this.label, {super.key, required this.onPressed});
+  final String label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) => TextButton(
+        style: TextButton.styleFrom(foregroundColor: AppColors.warningText),
+        onPressed: onPressed,
+        child: Text(label),
+      );
+}
+
 /// '더 보기' 글자 링크: 글자 + 화살표 아이콘. 목록 줄의 화살표와 같은 모양 (디자인 리뷰 10/31 #2)
 class MoreLink extends StatelessWidget {
   const MoreLink(this.text, {super.key, this.color = AppColors.primaryDark});

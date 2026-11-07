@@ -57,7 +57,8 @@ void showMemberSheet(BuildContext context, String member) {
               },
               child: const Text('고치기'),
             ),
-            TextButton(
+            DangerTextButton(
+              '지우기',
               onPressed: () async {
                 final ok = await confirmDialog(sheet,
                     title: '${log.date} 일지를 지울까요?',
@@ -73,7 +74,6 @@ void showMemberSheet(BuildContext context, String member) {
                 Navigator.pop(sheet);
                 if (context.mounted) toast(context, '일지를 지웠어요');
               },
-              child: const Text('지우기', style: TextStyle(color: AppColors.warningText)),
             ),
           ]),
         ),

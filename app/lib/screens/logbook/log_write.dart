@@ -292,7 +292,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         if (rows.length > 1)
           Row(children: [
             Expanded(child: Text('종목 ${i + 1}', style: AppText.bodyStrong)),
-            TextButton(onPressed: () => _removeRow(i), child: const Text('빼기', style: TextStyle(color: AppColors.warningText))),
+            DangerTextButton('빼기', onPressed: () => _removeRow(i)),
           ]),
         // 카드 안은 좁아서 글자가 잘리지 않게 종목 칸과 '직접 입력'을 두 줄로
         r.custom
@@ -343,7 +343,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         for (var j = 0; j < r.videos.length; j++)
           LineRow(
             left: WordText(r.videoLabel(r.videos[j])),
-            right: TextButton(onPressed: () => _removeVideo(r, j), child: const Text('빼기', style: TextStyle(color: AppColors.warningText))),
+            right: DangerTextButton('빼기', onPressed: () => _removeVideo(r, j)),
           ),
         Align(
           alignment: Alignment.centerRight,
@@ -458,7 +458,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       ]),
       if (editing == null && hasOwnDraft)
         Center(
-          child: TextButton(onPressed: _deleteDraft, child: const Text('임시 저장 지우기', style: TextStyle(color: AppColors.warningText))),
+          child: DangerTextButton('임시 저장 지우기', onPressed: _deleteDraft),
         ),
     ]),
     );
