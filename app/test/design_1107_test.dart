@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'finders.dart';
+
 /// 디자인 리뷰 11/07: 폭 360px, 큰 글씨
 void main() {
   setUp(() {
@@ -53,6 +55,15 @@ void main() {
     expect(h1.semanticsLabel, demo.greeting);
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: AppButton('임시 저장', onPressed: () {}))));
     expect(tester.widget<Text>(find.byType(Text)).data, keepWords('임시 저장'));
+  });
+
+  testWidgets('#5 빈 무게 칸에도 kg이 보이고, 촬영 동의 안내가 첫 종목 위에 있다', (tester) async {
+    await open(tester, 1.0, Routes.logWrite, arguments: '김지아');
+    expect(findText('kg'), findsOneWidget);
+    expect(findText('영상 0/5'), findsOneWidget);
+    expect(findText('운동 영상 0/5'), findsNothing);
+    final consent = tester.getTopLeft(findText('회원님 촬영 동의 후 올려 주세요')).dy;
+    expect(consent, lessThan(tester.getTopLeft(findText('영상 추가')).dy));
   });
 
   testWidgets('#2 1세트와 10세트의 숫자 칸 시작 위치가 같다', (tester) async {

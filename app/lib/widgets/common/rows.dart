@@ -108,7 +108,19 @@ class NumField extends StatelessWidget {
       enabled: enabled,
       keyboardType: decimal ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.number,
       inputFormatters: decimal ? null : [FilteringTextInputFormatter.digitsOnly],
-      decoration: InputDecoration(labelText: label, hintText: hint, errorText: error, suffixText: suffix),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        errorText: error,
+        // suffixText는 비었을 때 안 보여서 늘 보이는 작은 글자로 (디자인 리뷰 11/07 #5)
+        suffixIcon: suffix == null
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(right: AppSpace.s),
+                child: Text(suffix!, style: AppText.small.copyWith(color: AppColors.textSub)),
+              ),
+        suffixIconConstraints: const BoxConstraints(),
+      ),
       onChanged: onChanged,
     );
   }

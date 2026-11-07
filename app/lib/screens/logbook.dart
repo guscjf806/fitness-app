@@ -808,18 +808,18 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         ),
       ),
       const Muted('이 날짜에 출석 도장이 찍혀요', top: AppSpace.xs, bottom: AppSpace.m),
-      if (demo.logsOf(member!).isNotEmpty)
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(onPressed: _loadLast, child: const Text('지난 수업 불러오기')),
-        ),
-      for (var i = 0; i < rows.length; i++) _rowEditor(i),
-      AppButton('+ 종목 추가', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => rows.add(_LogRow()))),
-      const SizedBox(height: AppSpace.sPlus),
-      // 촬영 동의 안내가 묻히지 않게 제목·규칙·동의를 나눈다. 문구는 그대로 (디자인 리뷰 11/01 #4)
-      H2('운동 영상 $videoCount/5', top: 0),
+      // 영상은 종목 칸에서 올리니 동의 안내를 첫 종목 위에 둔다. 문구는 그대로 (디자인 리뷰 11/07 #5)
       const Text('회원님 촬영 동의 후 올려 주세요', style: AppText.bodyStrong),
       const Muted('영상당 15초 이내 · 회원님 본인에게만 보여요. 종목 칸의 영상 추가로 올려요.'),
+      ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Row(children: [
+          Expanded(child: Muted('영상 $videoCount/5', bottom: 0)),
+          if (demo.logsOf(member!).isNotEmpty) TextButton(onPressed: _loadLast, child: const Text('지난 수업 불러오기')),
+        ]),
+      ),
+      for (var i = 0; i < rows.length; i++) _rowEditor(i),
+      AppButton('+ 종목 추가', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => rows.add(_LogRow()))),
       const SizedBox(height: AppSpace.m),
       TextFormField(
         initialValue: comment,
