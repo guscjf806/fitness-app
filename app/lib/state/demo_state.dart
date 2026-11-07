@@ -247,6 +247,7 @@ class DemoState extends ChangeNotifier {
   /// 동의도 처음으로 돌린다 (리뷰 11/05 #4). 데모 바로 역할을 바꾸는 건 switchRole
   void logout() {
     consented = false;
+    ptEnded = false; // 다음 사람에게 앞사람 일지가 보이지 않게 (리뷰 11/07 #1)
     // 폰에 남은 몸 정보를 지운다 (결정 d1104-4). 계정에서 다시 불러오는 건 회원 정보 표를 만들 때
     sex = '남';
     height = '175';

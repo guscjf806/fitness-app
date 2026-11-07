@@ -18,7 +18,8 @@ class MainShell extends StatelessWidget {
   Widget _logbookTab() => switch (demo.role) {
         'trainer' => MemberManageTab(), // S18
         'member' => LogListTab(), // S13
-        _ => demo.ptEnded ? LogListTab() : LogIntroTab(), // S12, 연결을 끊은 뒤에도 받은 일지는 본다
+        // S12. 로그인한 회원이 연결을 끊었으면 받은 일지를 계속 본다
+        _ => demo.ptEnded && !demo.isGuest ? LogListTab() : LogIntroTab(),
       };
 
   @override
