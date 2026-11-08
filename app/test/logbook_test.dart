@@ -321,6 +321,8 @@ void main() {
     await tap(tester, findText('임시 저장 지우기'));
     await tap(tester, findText('지우기'));
     expect(hasLogDraft('박서연'), isFalse);
+    expect(find.widgetWithText(AppBar, '일지 작성'), findsOneWidget, reason: '지운 뒤 빈 일지로 남는다 (리뷰 11/08 #6)');
+    expect(field('종목 이름'), findsNothing);
   });
 
   testWidgets('#2·#7 직접 입력 종목은 이름이 있어야 하고, 칩을 껐다 켜도 이름이 남는다', (tester) async {

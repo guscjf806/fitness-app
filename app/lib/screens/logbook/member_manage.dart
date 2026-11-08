@@ -45,7 +45,9 @@ void showMemberSheet(BuildContext context, String member) {
       SheetTitle('$member 회원'),
       // 보낸 일지를 다시 보고 고치거나 지운다 (결정 d1104-3)
       const H2('보낸 일지'),
-      if ((demo.sentLogs[member] ?? const []).isEmpty) const Muted('앱에서 보낸 일지가 아직 없어요.'),
+      // 목록의 '마지막 일지'가 예시 일지일 때 헷갈리지 않게 (리뷰 11/08 #6)
+      if ((demo.sentLogs[member] ?? const []).isEmpty)
+        Muted(demo.lastLogOf(member) == null ? '앱에서 보낸 일지가 아직 없어요.' : '예시 일지는 고치거나 지울 수 없어요. 앱에서 보낸 일지만 여기 보여요.'),
       for (final log in demo.sentLogs[member] ?? const <WorkoutLog>[])
         LineRow(
           left: WordText('${log.date} · ${log.title}${log.edited ? ' · 수정됨' : ''}'),

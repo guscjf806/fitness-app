@@ -167,9 +167,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         title: '임시 저장을 지울까요?', body: '지우면 되돌릴 수 없어요.', keepLabel: '그대로 두기', okLabel: '지우기', danger: true);
     if (!ok || !mounted) return;
     demo.update(() => _logDrafts.remove(member));
-    baseFingerprint = fingerprint;
-    toast(context, '임시 저장을 지웠어요');
-    Navigator.pop(context);
+    // 바로 새로 쓸 수 있게 화면은 닫지 않는다 (리뷰 11/08 #6)
+    setState(_startBlank);
+    toast(context, '임시 저장을 지웠어요. 새로 쓸 수 있어요');
   }
 
   String get dateLabel => '${date.month}월 ${date.day}일';
@@ -400,7 +400,11 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         member = arg.member;
         editing = arg.log;
         final m = RegExp(r'(\d+)월 (\d+)일').firstMatch(arg.log.date);
-        if (m != null) date = DateTime(demoTodayDate.year, int.parse(m[1]!), int.parse(m[2]!));
+        if (m != null) {
+          // 12월 일지를 1월에 고쳐도 다음 해 날짜가 되지 않게 (리뷰 11/08 #6)
+          final d = DateTime(demoTodayDate.year, int.parse(m[1]!), int.parse(m[2]!));
+          date = d.isAfter(demoTodayDate) ? DateTime(d.year - 1, d.month, d.day) : d;
+        }
         rows
           ..clear()
           ..addAll(arg.log.items.map(_LogRow.fromItem));
