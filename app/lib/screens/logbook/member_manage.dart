@@ -147,10 +147,13 @@ class _MemberManageTabState extends State<MemberManageTab> {
       const SizedBox(height: AppSpace.l),
       if (member != null) AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Muted('이번 주 미션', bottom: 6),
+          // 아래 '새 회원 초대' 카드와 같은 제목 모양 (디자인 리뷰 11/08 #3)
+          const FieldLabel('이번 주 미션', sub: '회원을 고르고 이번 주 목표를 적어 주세요'),
+          const SizedBox(height: AppSpace.s),
           DropdownButtonFormField<String>(
             key: ValueKey(member),
             initialValue: member,
+            decoration: const InputDecoration(labelText: '회원'),
             items: [for (final m in demo.activeMembers) DropdownMenuItem(value: m, child: Text(m))],
             onChanged: (v) => setState(() => demo.missionMember = v),
           ),

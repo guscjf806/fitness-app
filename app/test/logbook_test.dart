@@ -3,6 +3,7 @@ import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
 import 'package:fitness_app/screens/logbook.dart';
 import 'package:fitness_app/state/demo_state.dart';
+import 'package:fitness_app/widgets/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -493,5 +494,18 @@ void main() {
     final draft = tester.getRect(find.ancestor(of: findText('임시 저장'), matching: find.byType(FilledButton)));
     expect(send.width, draft.width);
     expect(send.bottom, lessThan(draft.top));
+  });
+  testWidgets('디자인 리뷰 11/08 #3·#4 카드 제목이 같은 모양이고, 만든 초대 코드에 제목이 붙는다', (tester) async {
+    demo.inviteCodes.clear();
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    expect(find.ancestor(of: findText('이번 주 미션'), matching: find.byType(FieldLabel)), findsOneWidget);
+    expect(findText('만든 초대 코드 1개'), findsNothing);
+    await tester.enterText(find.widgetWithText(TextField, '예: 김지아 회원님'), '최민수');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('초대 코드 만들기'));
+    expect(find.text('INVITE_TITLE_CHECK'), findsNothing);
   });
 }
