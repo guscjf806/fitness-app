@@ -84,7 +84,7 @@ void showMemberSheet(BuildContext context, String member) {
           // 회원과 선생님 모두 끊을 수 있고 상대에게 알린다 (결정 d1104-2)
           final ok = await confirmDialog(sheet,
               title: '$member 회원과 연결을 끊을까요?',
-              body: '더 이상 이 회원의 일지를 볼 수 없어요. 회원님께 알림이 가요.',
+              body: '더 이상 이 회원의 일지를 볼 수 없어요. 회원님께 알림이 가요. 보낸 미션과 임시 저장한 일지도 함께 지워져요.',
               keepLabel: '그대로 두기',
               okLabel: '연결 끊기',
               danger: true);
@@ -92,6 +92,8 @@ void showMemberSheet(BuildContext context, String member) {
           demo.update(() {
             demo.removedMembers.add(member);
             demo.missions.remove(member);
+            // 다시 이어졌을 때 옛 임시 저장이 뜨지 않게 (리뷰 11/08 #4)
+            clearLogDraft(member);
           });
           Navigator.pop(sheet);
           if (context.mounted) toast(context, '$member 회원과 연결을 끊고 알렸어요');

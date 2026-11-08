@@ -25,6 +25,7 @@ class _LogDraft {
 
 final Map<String, _LogDraft> _logDrafts = {};
 bool hasLogDraft(String member) => _logDrafts.containsKey(member);
+void clearLogDraft(String member) => _logDrafts.remove(member);
 void clearLogDrafts() => _logDrafts.clear();
 
 /// 일지의 종목 한 줄 (결정 dd1101-logwrite: '+ 종목 추가'로 줄을 늘린다)

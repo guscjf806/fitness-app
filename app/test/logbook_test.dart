@@ -469,4 +469,16 @@ void main() {
     await tap(tester, findText('지우기').last);
     expect(demo.inviteCodes, isEmpty);
   });
+  testWidgets('리뷰 11/08 #4 연결을 끊으면 그 회원의 임시 저장도 지운다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '박서연');
+    await pick(tester);
+    await tap(tester, findText('임시 저장'));
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    await tap(tester, find.byTooltip('박서연 회원 더 보기'));
+    await tap(tester, findText('연결 끊기'));
+    expect(findTextContaining('임시 저장한 일지도 함께 지워져요'), findsOneWidget);
+    await tap(tester, findText('연결 끊기').last);
+    expect(hasLogDraft('박서연'), isFalse);
+  });
 }
