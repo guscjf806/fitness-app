@@ -102,6 +102,21 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   /// 보낸 일지를 고치는 중이면 그 일지 (결정 d1104-3)
   WorkoutLog? editing;
 
+  /// 내용을 통째로 바꿀 때 코멘트 칸을 새로 그리게 올린다
+  int formVersion = 0;
+
+  /// 빈 일지로 새로 시작한다 (리뷰 11/08 #2)
+  void _startBlank() {
+    date = demoTodayDate;
+    rows
+      ..clear()
+      ..add(_LogRow());
+    stamp = stamps.first;
+    comment = '';
+    formVersion++;
+    baseFingerprint = fingerprint;
+  }
+
   int get videoCount => rows.fold(0, (n, r) => n + r.videos.length);
 
   /// 적은 게 있는지 (뒤로 갈 때 버릴지 묻는 기준)
@@ -136,7 +151,11 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
           ..addAll(draft.rows.map((r) => r.copy()));
         stamp = draft.stamp;
         comment = draft.comment;
+        formVersion++;
         baseFingerprint = fingerprint;
+      } else if (!dirty) {
+        // 임시 저장에서 불러온 그대로면 다른 회원 일지로 남기지 않는다 (리뷰 11/08 #2)
+        _startBlank();
       }
     });
   }
@@ -442,6 +461,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       AppButton('+ 종목 추가', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => rows.add(_LogRow()))),
       const SizedBox(height: AppSpace.m),
       TextFormField(
+        key: ValueKey('comment-$formVersion'),
         initialValue: comment,
         maxLines: 3,
         decoration: const InputDecoration(labelText: '코멘트', hintText: '자세, 다음 목표 등', alignLabelWithHint: true),

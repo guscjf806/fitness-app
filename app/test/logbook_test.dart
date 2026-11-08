@@ -437,4 +437,22 @@ void main() {
     expect(demo.sentLogs['박서연']!.single.items.single.reps, '12개');
     expect(hasLogDraft('박서연'), isTrue);
   });
+  testWidgets('리뷰 11/08 #2 임시 저장을 연 채 회원을 바꾸면 빈 일지로 시작한다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '박서연');
+    await pick(tester);
+    await tester.enterText(find.widgetWithText(TextFormField, '코멘트'), '스쿼트 좋아요');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('임시 저장'));
+    demoNavigatorKey.currentState!.pushNamed(Routes.logWrite, arguments: '박서연');
+    await tester.pumpAndSettle();
+    expect(findText('스쿼트 좋아요'), findsOneWidget);
+    await tap(tester, find.byType(DropdownButtonFormField<String>));
+    await tap(tester, findText('김지아').last);
+    expect(findText('스쿼트 좋아요'), findsNothing);
+    expect(field('종목 이름'), findsNothing);
+    await tester.scrollUntilVisible(findText('김지아 회원님께 보내기'), 200,
+        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first);
+    expect(findText('김지아 회원님께 보내기'), findsOneWidget);
+    expect(hasLogDraft('박서연'), isTrue);
+  });
 }
