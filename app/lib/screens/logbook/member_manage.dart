@@ -50,7 +50,13 @@ void showMemberSheet(BuildContext context, String member) {
         Muted(demo.lastLogOf(member) == null ? '앱에서 보낸 일지가 아직 없어요.' : '예시 일지는 고치거나 지울 수 없어요. 앱에서 보낸 일지만 여기 보여요.'),
       for (final log in demo.sentLogs[member] ?? const <WorkoutLog>[])
         LineRow(
-          left: WordText('${log.date} · ${log.title}${log.edited ? ' · 수정됨' : ''}'),
+          left: Row(children: [
+            Flexible(child: WordText('${log.date} · ${log.title}')),
+            if (log.edited) ...[
+              const SizedBox(width: AppSpace.s),
+              const LogStatusLabels(edited: true),
+            ],
+          ]),
           right: Row(mainAxisSize: MainAxisSize.min, children: [
             TextButton(
               onPressed: () {

@@ -105,3 +105,17 @@ class WarningBox extends StatelessWidget {
     );
   }
 }
+
+/// 일지 상태 표시: 수정됨(회색)·새 일지(청록 굵게). 회원 일지 목록과 선생님 시트가 같이 쓴다 (디자인 리뷰 11/08 #2)
+class LogStatusLabels extends StatelessWidget {
+  const LogStatusLabels({super.key, required this.edited, this.isNew = false});
+  final bool edited;
+  final bool isNew;
+
+  @override
+  Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
+        if (edited) const Muted('수정됨', bottom: 0),
+        if (edited && isNew) const SizedBox(width: AppSpace.s),
+        if (isNew) const Text('새 일지', style: AppText.captionAccent),
+      ]);
+}

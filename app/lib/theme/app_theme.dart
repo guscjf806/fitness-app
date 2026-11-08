@@ -96,6 +96,9 @@ class AppText {
   static const caption = TextStyle(fontFamily: fontFamily, fontSize: 13);
   static const body = TextStyle(fontFamily: fontFamily, fontSize: 14);
   static const bodyStrong = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700);
+
+  /// '새 일지'처럼 눈에 띄어야 하는 작은 표시 (디자인 리뷰 11/08 #2)
+  static const captionAccent = TextStyle(fontFamily: fontFamily, fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primaryDark);
   static const title = TextStyle(fontFamily: fontFamily, fontSize: 18, fontWeight: FontWeight.w700);
   static const number = TextStyle(fontFamily: fontFamily, fontSize: 22, fontWeight: FontWeight.w700);
 

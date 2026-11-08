@@ -69,12 +69,9 @@ class LogListTab extends StatelessWidget {
           },
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Expanded(child: Text('${log.date} · ${log.title}', style: AppText.bodyStrong)),
+              Expanded(child: WordText('${log.date} · ${log.title}', style: AppText.bodyStrong)),
               // 안 본 일지를 구분한다 (리뷰 11/04 #7)
-              if (log.edited) const Muted('수정됨', bottom: 0),
-              if (log.edited && demo.unseenLogs.contains(log)) const SizedBox(width: AppSpace.s),
-              if (demo.unseenLogs.contains(log))
-                Text('새 일지', style: AppText.caption.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
+              LogStatusLabels(edited: log.edited, isNew: demo.unseenLogs.contains(log)),
             ]),
             Muted(
               '${log.items.length}종목'

@@ -290,7 +290,7 @@ void main() {
     demo.update(() => demo.tab = 3);
     await tester.pumpAndSettle();
     await tap(tester, find.byTooltip('박서연 회원 더 보기'));
-    expect(findTextContaining('수정됨'), findsOneWidget);
+    expect(findText('수정됨'), findsOneWidget);
     await tap(tester, findText('지우기'));
     await tap(tester, findText('지우기').last);
     expect(demo.sentLogs['박서연'], isEmpty);
