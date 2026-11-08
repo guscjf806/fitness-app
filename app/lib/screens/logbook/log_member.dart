@@ -153,7 +153,7 @@ class LogDetailScreen extends StatelessWidget {
       if (log.edited) const Muted('선생님이 보낸 뒤에 고친 일지예요.', top: AppSpace.s),
       // 다른 강조 카드와 같은 모양 (디자인 리뷰 10/28 #6)
       Padding(
-        padding: const EdgeInsets.only(top: 10),
+        padding: const EdgeInsets.only(top: AppSpace.sPlus),
         child: AppCard(
           accent: true,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

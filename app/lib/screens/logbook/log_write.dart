@@ -354,9 +354,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         // 휴대폰에서 숫자 자판이 뜨게 공용 숫자 칸으로 (디자인 리뷰 11/01 #2)
         Row(children: [
           Expanded(child: NumField(label: '무게', suffix: 'kg', hint: '60', value: r.kg, onChanged: (v) => setState(() => r.kg = v))),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpace.s),
           Expanded(child: NumField(key: ValueKey('${r.hashCode}-${r.isHold}'), label: r.isHold ? '시간(초)' : '횟수', hint: r.isHold ? '30' : '8', decimal: false, value: r.reps, onChanged: (v) => setState(() => r.reps = v))),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpace.s),
           Expanded(child: NumField(label: '세트', hint: '4', decimal: false, value: r.sets, onChanged: (v) => setState(() => r.sets = v))),
         ]),
         const Align(

@@ -159,7 +159,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
           ),
           // 고른 회원에게 지금 보낸 미션을 보여 준다 (리뷰 11/02 #4)
           Padding(
-            padding: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.only(top: AppSpace.s),
             child: Muted(demo.missions[member] == null ? '아직 보낸 미션이 없어요' : '지금 미션: ${demo.missions[member]}', bottom: 0),
           ),
           const SizedBox(height: AppSpace.s),
