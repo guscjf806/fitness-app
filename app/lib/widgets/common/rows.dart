@@ -144,3 +144,22 @@ class ProgressBar extends StatelessWidget {
         ),
       );
 }
+
+/// 누르면 고르는 창이 뜨는 입력 칸 (종목, 수업 날짜 등) (디자인 리뷰 11/08 #5)
+class PickerField extends StatelessWidget {
+  const PickerField({super.key, required this.label, required this.child, required this.icon, required this.onTap});
+  final String label;
+  final Widget child;
+  final Widget icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.small),
+        onTap: onTap,
+        child: InputDecorator(
+          decoration: InputDecoration(labelText: label),
+          child: Row(children: [Expanded(child: child), icon]),
+        ),
+      );
+}

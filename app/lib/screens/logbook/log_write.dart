@@ -327,27 +327,24 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
                     decoration: const InputDecoration(labelText: '종목 이름', hintText: '예: TRX 로우'),
                     onChanged: (v) => setState(() => r.customName = v),
                   )
-                : InkWell(
-                    borderRadius: BorderRadius.circular(AppRadius.small),
+                : PickerField(
+                    label: '종목',
+                    icon: const Icon(Icons.chevron_right, color: AppColors.textSub),
                     // 운동 추가하기(S21)에서 1개를 고른다
                     onTap: () async {
                       final picked = await Navigator.pushNamed(context, Routes.exercisePick, arguments: 1);
                       if (picked is List<String> && picked.isNotEmpty) setState(() => r.exercise = picked.first);
                     },
-                    child: InputDecorator(
-                      decoration: const InputDecoration(labelText: '종목'),
-                      child: Row(children: [
-                        if (r.exercise != null) ...[
-                          ExerciseThumb(r.exercise!, size: 32),
-                          const SizedBox(width: AppSpace.sPlus),
-                        ],
-                        Expanded(
-                          child: WordText(r.exercise ?? '종목을 골라 주세요',
-                              style: r.exercise == null ? const TextStyle(color: AppColors.textSub) : null),
-                        ),
-                        const Icon(Icons.chevron_right, color: AppColors.textSub),
-                      ]),
-                    ),
+                    child: Row(children: [
+                      if (r.exercise != null) ...[
+                        ExerciseThumb(r.exercise!, size: 32),
+                        const SizedBox(width: AppSpace.sPlus),
+                      ],
+                      Expanded(
+                        child: WordText(r.exercise ?? '종목을 골라 주세요',
+                            style: r.exercise == null ? const TextStyle(color: AppColors.textSub) : null),
+                      ),
+                    ]),
                   ),
         Align(
           alignment: Alignment.centerRight,
@@ -446,16 +443,11 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         onChanged: editing != null ? null : (v) => _changeMember(v),
       ),
       const SizedBox(height: AppSpace.m),
-      InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.small),
+      PickerField(
+        label: '수업 날짜',
+        icon: const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.textSub),
         onTap: _pickDate,
-        child: InputDecorator(
-          decoration: const InputDecoration(labelText: '수업 날짜'),
-          child: Row(children: [
-            Expanded(child: Text('$dateLabel (${dayLabels[date.weekday - 1]})${date == demoTodayDate ? ' · 오늘' : ''}')),
-            const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.textSub),
-          ]),
-        ),
+        child: Text('$dateLabel (${dayLabels[date.weekday - 1]})${date == demoTodayDate ? ' · 오늘' : ''}'),
       ),
       const Muted('이 날짜에 출석 도장이 찍혀요', top: AppSpace.xs, bottom: AppSpace.m),
       // 영상은 종목 칸에서 올리니 동의 안내를 첫 종목 위에 둔다. 문구는 그대로 (디자인 리뷰 11/07 #5)
