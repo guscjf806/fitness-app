@@ -257,6 +257,12 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       sent.add(log);
       demo.unseenLogs.add(log);
     });
+    // 고친 일지는 처음 보낼 때와 구분하고 출석 도장 말은 뺀다 (리뷰 11/08 #5)
+    if (editing != null) {
+      toast(context, '$member 회원님 일지를 고쳤어요');
+      Navigator.pop(context);
+      return;
+    }
     toast(context, '$member 회원님께 일지${videoCount == 0 ? '' : '와 영상 $videoCount개'}를 보내고 알림을 보냈어요 ($dateLabel 출석 도장 완료)');
     Navigator.pop(context);
   }
@@ -477,7 +483,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
           Expanded(child: AppButton('임시 저장', kind: ButtonKind.soft, onPressed: _saveDraft)),
           const SizedBox(width: AppSpace.s),
         ],
-        Expanded(child: AppButton(editing == null ? '$member 회원님께 보내기' : '고쳐서 보내기', onPressed: _save)),
+        Expanded(child: AppButton(editing == null ? '$member 회원님께 보내기' : '$member 회원님 일지 고쳐서 보내기', onPressed: _save)),
       ]),
       if (editing == null && hasOwnDraft)
         Center(

@@ -281,7 +281,8 @@ void main() {
     await openRoute(tester, Routes.logWrite, args: LogEditArgs('박서연', demo.sentLogs['박서연']!.single));
     await tester.enterText(field('횟수'), '12');
     await tester.pumpAndSettle();
-    await tap(tester, findText('고쳐서 보내기'));
+    await tap(tester, findText('박서연 회원님 일지 고쳐서 보내기'));
+    expect(findText('박서연 회원님 일지를 고쳤어요'), findsOneWidget);
     final edited = demo.sentLogs['박서연']!.single;
     expect(edited.edited, isTrue);
     expect(edited.items.single.reps, '12개');
