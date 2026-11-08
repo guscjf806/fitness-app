@@ -400,6 +400,8 @@ void main() {
     await tester.enterText(find.widgetWithText(TextField, '예: 김지아 회원님'), '최민수');
     await tester.pumpAndSettle();
     await tap(tester, findText('초대 코드 만들기'));
+    await tester.scrollUntilVisible(findText('1회용 · 7일 남음'), 200,
+        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first);
     expect(findText('최민수'), findsOneWidget);
     expect(findText('1회용 · 7일 남음'), findsOneWidget);
     await tap(tester, findText('복사'));
@@ -506,6 +508,8 @@ void main() {
     await tester.enterText(find.widgetWithText(TextField, '예: 김지아 회원님'), '최민수');
     await tester.pumpAndSettle();
     await tap(tester, findText('초대 코드 만들기'));
-    expect(find.text('INVITE_TITLE_CHECK'), findsNothing);
+    await tester.scrollUntilVisible(findText('1회용 · 7일 남음'), 200,
+        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first);
+    expect(findText('만든 초대 코드 1개'), findsOneWidget);
   });
 }

@@ -214,6 +214,8 @@ class _MemberManageTabState extends State<MemberManageTab> {
           }),
         ]),
       ),
+      // 만들기 카드와 만든 코드를 나눈다 (디자인 리뷰 11/08 #4)
+      if (demo.inviteCodes.isNotEmpty) H2('만든 초대 코드 ${demo.inviteCodes.length}개', top: AppSpace.m),
       for (final c in demo.inviteCodes)
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
