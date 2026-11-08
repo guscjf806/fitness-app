@@ -228,7 +228,7 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       edited: editing != null,
     );
     demo.update(() {
-      _logDrafts.remove(member);
+      if (editing == null) _logDrafts.remove(member);
       final sent = demo.sentLogs[member!] ??= [];
       if (editing != null) {
         sent.remove(editing);
@@ -386,8 +386,8 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       } else {
         member = arg as String? ?? members.first;
       }
-      // 임시 저장한 일지가 있으면 이어서 쓴다
-      final draft = _logDrafts[member];
+      // 임시 저장한 일지가 있으면 이어서 쓴다. 보낸 일지를 고칠 때는 건드리지 않는다 (리뷰 11/08 #1)
+      final draft = editing == null ? _logDrafts[member] : null;
       if (draft != null) {
         date = draft.date;
         rows
@@ -402,7 +402,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
     return DiscardGuard(
       dirty: dirty,
       title: '작성 중인 일지를 버릴까요?',
-      body: hasOwnDraft ? '고친 내용만 사라지고 임시 저장은 남아요.' : '나가면 적은 내용과 영상이 사라져요.',
+      body: editing != null
+          ? '고친 내용은 사라지고 보낸 일지는 그대로예요.'
+          : (hasOwnDraft ? '고친 내용만 사라지고 임시 저장은 남아요.' : '나가면 적은 내용과 영상이 사라져요.'),
       keepLabel: '계속 쓰기',
       okLabel: '버리고 나가기',
       child: AppPage(title: '일지 작성', children: [

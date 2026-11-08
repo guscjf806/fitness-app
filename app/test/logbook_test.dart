@@ -416,4 +416,25 @@ void main() {
     expect(findText('마지막 일지 10월 6일'), findsOneWidget);
     expect(findText('마지막 일지 10월 2일'), findsOneWidget);
   });
+  testWidgets('리뷰 11/08 #1 보낸 일지를 고칠 때는 임시 저장을 불러오지도 지우지도 않는다', (tester) async {
+    demo.sentLogs['박서연'] = [const WorkoutLog('10월 11일', '수업', [LogItem('TRX 로우', '체중', '8개', 3)], [], '좋아요', '꾸준해요')];
+    await openRoute(tester, Routes.logWrite, args: '박서연');
+    await pick(tester);
+    await tester.enterText(field('횟수'), '9');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('임시 저장'));
+    expect(hasLogDraft('박서연'), isTrue);
+    demoNavigatorKey.currentState!.pushNamed(Routes.logWrite, arguments: LogEditArgs('박서연', demo.sentLogs['박서연']!.single));
+    await tester.pumpAndSettle();
+    expect(tester.widget<EditableText>(find.descendant(of: field('횟수'), matching: find.byType(EditableText))).controller.text, '8');
+    await tester.enterText(field('횟수'), '12');
+    await tester.pumpAndSettle();
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(findText('고친 내용은 사라지고 보낸 일지는 그대로예요.'), findsOneWidget);
+    await tap(tester, findText('계속 쓰기'));
+    await tap(tester, findTextContaining('고쳐서 보내기'));
+    expect(demo.sentLogs['박서연']!.single.items.single.reps, '12개');
+    expect(hasLogDraft('박서연'), isTrue);
+  });
 }
