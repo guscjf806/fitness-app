@@ -484,4 +484,14 @@ void main() {
     await tap(tester, findText('연결 끊기').last);
     expect(hasLogDraft('박서연'), isFalse);
   });
+  testWidgets('디자인 리뷰 11/08 #1 보내기와 임시 저장은 전체 폭으로 위아래에 있다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    final page = find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first;
+    await tester.scrollUntilVisible(findText('임시 저장'), 200, scrollable: page);
+    await tester.pumpAndSettle();
+    final send = tester.getRect(find.ancestor(of: findText('김지아 회원님께 보내기'), matching: find.byType(FilledButton)));
+    final draft = tester.getRect(find.ancestor(of: findText('임시 저장'), matching: find.byType(FilledButton)));
+    expect(send.width, draft.width);
+    expect(send.bottom, lessThan(draft.top));
+  });
 }

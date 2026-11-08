@@ -482,13 +482,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       const FieldLabel('응원 스탬프'),
       Seg(options: stamps, value: stamp, onChanged: (v) => setState(() => stamp = v)),
       // 저장과 보내기를 나눠, 다 쓰기 전에 회원에게 알림이 가지 않게 (결정 d1102-2)
-      Row(children: [
-        if (editing == null) ...[
-          Expanded(child: AppButton('임시 저장', kind: ButtonKind.soft, onPressed: _saveDraft)),
-          const SizedBox(width: AppSpace.s),
-        ],
-        Expanded(child: AppButton(editing == null ? '$member 회원님께 보내기' : '$member 회원님 일지 고쳐서 보내기', onPressed: _save)),
-      ]),
+      // 회원 이름이 들어가 길어진 보내기 버튼이 줄바꿈되지 않게 세로로 쌓는다 (디자인 리뷰 11/08 #1)
+      AppButton(editing == null ? '$member 회원님께 보내기' : '$member 회원님 일지 고쳐서 보내기', onPressed: _save),
+      if (editing == null) AppButton('임시 저장', kind: ButtonKind.soft, top: AppSpace.s, onPressed: _saveDraft),
       if (editing == null && hasOwnDraft)
         Center(
           child: DangerTextButton('임시 저장 지우기', onPressed: _deleteDraft),
