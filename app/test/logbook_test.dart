@@ -455,4 +455,18 @@ void main() {
     expect(findText('김지아 회원님께 보내기'), findsOneWidget);
     expect(hasLogDraft('박서연'), isTrue);
   });
+  testWidgets('리뷰 11/08 #3 초대 코드를 만들면 알리고, 지울 수 있다', (tester) async {
+    demo.inviteCodes.clear();
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, '예: 김지아 회원님'), '최민수');
+    await tester.pumpAndSettle();
+    await tap(tester, findText('초대 코드 만들기'));
+    expect(findText("'최민수' 초대 코드를 만들었어요. 바로 아래에 있어요"), findsOneWidget);
+    await tap(tester, findText('지우기'));
+    await tap(tester, findText('지우기').last);
+    expect(demo.inviteCodes, isEmpty);
+  });
 }

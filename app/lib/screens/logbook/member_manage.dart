@@ -196,13 +196,29 @@ class _MemberManageTabState extends State<MemberManageTab> {
             }
             demo.update(() => demo.inviteCodes.insert(0, InviteCode(memo, '${100000 + Random().nextInt(900000)}')));
             inviteMemoController.clear();
+            // 만들어졌는지 몰라 또 누르지 않게 알린다 (리뷰 11/08 #3)
+            toast(context, "'$memo' 초대 코드를 만들었어요. 바로 아래에 있어요");
           }),
         ]),
       ),
       for (final c in demo.inviteCodes)
         AppCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(c.memo, style: AppText.bodyStrong),
+            Row(children: [
+              Expanded(child: Text(c.memo, style: AppText.bodyStrong)),
+              // 잘못 만들었거나 안 쓴 코드를 지운다 (리뷰 11/08 #3)
+              DangerTextButton('지우기', onPressed: () async {
+                final ok = await confirmDialog(context,
+                    title: '${c.memo} 초대 코드를 지울까요?',
+                    body: '지우면 이 코드로는 연결할 수 없어요.',
+                    keepLabel: '그대로 두기',
+                    okLabel: '지우기',
+                    danger: true);
+                if (!ok) return;
+                demo.update(() => demo.inviteCodes.remove(c));
+                if (context.mounted) toast(context, '초대 코드를 지웠어요');
+              }),
+            ]),
             Muted('1회용 · ${c.daysLeft}일 남음', bottom: 2),
             Row(children: [
               Expanded(child: BigNumber(c.code)),
