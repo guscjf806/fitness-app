@@ -1,5 +1,8 @@
 /// 출시 직전에 바꿀 수 있는 값은 여기에만 둔다 (기획서 7번).
 class AppConfig {
+  /// 앱 이름. 스토어 등록·홍보 전에 상표 확인을 마친다 (2026-11-09 사용자 결정)
+  static const appName = '무브노트';
+
   /// 무료 회원의 월 AI 사용 횟수 (식단·운동 루틴 생성 + 식단 AI 답변). 초안 값
   static const freeMonthlyAiLimit = 5;
 

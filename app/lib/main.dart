@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'config.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'routes.dart';
@@ -22,7 +24,7 @@ class FitnessApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '운동 앱 (목업)',
+      title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       // 달력·시간 고르기 같은 기본 창이 한국어로 나오게 (리뷰 11/04 #4)
