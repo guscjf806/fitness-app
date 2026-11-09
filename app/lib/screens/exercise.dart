@@ -96,10 +96,10 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
       child: Scaffold(
       appBar: AppBar(title: const Text('운동 추가하기')),
       body: TabBody(top: AppSpace.s, children: [
-        Row(children: [
-          const Expanded(child: FieldLabel('운동 고르기')),
+        // 큰 글씨에서 칩이 자리를 다 차지해 제목이 세로로 쌓이지 않게 줄을 나눈다 (디자인 리뷰 11/09 #1)
+        const FieldLabel('운동 고르기'),
+        Wrap(spacing: AppSpace.xsPlus, runSpacing: AppSpace.xs, children: [
           SelectChip('내 조건 맞춤', selected: fitOnly, onSelected: (v) => setState(() => fitOnly = v)),
-          const SizedBox(width: AppSpace.xsPlus),
           SelectChip('즐겨찾기', selected: favoriteOnly, onSelected: (v) => setState(() => favoriteOnly = v)),
         ]),
         if (fitOnly)
@@ -110,7 +110,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
           ),
         const SizedBox(height: AppSpace.s),
         TextField(
-          decoration: const InputDecoration(hintText: '운동 이름으로 검색해 보세요', prefixIcon: Icon(Icons.search)),
+          decoration: const InputDecoration(hintText: '운동 이름 검색', prefixIcon: Icon(Icons.search)),
           onChanged: (v) => setState(() => query = v),
         ),
         const SizedBox(height: AppSpace.sPlus),
