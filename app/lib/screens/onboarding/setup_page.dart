@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../config.dart';
 import '../../state/demo_state.dart';
 import '../../widgets/common.dart';
 
@@ -48,14 +49,45 @@ class _SetupPageState extends State<SetupPage> {
     }
   }
 
-  void _save() {
+  static const _safetyKeys = ['allergies', 'allergyNote', 'painAreas'];
+
+  Future<void> _save() async {
     if (widget.canSave?.call() == false) return;
     saved = true;
     demo.update(() {});
     final target = demo.tdee.target;
+    // 고친 조건을 이미 만든 식단·루틴에 반영할지 묻는다. 못 먹는 음식·아픈 부위는 안전 문제라 횟수를 세지 않는다 (결정 d1107-1)
+    final now = demo.bodySnapshot();
+    bool changed(String k) => '${before?[k]}' != '${now[k]}';
+    final safety = _safetyKeys.any(changed);
+    final other = now.keys.any((k) => !_safetyKeys.contains(k) && changed(k));
+    String regen = '';
+    if (editing && !demo.isGuest && (safety || other)) {
+      if (safety) {
+        final ok = await confirmDialog(context,
+            title: '식단·루틴을 새로 만들까요?',
+            body: '못 먹는 음식이나 아픈 부위가 바뀌었어요. 안전을 위한 수정이라 무료 횟수를 쓰지 않아요.',
+            keepLabel: '나중에',
+            okLabel: '새로 만들기');
+        if (ok) regen = ' 식단·루틴도 새로 만들었어요(데모, 무료 횟수 그대로).';
+      } else if (demo.quotaExhausted) {
+        regen = ' 이번 달 무료 횟수를 다 써서 다음 달 1일부터 새로 만들 수 있어요.';
+      } else {
+        final ok = await confirmDialog(context,
+            title: '바뀐 조건으로 새로 만들까요?',
+            body: '무료 횟수 1회를 써요. 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 썼어요.',
+            keepLabel: '나중에',
+            okLabel: '새로 만들기');
+        if (ok) {
+          demo.update(() => demo.aiUsed++);
+          regen = ' 식단·루틴도 새로 만들었어요(데모).';
+        }
+      }
+      if (!mounted) return;
+    }
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
-    toastOn(messenger, target == targetBefore ? '저장했어요' : '저장했어요. 목표 칼로리가 ${formatNumber(targetBefore)} → ${formatNumber(target)} kcal로 바뀌었어요');
+    toastOn(messenger, (target == targetBefore ? '저장했어요.' : '저장했어요. 목표 칼로리가 ${formatNumber(targetBefore)} → ${formatNumber(target)} kcal로 바뀌었어요.') + regen);
   }
 
   void _next() {

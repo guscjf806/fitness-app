@@ -118,6 +118,10 @@ void main() {
     await tester.scrollUntilVisible(findText('저장하기'), 200, scrollable: find.byType(Scrollable).first);
     await tester.tap(findText('저장하기'));
     await tester.pumpAndSettle();
+    // 조건이 바뀌면 새로 만들지 묻는다 (결정 d1107-1)
+    expect(findText('바뀐 조건으로 새로 만들까요?'), findsOneWidget);
+    await tester.tap(findText('나중에'));
+    await tester.pumpAndSettle();
     expect(demo.minutes, '15분');
     expect(findTextContaining('저장했어요'), findsOneWidget);
   });
