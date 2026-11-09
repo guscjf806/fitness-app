@@ -95,7 +95,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
       if (day.removed > 0)
         Muted('내 조건(${demo.place == '헬스장' ? '아픈 부위' : '장소·장비·소음·아픈 부위'})에 맞지 않는 운동 ${day.removed}개를 뺐어요.'),
       if (day.isRest)
-        const AppCard(child: Text('쉬는 날이에요. 쉬는 날도 기록으로 인정돼요. 가벼운 걷기 30분을 추천해요.'))
+        const AppCard(child: WordText('쉬는 날이에요. 쉬는 날도 기록으로 인정돼요. 가벼운 걷기 30분을 추천해요.'))
       else
         for (var i = 0; i < day.items.length; i++)
           _ExerciseRow(

@@ -82,7 +82,7 @@ class _BodyInfoScreenState extends State<BodyInfoScreen> {
       if (teen && demo.goal == '감량')
         const AppCard(
           accent: true,
-          child: Text('성장기에는 키가 크는 데도 에너지가 필요해요. 그래서 감량 폭을 줄여서 계산해요. '
+          child: WordText('성장기에는 키가 크는 데도 에너지가 필요해요. 그래서 감량 폭을 줄여서 계산해요. '
               '보호자나 전문가와 상의하며 천천히 관리하는 걸 권해요.'),
         ),
     ]);

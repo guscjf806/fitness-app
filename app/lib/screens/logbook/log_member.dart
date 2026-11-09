@@ -56,7 +56,7 @@ class LogListTab extends StatelessWidget {
         const SizedBox(height: AppSpace.m),
       ] else
         const Muted('담당 선생님이 작성한 내 일지예요. 나만 볼 수 있어요.'),
-      if (logs.isEmpty) const AppCard(child: Text('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
+      if (logs.isEmpty) const AppCard(child: WordText('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
       for (final log in logs)
         AppCard(
           showArrow: true,

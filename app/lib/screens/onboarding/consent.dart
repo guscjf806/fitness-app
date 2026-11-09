@@ -95,7 +95,7 @@ class _ConsentScreenState extends State<ConsentScreen> {
       if (!requiredDone)
         const Padding(
           padding: EdgeInsets.only(top: 8),
-          child: Text('필수 항목에 모두 동의해야 시작할 수 있어요.', textAlign: TextAlign.center, style: AppText.body),
+          child: WordText('필수 항목에 모두 동의해야 시작할 수 있어요.', textAlign: TextAlign.center, style: AppText.body),
         ),
     ]),
     );

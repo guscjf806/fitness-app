@@ -105,7 +105,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
         if (fitOnly)
           Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: Text('${demo.conditionText}${demo.painAreas.isEmpty ? '' : ' · ${demo.painAreas.join(', ')} 주의'} 기준이에요.',
+            child: WordText('${demo.conditionText}${demo.painAreas.isEmpty ? '' : ' · ${demo.painAreas.join(', ')} 주의'} 기준이에요.',
                 style: AppText.body),
           ),
         const SizedBox(height: AppSpace.s),
@@ -231,7 +231,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       if (e.gearOptional.isNotEmpty)
         Padding(
           padding: const EdgeInsets.only(top: 4),
-          child: Text('있으면 좋은 것: ${e.gearOptional.join(', ')}', style: AppText.body),
+          child: WordText('있으면 좋은 것: ${e.gearOptional.join(', ')}', style: AppText.body),
         ),
       const H2('하는 방법'),
       for (var i = 0; i < e.howTo.length; i++)
@@ -247,14 +247,14 @@ class ExerciseDetailScreen extends StatelessWidget {
                   style: AppText.caption.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
             ),
             const SizedBox(width: AppSpace.sPlus),
-            Expanded(child: Text(e.howTo[i])),
+            Expanded(child: WordText(e.howTo[i])),
           ]),
         ),
       AppCard(
         accent: true,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('주의할 점', bottom: 2),
-          Text(e.caution),
+          WordText(e.caution),
         ]),
       ),
       if (e.easierId != null || e.harderId != null) ...[

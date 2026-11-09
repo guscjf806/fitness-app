@@ -334,7 +334,7 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
       else
         Padding(
           padding: const EdgeInsets.only(top: 10),
-          child: AppCard(accent: true, child: Text(post.reply)),
+          child: AppCard(accent: true, child: WordText(post.reply)),
         ),
     ]);
   }

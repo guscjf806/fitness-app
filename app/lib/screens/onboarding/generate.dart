@@ -70,11 +70,11 @@ class _GenerateScreenState extends State<GenerateScreen> {
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('반영되는 정보', bottom: 2),
-          Text('목표 칼로리 ${formatNumber(r.target)} kcal · 현재 강도 ${demo.currentIntensity} · '
+          WordText('목표 칼로리 ${formatNumber(r.target)} kcal · 현재 강도 ${demo.currentIntensity} · '
               '원하는 강도 ${demo.desiredIntensity} · ${demo.conditionText}'),
           if (demo.allergies.isNotEmpty || demo.allergyNote.isNotEmpty)
-            Text('빼는 음식: ${[...demo.allergies, if (demo.allergyNote.isNotEmpty) demo.allergyNote].join(', ')}'),
-          if (demo.painAreas.isNotEmpty) Text('조심할 부위: ${demo.painAreas.join(', ')}'),
+            WordText('빼는 음식: ${[...demo.allergies, if (demo.allergyNote.isNotEmpty) demo.allergyNote].join(', ')}'),
+          if (demo.painAreas.isNotEmpty) WordText('조심할 부위: ${demo.painAreas.join(', ')}'),
         ]),
       ),
       AppButton('식단·운동 루틴 생성하기', onPressed: _generate),

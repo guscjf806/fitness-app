@@ -24,7 +24,7 @@ class OfflineBanner extends StatelessWidget {
                   const Icon(Icons.wifi_off, size: 16, color: Colors.white),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text('인터넷 연결을 확인해 주세요. 연결되면 자동으로 다시 불러와요.',
+                    child: WordText('인터넷 연결을 확인해 주세요. 연결되면 자동으로 다시 불러와요.',
                         style: AppText.small.copyWith(color: Colors.white)),
                   ),
                 ]),
