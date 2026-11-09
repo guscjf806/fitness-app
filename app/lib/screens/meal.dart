@@ -120,6 +120,12 @@ class _MealCard extends StatelessWidget {
 }
 
 /// 지금 시각에 맞는 끼니 (식단 올리기의 처음 값)
+/// 목업 AI 칼로리 추정: 그 끼니 식단표보다 조금 많게. 실제로는 AI 답변에서 받는다 (결정 d1107-2)
+int _estimateKcal(String slot) {
+  final planned = mealDays[0].where((m) => m.title == slot).firstOrNull?.kcal;
+  return planned == null ? 300 : (planned * 1.1).round();
+}
+
 String mealSlotFor(DateTime t) => switch (t.hour) {
       >= 5 && < 10 => '아침',
       >= 10 && < 15 => '점심',
@@ -153,7 +159,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
       return;
     }
     demo.update(() => demo.mealPosts.insert(
-        0, MealPost('오늘 $slot', note.isEmpty ? '(설명 없음)' : note, sampleMealReply, isToday: true, hasPhoto: photoPicked)));
+        0, MealPost('오늘 $slot', note.isEmpty ? '(설명 없음)' : note, sampleMealReply, isToday: true, hasPhoto: photoPicked, kcal: _estimateKcal(slot))));
     Navigator.pushReplacementNamed(context, Routes.mealReply, arguments: const MealReplyArgs(0, fresh: true));
   }
 

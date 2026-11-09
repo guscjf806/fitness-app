@@ -204,6 +204,21 @@ class DemoState extends ChangeNotifier {
 
   /// 올렸거나 '먹었어요'를 눌렀으면 오늘 식단을 기록한 것으로 본다
   bool get mealPostedToday => mealPosts.any((p) => p.isToday) || eatenMeals.isNotEmpty;
+  /// 오늘 먹은 칼로리: '먹었어요'를 누른 끼니는 식단표 칼로리, 같은 끼니에 올린 식단이 있으면 AI 추정값.
+  /// 올린 끼니는 먹은 것으로 보고 두 번 세지 않는다 (결정 d1107-2)
+  int get todayEatenKcal {
+    var sum = 0;
+    for (final m in mealDays[0]) {
+      final post = mealPosts.where((p) => p.isToday && p.date == '오늘 ${m.title}' && p.kcal != null).firstOrNull;
+      if (post != null) {
+        sum += post.kcal!;
+      } else if (eatenMeals.contains(m.title)) {
+        sum += m.kcal;
+      }
+    }
+    return sum;
+  }
+
   bool get recordedToday => mealPostedToday || workoutDone;
   int get streak => 6 + (recordedToday ? 1 : 0);
   /// 이번 달 무료 횟수를 다 썼는지 (실제로 다 쓴 경우와 목업의 '횟수 소진' 미리 보기)

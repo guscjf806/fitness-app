@@ -185,7 +185,7 @@ const homeDumbbellSessions = [
 ];
 
 class MealPost {
-  const MealPost(this.date, this.note, this.reply, {this.isToday = false, this.hasPhoto = true});
+  const MealPost(this.date, this.note, this.reply, {this.isToday = false, this.hasPhoto = true, this.kcal});
   final String date;
   final String note;
   final String reply;
@@ -193,6 +193,9 @@ class MealPost {
 
   /// 글만 올린 식단이면 false (결정 d1101-2)
   final bool hasPhoto;
+
+  /// AI가 추정한 칼로리. 같은 끼니의 '먹었어요'보다 먼저 쓴다 (결정 d1107-2)
+  final int? kcal;
 }
 
 const sampleMealReply =
@@ -303,4 +306,3 @@ const monthRestDays = [4, 7, 10, 11];
 
 /// 지난달까지의 최장 연속 기록 (목업)
 const pastLongestStreak = 12;
-const todayEatenKcal = 1240;
