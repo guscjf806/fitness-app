@@ -96,6 +96,31 @@ class FieldLabel extends StatelessWidget {
       );
 }
 
+/// 번호 동그라미가 붙는 목록 (운동 하는 방법 등) (디자인 리뷰 11/09 #3)
+class NumberedList extends StatelessWidget {
+  const NumberedList(this.items, {super.key});
+  final List<String> items;
+
+  @override
+  Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        for (var i = 0; i < items.length; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpace.sPlus),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(
+                width: 24,
+                height: 24,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
+                child: Text('${i + 1}', style: AppText.caption.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
+              ),
+              const SizedBox(width: AppSpace.sPlus),
+              Expanded(child: WordText(items[i])),
+            ]),
+          ),
+      ]);
+}
+
 /// 앞에 체크 아이콘이 붙는 목록 (혜택 안내 등) (디자인 리뷰 11/02 #5)
 class BulletList extends StatelessWidget {
   const BulletList(this.items, {super.key});

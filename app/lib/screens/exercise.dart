@@ -234,22 +234,7 @@ class ExerciseDetailScreen extends StatelessWidget {
           child: WordText('있으면 좋은 것: ${e.gearOptional.join(', ')}', style: AppText.body),
         ),
       const H2('하는 방법'),
-      for (var i = 0; i < e.howTo.length; i++)
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Container(
-              width: 24,
-              height: 24,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
-              child: Text('${i + 1}',
-                  style: AppText.caption.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
-            ),
-            const SizedBox(width: AppSpace.sPlus),
-            Expanded(child: WordText(e.howTo[i])),
-          ]),
-        ),
+      NumberedList(e.howTo),
       AppCard(
         accent: true,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
