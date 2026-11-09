@@ -134,13 +134,13 @@ class _WorkoutTabState extends State<WorkoutTab> {
       ),
       if (demo.painAreas.isNotEmpty)
         Padding(
-          padding: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.only(top: AppSpace.s),
           child: Muted('${demo.painAreas.join(', ')} 통증을 고르셨어요. 무리가 가는 운동은 AI가 루틴에서 빼고, 주의 표시를 해 둬요.'),
         ),
       if (isToday && !day.isRest)
         demo.workoutDone
             ? Padding(
-                padding: const EdgeInsets.only(top: 12),
+                padding: const EdgeInsets.only(top: AppSpace.m),
                 child: AppCard(
                   onTap: () => Navigator.pushNamed(context, Routes.records),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -164,7 +164,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
               ),
       if (!isToday && !day.isRest)
         Padding(
-          padding: const EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.only(top: AppSpace.sPlus),
           child: Muted('운동 완료는 오늘(${dayLabels[0]}) 루틴에서만 누를 수 있어요.'),
         ),
       const Disclaimer(),

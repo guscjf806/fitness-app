@@ -79,8 +79,8 @@ class _MealCard extends StatelessWidget {
         ]),
         for (final f in meal.foods)
           Container(
-            margin: const EdgeInsets.only(top: 8),
-            padding: const EdgeInsets.only(top: 8),
+            margin: const EdgeInsets.only(top: AppSpace.s),
+            padding: const EdgeInsets.only(top: AppSpace.s),
             decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.line))),
             // 대체 음식은 음식 이름 바로 아래 줄에 (결정 dd1029-alt-food)
             child: SizedBox(
@@ -218,7 +218,7 @@ class _PhotoBox extends StatelessWidget {
     // 누를 수 없는 사진 자리(AI 답변 화면)는 버튼처럼 보이지 않게 (디자인 리뷰 10/29 #7)
     final tappable = onTap != null;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: AppSpace.m),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.card),
@@ -326,14 +326,14 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
       Muted(post.note),
       if (waiting)
         const Padding(
-          padding: EdgeInsets.only(top: 24),
+          padding: EdgeInsets.only(top: AppSpace.xl),
           child: LoadingView('AI가 식단을 확인하는 중이에요'),
         )
       else if (failed)
         FailureView(title: 'AI 답변을 받지 못했어요', onRetry: _ask)
       else
         Padding(
-          padding: const EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.only(top: AppSpace.sPlus),
           child: AppCard(accent: true, child: WordText(post.reply)),
         ),
     ]);

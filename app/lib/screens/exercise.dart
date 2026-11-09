@@ -73,11 +73,11 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
 
   Widget _filterRow(List<String> options, String value, ValueChanged<String> onChanged) => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.only(bottom: AppSpace.s),
         child: Row(children: [
           for (final o in options)
             Padding(
-              padding: const EdgeInsets.only(right: 6),
+              padding: const EdgeInsets.only(right: AppSpace.xsPlus),
               child: SelectChip(o, selected: o == value, onSelected: (_) => onChanged(o)),
             ),
         ]),
@@ -104,7 +104,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
         ]),
         if (fitOnly)
           Padding(
-            padding: const EdgeInsets.only(top: 4),
+            padding: const EdgeInsets.only(top: AppSpace.xs),
             child: WordText('${demo.conditionText}${demo.painAreas.isEmpty ? '' : ' · ${demo.painAreas.join(', ')} 주의'} 기준이에요.',
                 style: AppText.body),
           ),
@@ -124,6 +124,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
         ]),
         if (list.isEmpty)
           Padding(
+            // 빈 목록 안내를 화면 가운데쯤으로 내리는 값이라 토큰 대신 그대로 (디자인 리뷰 11/09 #4)
             padding: const EdgeInsets.only(top: 30),
             child: Muted(favoriteOnly && demo.favorites.isEmpty ? '찜한 운동이 없어요. 하트를 눌러 모아 보세요' : '조건에 맞는 운동이 없어요', align: TextAlign.center),
           ),
@@ -138,10 +139,10 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
               borderRadius: BorderRadius.circular(AppRadius.card),
               onTap: () => _toggle(e),
               child: Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(AppSpace.s),
                 child: Row(children: [
                   ExerciseFigureView(e.id),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpace.m),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       WordText(e.name, style: AppText.bodyStrong),
@@ -230,7 +231,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       // 작은 회색 글씨 대신 14px 본문 색으로 (리뷰 10/27 #6)
       if (e.gearOptional.isNotEmpty)
         Padding(
-          padding: const EdgeInsets.only(top: 4),
+          padding: const EdgeInsets.only(top: AppSpace.xs),
           child: WordText('있으면 좋은 것: ${e.gearOptional.join(', ')}', style: AppText.body),
         ),
       const H2('하는 방법'),
