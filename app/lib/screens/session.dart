@@ -273,8 +273,16 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
             onKg: (v) => setState(() => ex.copyKgDown(i, v)),
           ),
         Row(children: [
+          // 자주 쓰는 '추가'는 넓게, 되돌릴 수 있는 '삭제'는 회색 테두리로 (결정 dd1107-setdelete)
           Expanded(
-            child: AppButton('세트 삭제', kind: ButtonKind.soft, onPressed: ex.sets.length <= 1
+            child: Padding(
+              padding: const EdgeInsets.only(top: AppSpace.m),
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.textSub,
+                    side: const BorderSide(color: AppColors.line),
+                    minimumSize: const Size.fromHeight(50)),
+                onPressed: ex.sets.length <= 1
                 ? null
                 : () {
                     // 체크와 무게까지 지워지니 되돌릴 수 있게 한다 (디자인 리뷰 11/04 #2)
@@ -284,10 +292,14 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
                     toast(context, '$number세트를 지웠어요', actionLabel: '되돌리기', onAction: () {
                       if (mounted) setState(() => ex.sets.add(removed));
                     });
-                  }),
+                  },
+                child: const WordText('세트 삭제', textAlign: TextAlign.center),
+              ),
+            ),
           ),
           const SizedBox(width: AppSpace.sPlus),
           Expanded(
+            flex: 2,
             child: AppButton('+ 세트 추가', kind: ButtonKind.soft, onPressed: () => setState(() {
               final prev = ex.sets.last;
               ex.sets.add(SetEntry(kg: prev.kg, reps: prev.reps));
