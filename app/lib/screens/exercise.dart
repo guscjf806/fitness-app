@@ -204,12 +204,13 @@ class ExerciseDetailScreen extends StatelessWidget {
       if (id == null) return const SizedBox.shrink();
       final r = exerciseById(id)!;
       return LineRow(
+        rightBelowOnLargeText: true,
         // 바꿔치기 대신 위에 쌓아서, 뒤로 가면 원래 보던 운동으로 돌아온다 (리뷰 10/27 #7)
         onTap: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: r.id),
         left: Row(children: [
           ExerciseFigureView(r.id, size: 40, radius: AppRadius.small),
           const SizedBox(width: AppSpace.sPlus),
-          Expanded(child: Text(r.name)),
+          Expanded(child: WordText(r.name)),
         ]),
         right: Muted(label, bottom: 0),
         showArrow: true,
