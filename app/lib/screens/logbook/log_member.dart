@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../config.dart';
 import '../../data/mock_data.dart';
 import '../../routes.dart';
 import '../../state/demo_state.dart';
@@ -31,7 +32,9 @@ class LogIntroTab extends StatelessWidget {
           ]),
         ),
       ),
-      AppButton('PT 문의하기', onPressed: () => toast(context, '선생님께 PT 문의가 전달돼요 (데모)')),
+      // 카카오톡 채널로 바로 연결한다 (결정 d1104-5). 채널 주소를 받기 전까지는 자리만
+      AppButton('카카오톡으로 PT 문의하기',
+          onPressed: () => toast(context, AppConfig.kakaoChannelUrl.isEmpty ? '카카오톡 채널을 준비하고 있어요. 곧 연결할게요' : '카카오톡 채널로 이동해요 (데모)')),
       AppButton('PT 코드가 있어요',
           kind: ButtonKind.soft,
           onPressed: () => demo.isGuest

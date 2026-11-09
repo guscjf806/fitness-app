@@ -20,6 +20,9 @@ class AppConfig {
   /// 소셜 로그인을 마치고 폰 앱으로 돌아오는 주소 (iOS Info.plist·안드로이드 매니페스트와 같아야 한다)
   static const loginRedirect = 'com.guscjf806.fitnessapp://login-callback';
 
+  /// 'PT 문의하기'를 누르면 여는 카카오톡 채널 주소 (결정 d1104-5). 채널을 만들면 넣는다. 비어 있으면 준비 중 안내
+  static const kakaoChannelUrl = '';
+
   /// 한 번에 고를 수 있는 운동 수
   static const maxExercisePick = 10;
 }

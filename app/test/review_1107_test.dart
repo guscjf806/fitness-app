@@ -38,7 +38,7 @@ void main() {
     await tester.pumpAndSettle();
     demo.update(() => demo.tab = 3);
     await tester.pumpAndSettle();
-    expect(findText('PT 문의하기'), findsOneWidget);
+    expect(findText('카카오톡으로 PT 문의하기'), findsOneWidget);
     expect(findTextContaining('연결이 끊겼어요'), findsNothing);
   });
   testWidgets('#2 일부만 끝내면 운동 탭에 한 운동만 체크로 보인다', (tester) async {
