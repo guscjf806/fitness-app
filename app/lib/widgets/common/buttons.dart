@@ -152,8 +152,8 @@ class DayChips extends StatelessWidget {
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 24),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Text(day, style: TextStyle(color: on ? Colors.white : AppColors.text, fontWeight: on ? FontWeight.w700 : FontWeight.w400)),
-      Text(notes.isEmpty ? ' ' : notes.join('·'), style: AppText.small.copyWith(color: on ? Colors.white : AppColors.textSub)),
+      Text(day, style: TextStyle(color: on ? AppColors.primaryDark : AppColors.text, fontWeight: on ? FontWeight.w700 : FontWeight.w400)),
+      Text(notes.isEmpty ? ' ' : notes.join('·'), style: AppText.small.copyWith(color: on ? AppColors.primaryDark : AppColors.textSub)),
       ]),
     );
   }
@@ -181,8 +181,8 @@ class DayChips extends StatelessWidget {
                   label: _label(i),
                   selected: i == selected,
                   showCheckmark: false,
-                  // 흰 글씨가 잘 읽히게 진한 청록으로 (디자인 리뷰 11/06 #5)
-                  selectedColor: AppColors.primaryDark,
+                  // 앱 전체의 '선택됨'과 같은 연한 청록 (결정 dd1107-selected)
+                  selectedColor: AppColors.primarySoft,
                   shape: const StadiumBorder(),
                   onSelected: (_) => onSelect(i),
                 ),
