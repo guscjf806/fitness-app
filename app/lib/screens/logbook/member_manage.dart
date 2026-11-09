@@ -72,7 +72,8 @@ void showMemberSheet(BuildContext context, String member) {
               onPressed: () async {
                 final ok = await confirmDialog(sheet,
                     title: '${log.date} 일지를 지울까요?',
-                    body: '회원님 화면에서도 사라지고 되돌릴 수 없어요.',
+                    // 출석 도장은 일지를 따라간다 (결정 d1108-2)
+                    body: '회원님 화면에서도 사라지고 되돌릴 수 없어요. 그날 출석 도장도 함께 지워져요.',
                     keepLabel: '그대로 두기',
                     okLabel: '지우기',
                     danger: true);

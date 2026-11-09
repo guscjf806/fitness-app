@@ -542,4 +542,14 @@ void main() {
     expect(demo.unseenLogs.contains(demo.sentLogs['박서연']!.single), isTrue);
     expect(findTextContaining('고치고 다시 알렸어요'), findsOneWidget);
   });
+  testWidgets('결정 d1108-2 보낸 일지를 지울 때 출석 도장도 지워진다고 알린다', (tester) async {
+    demo.sentLogs['박서연'] = [const WorkoutLog('10월 11일', '수업', [LogItem('TRX 로우', '체중', '8개', 3)], [], '좋아요', '꾸준해요')];
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    await tap(tester, find.byTooltip('박서연 회원 더 보기'));
+    await tap(tester, findText('지우기'));
+    expect(findTextContaining('그날 출석 도장도 함께 지워져요'), findsOneWidget);
+  });
 }

@@ -267,7 +267,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
     // 고친 일지는 처음 보낼 때와 구분하고 출석 도장 말은 뺀다 (리뷰 11/08 #5)
     if (editing != null) {
       final note = notifyAgain ? '고치고 다시 알렸어요' : '고쳤어요. 알림은 보내지 않았어요';
-      toast(context, '$member 회원님 일지를 $note');
+      // 날짜를 바꾸면 출석 도장도 옮긴다 (결정 d1108-2)
+      final moved = editing!.date == dateLabel ? '' : ' 출석 도장도 $dateLabel로 옮겼어요.';
+      toast(context, '$member 회원님 일지를 $note.$moved');
       Navigator.pop(context);
       return;
     }
