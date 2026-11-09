@@ -284,7 +284,7 @@ void main() {
     await tester.enterText(field('횟수'), '12');
     await tester.pumpAndSettle();
     await tap(tester, findText('박서연 회원님 일지 고쳐서 보내기'));
-    expect(findText('박서연 회원님 일지를 고쳤어요'), findsOneWidget);
+    expect(findTextContaining('박서연 회원님 일지를 고쳤어요'), findsOneWidget);
     final edited = demo.sentLogs['박서연']!.single;
     expect(edited.edited, isTrue);
     expect(edited.items.single.reps, '12개');
@@ -529,5 +529,17 @@ void main() {
     await tester.pumpAndSettle();
     final b = tester.widget<FilledButton>(find.ancestor(of: findText('일지 작성').first, matching: find.byType(FilledButton)));
     expect(b.style!.backgroundColor!.resolve({}), AppColors.primarySoft);
+  });
+  testWidgets('결정 d1108-1 고친 일지는 체크해야 다시 알린다', (tester) async {
+    demo.sentLogs['박서연'] = [const WorkoutLog('10월 11일', '수업', [LogItem('TRX 로우', '체중', '8개', 3)], [], '좋아요', '꾸준해요')];
+    await openRoute(tester, Routes.logWrite, args: LogEditArgs('박서연', demo.sentLogs['박서연']!.single));
+    await tap(tester, findTextContaining('고쳐서 보내기'));
+    expect(demo.unseenLogs.contains(demo.sentLogs['박서연']!.single), isFalse);
+    demoNavigatorKey.currentState!.pushNamed(Routes.logWrite, arguments: LogEditArgs('박서연', demo.sentLogs['박서연']!.single));
+    await tester.pumpAndSettle();
+    await tap(tester, findText('회원님께 다시 알리기'));
+    await tap(tester, findTextContaining('고쳐서 보내기'));
+    expect(demo.unseenLogs.contains(demo.sentLogs['박서연']!.single), isTrue);
+    expect(findTextContaining('고치고 다시 알렸어요'), findsOneWidget);
   });
 }

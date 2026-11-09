@@ -103,6 +103,9 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
   /// 보낸 일지를 고치는 중이면 그 일지 (결정 d1104-3)
   WorkoutLog? editing;
 
+  /// 고친 일지를 회원에게 다시 알릴지. 처음엔 꺼짐 (결정 d1108-1)
+  bool notifyAgain = false;
+
   /// 내용을 통째로 바꿀 때 코멘트 칸을 새로 그리게 올린다
   int formVersion = 0;
 
@@ -251,15 +254,20 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       if (editing == null) _logDrafts.remove(member);
       final sent = demo.sentLogs[member!] ??= [];
       if (editing != null) {
+        // 알리지 않으면 '새 일지'로 다시 띄우지 않는다. 아직 안 본 일지였다면 그대로 둔다
+        final wasUnseen = demo.unseenLogs.remove(editing);
         sent.remove(editing);
-        demo.unseenLogs.remove(editing);
+        sent.add(log);
+        if (wasUnseen || notifyAgain) demo.unseenLogs.add(log);
+      } else {
+        sent.add(log);
+        demo.unseenLogs.add(log);
       }
-      sent.add(log);
-      demo.unseenLogs.add(log);
     });
     // 고친 일지는 처음 보낼 때와 구분하고 출석 도장 말은 뺀다 (리뷰 11/08 #5)
     if (editing != null) {
-      toast(context, '$member 회원님 일지를 고쳤어요');
+      final note = notifyAgain ? '고치고 다시 알렸어요' : '고쳤어요. 알림은 보내지 않았어요';
+      toast(context, '$member 회원님 일지를 $note');
       Navigator.pop(context);
       return;
     }
@@ -474,6 +482,16 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       const FieldLabel('응원 스탬프'),
       Seg(options: stamps, value: stamp, onChanged: (v) => setState(() => stamp = v)),
       // 저장과 보내기를 나눠, 다 쓰기 전에 회원에게 알림이 가지 않게 (결정 d1102-2)
+      // 오타는 조용히, 중요한 수정은 알림으로 (결정 d1108-1)
+      if (editing != null)
+        CheckboxListTile(
+          contentPadding: EdgeInsets.zero,
+          controlAffinity: ListTileControlAffinity.leading,
+          value: notifyAgain,
+          onChanged: (v) => setState(() => notifyAgain = v ?? false),
+          title: const Text('회원님께 다시 알리기'),
+          subtitle: const WordText("끄면 알림 없이 '수정됨' 표시만 붙어요"),
+        ),
       // 회원 이름이 들어가 길어진 보내기 버튼이 줄바꿈되지 않게 세로로 쌓는다 (디자인 리뷰 11/08 #1)
       AppButton(editing == null ? '$member 회원님께 보내기' : '$member 회원님 일지 고쳐서 보내기', onPressed: _save),
       if (editing == null) AppButton('임시 저장', kind: ButtonKind.soft, top: AppSpace.s, onPressed: _saveDraft),
