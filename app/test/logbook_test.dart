@@ -3,6 +3,7 @@ import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
 import 'package:fitness_app/screens/logbook.dart';
 import 'package:fitness_app/state/demo_state.dart';
+import 'package:fitness_app/theme/app_theme.dart';
 import 'package:fitness_app/widgets/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -520,5 +521,13 @@ void main() {
     await tap(tester, find.byTooltip('박서연 회원 더 보기'));
     await tap(tester, findText('연결 끊기'));
     expect(findTextContaining('새 PT 코드를 만들어 회원님께 드려야 해요'), findsOneWidget);
+  });
+  testWidgets('결정 dd1107-logbtn 회원 줄의 일지 작성 버튼은 연한 색', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    final b = tester.widget<FilledButton>(find.ancestor(of: findText('일지 작성').first, matching: find.byType(FilledButton)));
+    expect(b.style!.backgroundColor!.resolve({}), AppColors.primarySoft);
   });
 }
