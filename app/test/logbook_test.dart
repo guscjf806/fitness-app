@@ -512,4 +512,13 @@ void main() {
         scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first);
     expect(findText('만든 초대 코드 1개'), findsOneWidget);
   });
+  testWidgets('결정 d1107-3 연결을 끊기 전에 다시 잇는 방법을 알린다', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 3);
+    await tester.pumpAndSettle();
+    await tap(tester, find.byTooltip('박서연 회원 더 보기'));
+    await tap(tester, findText('연결 끊기'));
+    expect(findTextContaining('새 PT 코드를 만들어 회원님께 드려야 해요'), findsOneWidget);
+  });
 }

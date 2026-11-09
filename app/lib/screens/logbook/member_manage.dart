@@ -92,7 +92,7 @@ void showMemberSheet(BuildContext context, String member) {
           // 회원과 선생님 모두 끊을 수 있고 상대에게 알린다 (결정 d1104-2)
           final ok = await confirmDialog(sheet,
               title: '$member 회원과 연결을 끊을까요?',
-              body: '더 이상 이 회원의 일지를 볼 수 없어요. 회원님께 알림이 가요. 보낸 미션과 임시 저장한 일지도 함께 지워져요.',
+              body: '더 이상 이 회원의 일지를 볼 수 없어요. 회원님께 알림이 가요. 보낸 미션과 임시 저장한 일지도 함께 지워져요. 다시 이으려면 새 PT 코드를 만들어 회원님께 드려야 해요.',
               keepLabel: '그대로 두기',
               okLabel: '연결 끊기',
               danger: true);

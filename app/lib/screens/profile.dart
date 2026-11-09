@@ -106,7 +106,7 @@ class ProfileTab extends StatelessWidget {
           onTap: () async {
             final ok = await confirmDialog(context,
                 title: '선생님과 연결을 끊을까요?',
-                body: '받은 일지와 영상은 계속 볼 수 있어요. 선생님은 더 이상 내 일지를 볼 수 없고, 선생님께 알림이 가요.',
+                body: '받은 일지와 영상은 계속 볼 수 있어요. 선생님은 더 이상 내 일지를 볼 수 없고, 선생님께 알림이 가요. 다시 이으려면 선생님께 새 PT 코드를 받아야 해요.',
                 keepLabel: '그대로 두기',
                 okLabel: '연결 끊기',
                 danger: true);
