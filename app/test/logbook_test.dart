@@ -552,4 +552,13 @@ void main() {
     await tap(tester, findText('지우기'));
     expect(findTextContaining('그날 출석 도장도 함께 지워져요'), findsOneWidget);
   });
+  testWidgets('결정 d1108-3 고친 일지의 원래 영상은 남은 기간 그대로, 새 영상만 30일', (tester) async {
+    demo.sentLogs['박서연'] = [const WorkoutLog('10월 11일', '수업', [LogItem('TRX 로우', '체중', '8개', 3)], [LogVideo('TRX 로우 영상 · 0:11', 12)], '좋아요', '꾸준해요')];
+    await openRoute(tester, Routes.logWrite, args: LogEditArgs('박서연', demo.sentLogs['박서연']!.single));
+    await tap(tester, findText('영상 추가'));
+    await tap(tester, findText('촬영하기'));
+    await tap(tester, findTextContaining('고쳐서 보내기'));
+    final videos = demo.sentLogs['박서연']!.single.videos;
+    expect(videos.map((v) => v.daysLeft), [12, 30]);
+  });
 }

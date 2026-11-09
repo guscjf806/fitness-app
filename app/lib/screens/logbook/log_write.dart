@@ -245,7 +245,11 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         for (final r in rows)
           LogItem(r.name, r.kg.trim().isEmpty ? '체중' : '${r.kg.trim()}kg', '${int.parse(r.reps.trim())}${r.isHold ? '초' : '개'}', int.parse(r.sets.trim())),
       ],
-      [for (final r in rows) for (final v in r.videos) LogVideo(r.videoLabel(v), 30)], // 기획서 6번 초안: 올린 날부터 30일
+      // 기획서 6번 초안: 올린 날부터 30일. 고친 일지에 원래 있던 영상은 처음 기간 그대로 (결정 d1108-3)
+      [
+        for (final r in rows)
+          for (final v in r.videos) LogVideo(r.videoLabel(v), editing?.videos.where((x) => x.name == v).firstOrNull?.daysLeft ?? 30),
+      ],
       comment.trim(),
       stamp,
       edited: editing != null,
