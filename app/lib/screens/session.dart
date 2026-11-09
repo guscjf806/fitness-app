@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../data/exercises.dart';
 import '../logic/intensity.dart';
@@ -33,6 +34,8 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
   @override
   void initState() {
     super.initState();
+    // 운동 진행 화면에 있는 동안만 화면이 꺼지지 않게 (결정 d1028-screen-awake)
+    WakelockPlus.enable().catchError((_) {});
     // 위쪽 경과 시간을 1초마다 새로 그린다
     ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) setState(() {});
@@ -41,6 +44,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
 
   @override
   void dispose() {
+    WakelockPlus.disable().catchError((_) {});
     ticker?.cancel();
     super.dispose();
   }
