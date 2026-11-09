@@ -149,6 +149,16 @@ class AuthService {
     toast(nav.context, '로그인이 끊겼어요. 다시 로그인해 주세요');
   }
 
+  /// 동의를 거절하면 서버에 방금 만든 계정을 지우고 로그아웃한다 (결정 d1105-2).
+  /// 지우기가 실패해도 로그아웃은 한다
+  static Future<void> cancelSignIn() async {
+    if (!enabled) return;
+    if (_user != null) {
+      await Supabase.instance.client.functions.invoke('delete-account').then((_) {}, onError: (_) {});
+    }
+    await signOut();
+  }
+
   static Future<void> signOut() async {
     if (!enabled) return;
     _user = null;
