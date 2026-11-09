@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' hide User;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -76,11 +80,17 @@ class AuthService {
   /// 창을 열었으면 true
   static Future<bool> signIn(OAuthProvider provider) async {
     _fromLoginScreen = true;
-    // 아이폰은 인터넷 창 대신 카카오톡·카카오 계정 창으로 바로 로그인한다 (결정 d1105-1).
-    // 안드로이드는 카카오 콘솔에 키 해시를 등록한 뒤에 바꾼다
-    if (provider == OAuthProvider.kakao && !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
-      await _kakaoNative();
-      return true;
+    // 아이폰은 인터넷 창 대신 카카오톡·카카오 계정 창, 구글 계정 창으로 바로 로그인한다 (결정 d1105-1).
+    // 안드로이드는 카카오 키 해시·구글 안드로이드 클라이언트를 등록한 뒤에 바꾼다
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      if (provider == OAuthProvider.kakao) {
+        await _kakaoNative();
+        return true;
+      }
+      if (provider == OAuthProvider.google) {
+        await _googleNative();
+        return true;
+      }
     }
     return Supabase.instance.client.auth.signInWithOAuth(
       provider,
@@ -101,6 +111,23 @@ class AuthService {
       idToken: idToken,
       accessToken: token.accessToken,
     );
+  }
+
+  /// 구글 로그인용 일회 값. 구글 SDK는 앱이 켜진 동안 한 번만 준비할 수 있어 그때 만든다
+  static String? _googleNonce;
+
+  /// 구글 SDK로 받은 ID 토큰을 Supabase에 넘긴다. 토큰은 로그에 남기지 않는다
+  static Future<void> _googleNative() async {
+    final google = GoogleSignIn.instance;
+    if (_googleNonce == null) {
+      final raw = Supabase.instance.client.auth.generateRawNonce();
+      await google.initialize(clientId: AppConfig.googleIosClientId, nonce: sha256.convert(utf8.encode(raw)).toString());
+      _googleNonce = raw;
+    }
+    final account = await google.authenticate();
+    final idToken = account.authentication.idToken;
+    if (idToken == null) throw StateError('google id token missing');
+    await Supabase.instance.client.auth.signInWithIdToken(provider: OAuthProvider.google, idToken: idToken, nonce: _googleNonce);
   }
 
   /// 본인이 로그인 창을 닫은 경우인지 (그때는 알리지 않는다)
@@ -126,8 +153,9 @@ class AuthService {
     if (!enabled) return;
     _user = null;
     await Supabase.instance.client.auth.signOut();
-    // 카카오 SDK 쪽 로그인도 끊는다. 실패해도 앱 로그아웃은 이미 끝났다
+    // 카카오·구글 SDK 쪽 로그인도 끊는다. 실패해도 앱 로그아웃은 이미 끝났다
     if (!kIsWeb) await UserApi.instance.logout().then((_) {}, onError: (_) {});
+    if (_googleNonce != null) await GoogleSignIn.instance.signOut().then((_) {}, onError: (_) {});
   }
 
   static void _enter(User user) {

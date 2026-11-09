@@ -40,6 +40,8 @@ dependencies:
   supabase_flutter: ^2.18.3
   wakelock_plus: ^1.8.2
   kakao_flutter_sdk_user: ^1.9.7+3
+  google_sign_in: ^7.2.0
+  crypto: ^3.0.8
 
 dev_dependencies:
   flutter_test:

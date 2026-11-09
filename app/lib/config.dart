@@ -20,6 +20,9 @@ class AppConfig {
   /// 카카오 네이티브 앱 키. 앱 안에 들어가는 공개용 값이다 (REST API 키·클라이언트 시크릿과 다름, 결정 d1105-1)
   static const kakaoNativeAppKey = '61af430dbe6ecd7ebf85305f218afb13';
 
+  /// 구글 iOS 클라이언트 ID. 앱 안에 들어가는 공개용 값이다 (결정 d1105-1)
+  static const googleIosClientId = '886730617819-2ipfquhk4rn8ok7t4n6sfe1kov2r1geq.apps.googleusercontent.com';
+
   /// 소셜 로그인을 마치고 폰 앱으로 돌아오는 주소 (iOS Info.plist·안드로이드 매니페스트와 같아야 한다)
   static const loginRedirect = 'com.guscjf806.fitnessapp://login-callback';
 

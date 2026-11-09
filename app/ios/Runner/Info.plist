@@ -84,7 +84,17 @@
 				<string>kakao61af430dbe6ecd7ebf85305f218afb13</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.886730617819-2ipfquhk4rn8ok7t4n6sfe1kov2r1geq</string>
+			</array>
+		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>886730617819-2ipfquhk4rn8ok7t4n6sfe1kov2r1geq.apps.googleusercontent.com</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>kakaokompassauth</string>
