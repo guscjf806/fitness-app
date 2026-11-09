@@ -60,10 +60,12 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
     setState(() => connecting = provider);
     try {
       if (!await AuthService.signIn(provider)) throw StateError('login window not opened');
-    } catch (_) {
+    } catch (e) {
       if (!context.mounted) return;
       setState(() => connecting = null);
-      toast(context, '로그인 창을 열지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요');
+      // 본인이 창을 닫았으면 조용히 둔다
+      if (AuthService.isCancel(e)) return;
+      toast(context, '로그인하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요');
     }
   }
 

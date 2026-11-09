@@ -39,6 +39,7 @@ dependencies:
   shared_preferences: ^2.5.6
   supabase_flutter: ^2.18.3
   wakelock_plus: ^1.8.2
+  kakao_flutter_sdk_user: ^1.9.7+3
 
 dev_dependencies:
   flutter_test:

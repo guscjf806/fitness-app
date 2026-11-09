@@ -76,6 +76,20 @@
 				<string>com.guscjf806.fitnessapp</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao61af430dbe6ecd7ebf85305f218afb13</string>
+			</array>
+		</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kakaokompassauth</string>
+		<string>kakaolink</string>
+		<string>kakaoplus</string>
 	</array>
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>

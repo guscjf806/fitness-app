@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' hide User;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../config.dart';
@@ -18,6 +19,7 @@ class AuthService {
 
   static Future<void> init() async {
     await Supabase.initialize(url: AppConfig.supabaseUrl, publishableKey: AppConfig.supabasePublishableKey);
+    if (!kIsWeb) KakaoSdk.init(nativeAppKey: AppConfig.kakaoNativeAppKey);
     enabled = true;
   }
 
@@ -74,12 +76,35 @@ class AuthService {
   /// 창을 열었으면 true
   static Future<bool> signIn(OAuthProvider provider) async {
     _fromLoginScreen = true;
+    // 아이폰은 인터넷 창 대신 카카오톡·카카오 계정 창으로 바로 로그인한다 (결정 d1105-1).
+    // 안드로이드는 카카오 콘솔에 키 해시를 등록한 뒤에 바꾼다
+    if (provider == OAuthProvider.kakao && !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      await _kakaoNative();
+      return true;
+    }
     return Supabase.instance.client.auth.signInWithOAuth(
       provider,
       redirectTo: kIsWeb ? Uri.base.origin : AppConfig.loginRedirect,
       authScreenLaunchMode: kIsWeb ? LaunchMode.platformDefault : LaunchMode.externalApplication,
     );
   }
+
+  /// 카카오 SDK로 받은 ID 토큰을 Supabase에 넘긴다. 토큰은 로그에 남기지 않는다
+  static Future<void> _kakaoNative() async {
+    final token = await isKakaoTalkInstalled()
+        ? await UserApi.instance.loginWithKakaoTalk()
+        : await UserApi.instance.loginWithKakaoAccount();
+    final idToken = token.idToken;
+    if (idToken == null) throw StateError('kakao id token missing');
+    await Supabase.instance.client.auth.signInWithIdToken(
+      provider: OAuthProvider.kakao,
+      idToken: idToken,
+      accessToken: token.accessToken,
+    );
+  }
+
+  /// 본인이 로그인 창을 닫은 경우인지 (그때는 알리지 않는다)
+  static bool isCancel(Object error) => error.toString().toLowerCase().contains('cancel');
 
   /// 직접 로그아웃하면 signOut()이 먼저 _user를 비우므로 여기서는 아무것도 안 한다.
   /// 다른 곳에서 끊겼을 때만 안내하고 로그인 화면으로 보낸다 (리뷰 11/05 #7). 목업 로그인은 _user가 없어 영향 없음
@@ -101,6 +126,8 @@ class AuthService {
     if (!enabled) return;
     _user = null;
     await Supabase.instance.client.auth.signOut();
+    // 카카오 SDK 쪽 로그인도 끊는다. 실패해도 앱 로그아웃은 이미 끝났다
+    if (!kIsWeb) await UserApi.instance.logout().then((_) {}, onError: (_) {});
   }
 
   static void _enter(User user) {

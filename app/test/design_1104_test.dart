@@ -84,7 +84,7 @@ void main() {
     await open(tester, Routes.login);
     await tester.tap(findText('구글로 시작하기'));
     await tester.pumpAndSettle();
-    expect(findText('로그인 창을 열지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요'), findsOneWidget);
+    expect(findText('로그인하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요'), findsOneWidget);
     expect(findText('연결하는 중…'), findsNothing);
     expect(tester.widget<FilledButton>(find.widgetWithText(FilledButton, '구글로 시작하기')).onPressed, isNotNull);
   });
