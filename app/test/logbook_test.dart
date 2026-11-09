@@ -561,4 +561,16 @@ void main() {
     final videos = demo.sentLogs['박서연']!.single.videos;
     expect(videos.map((v) => v.daysLeft), [12, 30]);
   });
+  testWidgets('결정 d1107-4 선생님 탭은 홈·운동·회원 관리·내 정보, 운동 탭은 종목 찾아보기', (tester) async {
+    await openRoute(tester, Routes.logWrite, args: '김지아');
+    demoNavigatorKey.currentState!.pop();
+    await tester.pumpAndSettle();
+    final nav = find.byType(NavigationBar);
+    expect(find.descendant(of: nav, matching: findText('식단')), findsNothing);
+    expect(find.descendant(of: nav, matching: findText('회원 관리')), findsOneWidget);
+    await tap(tester, find.descendant(of: nav, matching: findText('운동')));
+    expect(findText('운동 찾아보기'), findsOneWidget);
+    await tap(tester, find.descendant(of: nav, matching: findText('회원 관리')));
+    expect(demo.tab, 3);
+  });
 }

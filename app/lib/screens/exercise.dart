@@ -253,3 +253,61 @@ class ExerciseDetailScreen extends StatelessWidget {
     ]);
   }
 }
+
+/// 선생님용 운동 탭: 수업 때 동작 그림과 설명을 찾아 보여 준다 (결정 d1107-4)
+class ExerciseBrowseTab extends StatefulWidget {
+  const ExerciseBrowseTab({super.key});
+
+  @override
+  State<ExerciseBrowseTab> createState() => _ExerciseBrowseTabState();
+}
+
+class _ExerciseBrowseTabState extends State<ExerciseBrowseTab> {
+  String query = '';
+  String part = '전체';
+
+  @override
+  Widget build(BuildContext context) {
+    final list = [
+      for (final e in exercises)
+        if ((part == '전체' || e.part == part) && (_squash(query).isEmpty || _squash(e.name).contains(_squash(query)))) e,
+    ];
+    return TabBody(children: [
+      const H1('운동 찾아보기'),
+      const Muted('수업 때 동작 그림과 설명을 찾아 회원님께 보여 줄 수 있어요.'),
+      TextField(
+        decoration: const InputDecoration(hintText: '운동 이름 검색', prefixIcon: Icon(Icons.search)),
+        onChanged: (v) => setState(() => query = v),
+      ),
+      const SizedBox(height: AppSpace.sPlus),
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.only(bottom: AppSpace.s),
+        child: Row(children: [
+          for (final p in _parts)
+            Padding(
+              padding: const EdgeInsets.only(right: AppSpace.xsPlus),
+              child: SelectChip(p, selected: p == part, onSelected: (_) => setState(() => part = p)),
+            ),
+        ]),
+      ),
+      Muted('전체 ${list.length}개', bottom: AppSpace.xs),
+      if (list.isEmpty) const Muted('찾는 운동이 없어요'),
+      for (final e in list)
+        LineRow(
+          showArrow: true,
+          onTap: () => Navigator.pushNamed(context, Routes.exerciseDetail, arguments: e.id),
+          left: Row(children: [
+            ExerciseFigureView(e.id, size: 40, radius: AppRadius.small),
+            const SizedBox(width: AppSpace.sPlus),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                WordText(e.name, style: AppText.bodyStrong),
+                Muted('${e.part} · ${e.equipment}', bottom: 0),
+              ]),
+            ),
+          ]),
+        ),
+    ]);
+  }
+}
