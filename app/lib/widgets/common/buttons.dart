@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import 'text.dart';
 
-enum ButtonKind { primary, soft }
+/// primary: 진한 주 버튼, soft: 연한 보조 버튼, quiet: 흰 바탕·회색 테두리의 조용한 버튼 (디자인 리뷰 11/10 #1)
+enum ButtonKind { primary, soft, quiet }
 
 class AppButton extends StatelessWidget {
   const AppButton(this.label,
@@ -22,11 +23,16 @@ class AppButton extends StatelessWidget {
       padding: EdgeInsets.only(top: top),
       child: FilledButton(
         onPressed: onPressed,
-        style: kind == ButtonKind.soft
-            ? FilledButton.styleFrom(
-                backgroundColor: AppColors.primarySoft,
-                foregroundColor: AppColors.primaryDark)
-            : null,
+        style: switch (kind) {
+          ButtonKind.primary => null,
+          ButtonKind.soft => FilledButton.styleFrom(
+              backgroundColor: AppColors.primarySoft,
+              foregroundColor: AppColors.primaryDark),
+          ButtonKind.quiet => FilledButton.styleFrom(
+              backgroundColor: AppColors.background,
+              foregroundColor: AppColors.textSub,
+              side: const BorderSide(color: AppColors.line)),
+        },
         // 큰 글씨에서 단어 중간에 끊기지 않게 (디자인 리뷰 11/07 #3)
         child: WordText(label, textAlign: TextAlign.center),
       ),

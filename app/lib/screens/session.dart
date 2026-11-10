@@ -216,6 +216,24 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
     final ex = current;
     final info = exerciseByName(ex.name);
     final last = index == session.items.length - 1;
+    // 체크와 무게까지 지워지니 되돌릴 수 있게 한다 (디자인 리뷰 11/04 #2)
+    void deleteSet() {
+      final number = ex.sets.length;
+      final removed = ex.sets.last;
+      setState(() => ex.sets.removeLast());
+      toast(context, '$number세트를 지웠어요', actionLabel: '되돌리기', onAction: () {
+        if (mounted) setState(() => ex.sets.add(removed));
+      });
+    }
+
+    // 자주 쓰는 '추가'는 넓게, 되돌릴 수 있는 '삭제'는 회색 테두리로 (결정 dd1107-setdelete)
+    final addButton = AppButton('+ 세트 추가', kind: ButtonKind.soft, onPressed: () => setState(() {
+      final prev = ex.sets.last;
+      ex.sets.add(SetEntry(kg: prev.kg, reps: prev.reps));
+    }));
+    final deleteButton = AppButton('세트 삭제', kind: ButtonKind.quiet, onPressed: ex.sets.length <= 1 ? null : deleteSet);
+    // 아주 큰 글씨에서는 세트 줄처럼 위아래로 쌓아 높이가 어긋나지 않게 (디자인 리뷰 11/10 #1)
+    final stackButtons = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
     return Scaffold(
       appBar: AppBar(
         title: Row(children: [
@@ -276,40 +294,13 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
             onToggle: () => _toggleSet(i),
             onKg: (v) => setState(() => ex.copyKgDown(i, v)),
           ),
-        Row(children: [
-          // 자주 쓰는 '추가'는 넓게, 되돌릴 수 있는 '삭제'는 회색 테두리로 (결정 dd1107-setdelete)
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: AppSpace.m),
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.textSub,
-                    side: const BorderSide(color: AppColors.line),
-                    minimumSize: const Size.fromHeight(50)),
-                onPressed: ex.sets.length <= 1
-                ? null
-                : () {
-                    // 체크와 무게까지 지워지니 되돌릴 수 있게 한다 (디자인 리뷰 11/04 #2)
-                    final number = ex.sets.length;
-                    final removed = ex.sets.last;
-                    setState(() => ex.sets.removeLast());
-                    toast(context, '$number세트를 지웠어요', actionLabel: '되돌리기', onAction: () {
-                      if (mounted) setState(() => ex.sets.add(removed));
-                    });
-                  },
-                child: const WordText('세트 삭제', textAlign: TextAlign.center),
-              ),
-            ),
-          ),
-          const SizedBox(width: AppSpace.sPlus),
-          Expanded(
-            flex: 2,
-            child: AppButton('+ 세트 추가', kind: ButtonKind.soft, onPressed: () => setState(() {
-              final prev = ex.sets.last;
-              ex.sets.add(SetEntry(kg: prev.kg, reps: prev.reps));
-            })),
-          ),
-        ]),
+        if (stackButtons) ...[addButton, deleteButton]
+        else
+          Row(children: [
+            Expanded(child: deleteButton),
+            const SizedBox(width: AppSpace.sPlus),
+            Expanded(flex: 2, child: addButton),
+          ]),
       ]),
       bottomNavigationBar: BottomActionBar(
           child: Row(children: [
