@@ -490,16 +490,18 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
       // 저장과 보내기를 나눠, 다 쓰기 전에 회원에게 알림이 가지 않게 (결정 d1102-2)
       // 오타는 조용히, 중요한 수정은 알림으로 (결정 d1108-1)
       if (editing != null)
-        CheckboxListTile(
-          contentPadding: EdgeInsets.zero,
-          controlAffinity: ListTileControlAffinity.leading,
+        // 다른 켜고 끄기와 같은 스위치 모양 (디자인 리뷰 11/10 #2)
+        SwitchRow(
+          title: '회원님께 다시 알리기',
+          subtitle: "끄면 알림 없이 '수정됨' 표시만 붙어요",
           value: notifyAgain,
-          onChanged: (v) => setState(() => notifyAgain = v ?? false),
-          title: const Text('회원님께 다시 알리기'),
-          subtitle: const WordText("끄면 알림 없이 '수정됨' 표시만 붙어요"),
+          onChanged: (v) => setState(() => notifyAgain = v),
         ),
       // 회원 이름이 들어가 길어진 보내기 버튼이 줄바꿈되지 않게 세로로 쌓는다 (디자인 리뷰 11/08 #1)
-      AppButton(editing == null ? '$member 회원님께 보내기' : '$member 회원님 일지 고쳐서 보내기', onPressed: _save),
+      // 알림을 꺼 두면 '보낸다'로 읽히지 않게 스위치에 따라 문구를 바꾼다 (디자인 리뷰 11/10 #2)
+      AppButton(
+          editing == null ? '$member 회원님께 보내기' : (notifyAgain ? '고치고 $member 회원님께 다시 알리기' : '고친 내용 저장'),
+          onPressed: _save),
       if (editing == null) AppButton('임시 저장', kind: ButtonKind.soft, top: AppSpace.s, onPressed: _saveDraft),
       if (editing == null && hasOwnDraft)
         Center(
