@@ -181,7 +181,8 @@ class ExerciseDetailScreen extends StatelessWidget {
     if (e == null) {
       return AppPage(title: arg, children: const [Muted('선생님이 직접 추가한 운동이라 설명이 없어요.')]);
     }
-    final painHit = e.avoidFor.where(demo.painAreas.contains).toList();
+    // 선생님은 회원에게 보여 주려고 여는 화면이라 본인 통증 경고는 띄우지 않는다 (디자인 리뷰 11/10 #5)
+    final painHit = demo.role == 'trainer' ? const <String>[] : e.avoidFor.where(demo.painAreas.contains).toList();
     Widget related(String label, String? id) {
       if (id == null) return const SizedBox.shrink();
       final r = exerciseById(id)!;
