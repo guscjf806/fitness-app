@@ -89,7 +89,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(findText('즐겨찾기'));
     await tester.pumpAndSettle();
-    expect(findTextContaining('전체 1개'), findsOneWidget);
+    expect(findTextContaining('운동 1개'), findsOneWidget);
   });
   testWidgets('결정 dd1105-steps 처음에는 단계 표시, dd1105-edit 고치면 저장 후 돌아가고 저장 안 하면 되돌린다', (tester) async {
     await start(tester, 1);

@@ -71,18 +71,6 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
     });
   }
 
-  Widget _filterRow(List<String> options, String value, ValueChanged<String> onChanged) => SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(bottom: AppSpace.s),
-        child: Row(children: [
-          for (final o in options)
-            Padding(
-              padding: const EdgeInsets.only(right: AppSpace.xsPlus),
-              child: SelectChip(o, selected: o == value, onSelected: (_) => onChanged(o)),
-            ),
-        ]),
-      );
-
   @override
   Widget build(BuildContext context) {
     final list = filtered;
@@ -109,25 +97,19 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
                 style: AppText.body),
           ),
         const SizedBox(height: AppSpace.s),
-        TextField(
-          decoration: const InputDecoration(hintText: '운동 이름 검색', prefixIcon: Icon(Icons.search)),
-          onChanged: (v) => setState(() => query = v),
+        _ExerciseFilters(
+          part: part,
+          equipment: equipment,
+          onQuery: (v) => setState(() => query = v),
+          onPart: (v) => setState(() => part = v),
+          onEquipment: (v) => setState(() => equipment = v),
         ),
-        const SizedBox(height: AppSpace.sPlus),
-        const Muted('부위', bottom: AppSpace.xs),
-        _filterRow(_parts, part, (v) => setState(() => part = v)),
-        const Muted('기구', bottom: AppSpace.xs),
-        _filterRow(_equipments, equipment, (v) => setState(() => equipment = v)),
         Row(children: [
           Expanded(child: Muted('선택한 운동 ${selected.length} / $maxPick', bottom: AppSpace.xs)),
-          Muted('전체 ${list.length}개', bottom: AppSpace.xs),
+          Muted('운동 ${list.length}개', bottom: AppSpace.xs),
         ]),
         if (list.isEmpty)
-          Padding(
-            // 빈 목록 안내를 화면 가운데쯤으로 내리는 값이라 토큰 대신 그대로 (디자인 리뷰 11/09 #4)
-            padding: const EdgeInsets.only(top: 30),
-            child: Muted(favoriteOnly && demo.favorites.isEmpty ? '찜한 운동이 없어요. 하트를 눌러 모아 보세요' : '조건에 맞는 운동이 없어요', align: TextAlign.center),
-          ),
+          _EmptyExercises(favoriteOnly && demo.favorites.isEmpty ? '찜한 운동이 없어요. 하트를 눌러 모아 보세요' : '조건에 맞는 운동이 없어요'),
         for (final e in list)
           Material(
             color: selected.contains(e.id) ? AppColors.primarySoft : Colors.transparent,
@@ -265,34 +247,29 @@ class ExerciseBrowseTab extends StatefulWidget {
 class _ExerciseBrowseTabState extends State<ExerciseBrowseTab> {
   String query = '';
   String part = '전체';
+  String equipment = '전체';
 
   @override
   Widget build(BuildContext context) {
     final list = [
       for (final e in exercises)
-        if ((part == '전체' || e.part == part) && (_squash(query).isEmpty || _squash(e.name).contains(_squash(query)))) e,
+        if ((part == '전체' || e.part == part) &&
+            (equipment == '전체' || e.equipment == equipment) &&
+            (_squash(query).isEmpty || _squash(e.name).contains(_squash(query))))
+          e,
     ];
     return TabBody(children: [
       const H1('운동 찾아보기'),
       const Muted('수업 때 동작 그림과 설명을 찾아 회원님께 보여 줄 수 있어요.'),
-      TextField(
-        decoration: const InputDecoration(hintText: '운동 이름 검색', prefixIcon: Icon(Icons.search)),
-        onChanged: (v) => setState(() => query = v),
+      _ExerciseFilters(
+        part: part,
+        equipment: equipment,
+        onQuery: (v) => setState(() => query = v),
+        onPart: (v) => setState(() => part = v),
+        onEquipment: (v) => setState(() => equipment = v),
       ),
-      const SizedBox(height: AppSpace.sPlus),
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(bottom: AppSpace.s),
-        child: Row(children: [
-          for (final p in _parts)
-            Padding(
-              padding: const EdgeInsets.only(right: AppSpace.xsPlus),
-              child: SelectChip(p, selected: p == part, onSelected: (_) => setState(() => part = p)),
-            ),
-        ]),
-      ),
-      Muted('전체 ${list.length}개', bottom: AppSpace.xs),
-      if (list.isEmpty) const Muted('찾는 운동이 없어요'),
+      Muted('운동 ${list.length}개', bottom: AppSpace.xs),
+      if (list.isEmpty) const _EmptyExercises('찾는 운동이 없어요'),
       for (final e in list)
         LineRow(
           showArrow: true,
@@ -310,4 +287,58 @@ class _ExerciseBrowseTabState extends State<ExerciseBrowseTab> {
         ),
     ]);
   }
+}
+
+/// 운동 고르기와 찾아보기가 같이 쓰는 검색 칸과 부위·기구 칩 (디자인 리뷰 11/10 #3)
+class _ExerciseFilters extends StatelessWidget {
+  const _ExerciseFilters({
+    required this.part,
+    required this.equipment,
+    required this.onQuery,
+    required this.onPart,
+    required this.onEquipment,
+  });
+  final String part;
+  final String equipment;
+  final ValueChanged<String> onQuery;
+  final ValueChanged<String> onPart;
+  final ValueChanged<String> onEquipment;
+
+  Widget _chips(List<String> options, String value, ValueChanged<String> onChanged) => SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.only(bottom: AppSpace.s),
+        child: Row(children: [
+          for (final o in options)
+            Padding(
+              padding: const EdgeInsets.only(right: AppSpace.xsPlus),
+              child: SelectChip(o, selected: o == value, onSelected: (_) => onChanged(o)),
+            ),
+        ]),
+      );
+
+  @override
+  Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        TextField(
+          decoration: const InputDecoration(hintText: '운동 이름 검색', prefixIcon: Icon(Icons.search)),
+          onChanged: onQuery,
+        ),
+        const SizedBox(height: AppSpace.sPlus),
+        const Muted('부위', bottom: AppSpace.xs),
+        _chips(_parts, part, onPart),
+        const Muted('기구', bottom: AppSpace.xs),
+        _chips(_equipments, equipment, onEquipment),
+      ]);
+}
+
+/// 조건에 맞는 운동이 없을 때 (두 화면이 같은 모양)
+class _EmptyExercises extends StatelessWidget {
+  const _EmptyExercises(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        // 빈 목록 안내를 화면 가운데쯤으로 내리는 값이라 토큰 대신 그대로 (디자인 리뷰 11/09 #4)
+        padding: const EdgeInsets.only(top: 30),
+        child: Muted(text, align: TextAlign.center),
+      );
 }
