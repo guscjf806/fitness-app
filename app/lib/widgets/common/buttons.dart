@@ -6,6 +6,12 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import 'text.dart';
 
+/// 연한 버튼 색. AppButton(soft)과 회원 줄의 작은 버튼이 같이 쓴다 (디자인 리뷰 11/10 #4)
+abstract final class AppButtonStyle {
+  static ButtonStyle soft({Size? minimumSize}) => FilledButton.styleFrom(
+      backgroundColor: AppColors.primarySoft, foregroundColor: AppColors.primaryDark, minimumSize: minimumSize);
+}
+
 /// primary: 진한 주 버튼, soft: 연한 보조 버튼, quiet: 흰 바탕·회색 테두리의 조용한 버튼 (디자인 리뷰 11/10 #1)
 enum ButtonKind { primary, soft, quiet }
 
@@ -25,9 +31,7 @@ class AppButton extends StatelessWidget {
         onPressed: onPressed,
         style: switch (kind) {
           ButtonKind.primary => null,
-          ButtonKind.soft => FilledButton.styleFrom(
-              backgroundColor: AppColors.primarySoft,
-              foregroundColor: AppColors.primaryDark),
+          ButtonKind.soft => AppButtonStyle.soft(),
           ButtonKind.quiet => FilledButton.styleFrom(
               backgroundColor: AppColors.background,
               foregroundColor: AppColors.textSub,

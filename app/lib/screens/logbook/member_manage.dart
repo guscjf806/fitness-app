@@ -25,8 +25,7 @@ class MemberLogRow extends StatelessWidget {
         right: Row(mainAxisSize: MainAxisSize.min, children: [
           FilledButton.tonal(
             // 회원 이름과 날짜가 먼저 읽히게 연한 버튼으로 (결정 dd1107-logbtn)
-            style: FilledButton.styleFrom(
-                minimumSize: const Size(0, 48), backgroundColor: AppColors.primarySoft, foregroundColor: AppColors.primaryDark),
+            style: AppButtonStyle.soft(minimumSize: const Size(0, 48)),
             onPressed: () => Navigator.pushNamed(context, Routes.logWrite, arguments: member),
             child: Text(hasLogDraft(member) ? '이어 쓰기' : '일지 작성'),
           ),
