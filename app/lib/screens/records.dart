@@ -41,24 +41,26 @@ class _RecordsScreenState extends State<RecordsScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('현재 연속 기록', bottom: 2),
           BigNumber('${demo.streak}일'),
-          Muted('최장 기록 $longest일${demo.restMode ? ' · 쉬기 모드 중이라 기록이 유지돼요' : ''}', bottom: 10),
+          Muted('최장 기록 $longest일${demo.restMode ? ' · 쉬기 모드 중이라 기록이 유지돼요' : ''}', bottom: AppSpace.sPlus),
+          // 제목처럼 줄 위에 (디자인 리뷰 11/11 #3)
+          const Muted('최근 7일', bottom: AppSpace.xs),
           // 어느 날인지 알 수 있게 동그라미 아래에 요일을 쓴다.
           // 마지막 칸은 '오늘'로 쓰고 색을 달리해, 아직 안 한 날처럼 보이지 않게 (디자인 리뷰 11/03 #2)
+          // 7칸을 똑같이 나눠 큰 글씨에서도 동그라미가 글자 가운데에 서게 (디자인 리뷰 11/11 #3)
           Row(children: [
-            for (var i = 1; i <= 7; i++) ...[
-              Column(children: [
-                _Dot(on: i < 7 || demo.recordedToday, today: i == 7),
-                const SizedBox(height: 2),
-                Text(i == 7 ? '오늘' : dayLabels[DateTime(2026, 10, demoToday - 7 + i).weekday - 1],
-                    style: i == 7
-                        ? AppText.small.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)
-                        : AppText.small.copyWith(color: AppColors.textSub)),
-              ]),
-              const SizedBox(width: AppSpace.xsPlus),
-            ],
+            for (var i = 1; i <= 7; i++)
+              Expanded(
+                child: Column(children: [
+                  _Dot(on: i < 7 || demo.recordedToday, today: i == 7),
+                  const SizedBox(height: AppSpace.xxs),
+                  Text(i == 7 ? '오늘' : dayLabels[DateTime(2026, 10, demoToday - 7 + i).weekday - 1],
+                      softWrap: false,
+                      style: i == 7
+                          ? AppText.small.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)
+                          : AppText.small.copyWith(color: AppColors.textSub)),
+                ]),
+              ),
           ]),
-          const SizedBox(height: AppSpace.s),
-          const Muted('최근 7일', bottom: 0),
         ]),
       ),
       const RestModeSwitch(),

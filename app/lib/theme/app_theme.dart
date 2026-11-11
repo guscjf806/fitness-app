@@ -59,11 +59,13 @@ class AppSpace {
   /// 바텀시트 왼쪽·오른쪽 여백
   static const double sheet = 20;
 
+  static const double xxs = 2;
   static const double xs = 4;
   static const double xsPlus = 6;
   static const double s = 8;
   static const double sPlus = 10;
   static const double m = 12;
+  static const double mPlus = 14;
   static const double l = 16;
   static const double xl = 24;
 }
