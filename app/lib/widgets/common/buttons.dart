@@ -118,12 +118,16 @@ class _SegButton extends StatelessWidget {
         // 손가락으로 누르기 쉽게 높이 48px 이상 (디자인 리뷰 10/30 #1)
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 48),
-          child: Center(
-            child: Text(label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: selected ? AppColors.primaryDark : AppColors.text,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w400)),
+          // 큰 글씨에서 글자가 테두리에 닿지 않게 안쪽 여백, 넘치면 낱말 단위로 두 줄 (디자인 리뷰 11/11 #2)
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpace.s),
+            child: Center(
+              child: WordText(label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: selected ? AppColors.primaryDark : AppColors.text,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w400)),
+            ),
           ),
         ),
       ),
