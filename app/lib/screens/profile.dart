@@ -63,17 +63,17 @@ class ProfileTab extends StatelessWidget {
         onChanged: (v) => demo.update(() => demo.pushOn = v),
       ),
       // 알림을 끄면 시간도 고를 수 없게 회색으로 (디자인 리뷰 10/29 #5)
+      // 줄 전체를 누르게 하고, 시간 글자 끝을 위아래 스위치와 맞춘다 (디자인 리뷰 11/11 #5)
       LineRow(
+        onTap: !demo.pushOn
+            ? null
+            : () async {
+                final picked = await showTimePicker(context: context, initialTime: demo.pushTime);
+                if (picked != null) demo.update(() => demo.pushTime = picked);
+              },
         left: Text('알림 시간', style: TextStyle(color: demo.pushOn ? AppColors.text : AppColors.textSub)),
-        right: TextButton(
-          onPressed: !demo.pushOn
-              ? null
-              : () async {
-                  final picked = await showTimePicker(context: context, initialTime: demo.pushTime);
-                  if (picked != null) demo.update(() => demo.pushTime = picked);
-                },
-          child: Text(demo.pushTime.format(context)),
-        ),
+        right: Text(demo.pushTime.format(context),
+            style: AppText.bodyStrong.copyWith(color: demo.pushOn ? AppColors.primaryDark : AppColors.textSub)),
       ),
       if (role != 'trainer')
         SwitchRow(
