@@ -52,8 +52,12 @@ class _ConsentScreenState extends State<ConsentScreen> {
       demo.continueToGenerate = false;
     });
     // 동의하지 않았으면 서버에 만든 계정을 지우고 로그인도 끊는다 (결정 d1105-2)
-    AuthService.cancelSignIn();
+    final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
+    // 지우지 못했으면 알린다. 말없이 넘어가면 지워진 줄 안다 (리뷰 11/11 #3)
+    if (!await AuthService.cancelSignIn()) {
+      toastOn(messenger, '계정을 지우지 못했어요. 다시 로그인한 뒤 내 정보 > 계정 삭제에서 지울 수 있어요');
+    }
   }
 
   @override

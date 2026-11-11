@@ -162,12 +162,23 @@ class AuthService {
 
   /// 동의를 거절하면 서버에 방금 만든 계정을 지우고 로그아웃한다 (결정 d1105-2).
   /// 지우기가 실패해도 로그아웃은 한다
-  static Future<void> cancelSignIn() async {
-    if (!enabled) return;
-    if (_user != null && isNewAccount) {
-      await Supabase.instance.client.functions.invoke('delete-account').then((_) {}, onError: (_) {});
-    }
+  /// 지우기가 실패하면 false (리뷰 11/11 #3)
+  static Future<bool> cancelSignIn() async {
+    if (!enabled) return true;
+    final deleted = _user != null && isNewAccount ? await _deleteOnServer() : true;
     await signOut();
+    return deleted;
+  }
+
+  /// 서버의 delete-account 함수를 부른다. 실패했다는 사실만 개발용 로그에 남긴다 (개인정보 없이)
+  static Future<bool> _deleteOnServer() async {
+    try {
+      await Supabase.instance.client.functions.invoke('delete-account');
+      return true;
+    } catch (_) {
+      debugPrint('delete-account failed');
+      return false;
+    }
   }
 
   static Future<void> signOut() async {
