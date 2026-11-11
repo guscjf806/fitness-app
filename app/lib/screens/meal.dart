@@ -107,9 +107,10 @@ class _MealCard extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 48),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  CheckCircle(demo.eatenMeals.contains(meal.title)),
+                  // 올린 끼니는 먹은 것으로 보이고 AI가 계산한 칼로리를 같이 보여 준다 (리뷰 11/11 #4)
+                  CheckCircle(demo.eatenMeals.contains(meal.title) || demo.postedKcal(meal.title) != null),
                   const SizedBox(width: AppSpace.s),
-                  const Text('먹었어요'),
+                  Text(demo.postedKcal(meal.title) == null ? '먹었어요' : '올림 · 약 ${demo.postedKcal(meal.title)} kcal'),
                 ]),
               ),
             ),
@@ -342,6 +343,9 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
           padding: const EdgeInsets.only(top: AppSpace.sPlus),
           child: AppCard(accent: true, child: WordText(post.reply)),
         ),
+      // 홈 칼로리에 더해진 숫자를 회원이 볼 수 있게 (리뷰 11/11 #4)
+      if (!waiting && !failed && post.kcal != null)
+        Muted('약 ${post.kcal} kcal로 계산했어요(AI 추정). 홈의 오늘 먹은 칼로리에 더해져요.', top: AppSpace.s),
     ]);
   }
 }

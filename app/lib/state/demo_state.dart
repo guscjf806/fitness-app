@@ -209,14 +209,20 @@ class DemoState extends ChangeNotifier {
   int get todayEatenKcal {
     var sum = 0;
     for (final m in mealDays[0]) {
-      final post = mealPosts.where((p) => p.isToday && p.date == '오늘 ${m.title}' && p.kcal != null).firstOrNull;
-      if (post != null) {
-        sum += post.kcal!;
+      final posted = postedKcal(m.title);
+      if (posted != null) {
+        sum += posted;
       } else if (eatenMeals.contains(m.title)) {
         sum += m.kcal;
       }
     }
     return sum;
+  }
+
+  /// 오늘 그 끼니에 올린 식단의 AI 추정 칼로리 합. 같은 끼니를 두 번 올리면 더한다. 안 올렸으면 null (리뷰 11/11 #4)
+  int? postedKcal(String slot) {
+    final posts = mealPosts.where((p) => p.isToday && p.date == '오늘 $slot' && p.kcal != null);
+    return posts.isEmpty ? null : posts.fold<int>(0, (s, p) => s + p.kcal!);
   }
 
   bool get recordedToday => mealPostedToday || workoutDone;

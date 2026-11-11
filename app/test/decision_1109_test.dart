@@ -25,6 +25,8 @@ void main() {
     expect(demo.todayEatenKcal, breakfast.kcal);
     demo.mealPosts.insert(0, MealPost('오늘 ${breakfast.title}', '오트밀', '', isToday: true, kcal: 999));
     expect(demo.todayEatenKcal, 999, reason: '두 번 세지 않는다');
+    demo.mealPosts.insert(0, MealPost('오늘 ${breakfast.title}', '바나나', '', isToday: true, kcal: 100));
+    expect(demo.todayEatenKcal, 1099, reason: '같은 끼니를 두 번 올리면 더한다 (리뷰 11/11 #4)');
   });
   Future<void> openEdit(WidgetTester tester, String route) async {
     tester.view.physicalSize = const Size(1200, 3600);
