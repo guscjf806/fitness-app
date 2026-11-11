@@ -50,4 +50,15 @@ void main() {
       }
     });
   }
+  testWidgets('리뷰 11/11 #6 결과가 없으면 검색·필터를 한 번에 지운다', (tester) async {
+    await open(tester, 1.0, Routes.exercisePick, arguments: 3);
+    await tester.enterText(find.byType(TextField).first, '없는운동이름');
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('검색어 지우기'), findsOneWidget);
+    await tester.scrollUntilVisible(findText('검색·필터 지우기'), 200, scrollable: page());
+    await tester.tap(findText('검색·필터 지우기'));
+    await tester.pumpAndSettle();
+    expect(findText('검색·필터 지우기'), findsNothing);
+    expect(tester.widget<TextField>(find.byType(TextField).first).controller!.text, '');
+  });
 }

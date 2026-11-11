@@ -98,6 +98,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
           ),
         const SizedBox(height: AppSpace.s),
         _ExerciseFilters(
+          query: query,
           part: part,
           equipment: equipment,
           onQuery: (v) => setState(() => query = v),
@@ -109,7 +110,13 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
           Muted('운동 ${list.length}개', bottom: AppSpace.xs),
         ]),
         if (list.isEmpty)
-          _EmptyExercises(favoriteOnly && demo.favorites.isEmpty ? '찜한 운동이 없어요. 하트를 눌러 모아 보세요' : '조건에 맞는 운동이 없어요'),
+          _EmptyExercises(favoriteOnly && demo.favorites.isEmpty ? '찜한 운동이 없어요. 하트를 눌러 모아 보세요' : '조건에 맞는 운동이 없어요',
+              onReset: () => setState(() {
+                    query = '';
+                    part = '전체';
+                    equipment = '전체';
+                    favoriteOnly = false;
+                  })),
         for (final e in list)
           Material(
             color: selected.contains(e.id) ? AppColors.primarySoft : Colors.transparent,
@@ -263,6 +270,7 @@ class _ExerciseBrowseTabState extends State<ExerciseBrowseTab> {
       const H1('운동 찾아보기'),
       const Muted('수업 때 동작 그림과 설명을 찾아 회원님께 보여 줄 수 있어요.'),
       _ExerciseFilters(
+        query: query,
         part: part,
         equipment: equipment,
         onQuery: (v) => setState(() => query = v),
@@ -270,7 +278,13 @@ class _ExerciseBrowseTabState extends State<ExerciseBrowseTab> {
         onEquipment: (v) => setState(() => equipment = v),
       ),
       Muted('운동 ${list.length}개', bottom: AppSpace.xs),
-      if (list.isEmpty) const _EmptyExercises('찾는 운동이 없어요'),
+      if (list.isEmpty)
+        _EmptyExercises('찾는 운동이 없어요',
+            onReset: () => setState(() {
+                  query = '';
+                  part = '전체';
+                  equipment = '전체';
+                })),
       for (final e in list)
         LineRow(
           showArrow: true,
@@ -291,19 +305,41 @@ class _ExerciseBrowseTabState extends State<ExerciseBrowseTab> {
 }
 
 /// 운동 고르기와 찾아보기가 같이 쓰는 검색 칸과 부위·기구 칩 (디자인 리뷰 11/10 #3)
-class _ExerciseFilters extends StatelessWidget {
+class _ExerciseFilters extends StatefulWidget {
   const _ExerciseFilters({
+    required this.query,
     required this.part,
     required this.equipment,
     required this.onQuery,
     required this.onPart,
     required this.onEquipment,
   });
+  final String query;
   final String part;
   final String equipment;
   final ValueChanged<String> onQuery;
   final ValueChanged<String> onPart;
   final ValueChanged<String> onEquipment;
+
+  @override
+  State<_ExerciseFilters> createState() => _ExerciseFiltersState();
+}
+
+class _ExerciseFiltersState extends State<_ExerciseFilters> {
+  late final controller = TextEditingController(text: widget.query);
+
+  /// '검색·필터 지우기'로 바깥에서 검색어를 비우면 칸도 비운다
+  @override
+  void didUpdateWidget(_ExerciseFilters old) {
+    super.didUpdateWidget(old);
+    if (widget.query != controller.text) controller.text = widget.query;
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   Widget _chips(List<String> options, String value, ValueChanged<String> onChanged) => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -320,26 +356,40 @@ class _ExerciseFilters extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         TextField(
-          decoration: const InputDecoration(hintText: '운동 이름 검색', prefixIcon: Icon(Icons.search)),
-          onChanged: onQuery,
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: '운동 이름 검색',
+            prefixIcon: const Icon(Icons.search),
+            // 검색어를 한 번에 지운다 (리뷰 11/11 #6)
+            suffixIcon: widget.query.isEmpty
+                ? null
+                : IconButton(tooltip: '검색어 지우기', icon: const Icon(Icons.close), onPressed: () => widget.onQuery('')),
+          ),
+          onChanged: widget.onQuery,
         ),
         const SizedBox(height: AppSpace.sPlus),
         const Muted('부위', bottom: AppSpace.xs),
-        _chips(_parts, part, onPart),
+        _chips(_parts, widget.part, widget.onPart),
         const Muted('기구', bottom: AppSpace.xs),
-        _chips(_equipments, equipment, onEquipment),
+        _chips(_equipments, widget.equipment, widget.onEquipment),
       ]);
 }
 
 /// 조건에 맞는 운동이 없을 때 (두 화면이 같은 모양)
 class _EmptyExercises extends StatelessWidget {
-  const _EmptyExercises(this.text);
+  const _EmptyExercises(this.text, {required this.onReset});
   final String text;
+
+  /// 칩을 하나씩 되돌리지 않게 한 번에 지운다 (리뷰 11/11 #6)
+  final VoidCallback onReset;
 
   @override
   Widget build(BuildContext context) => Padding(
         // 빈 목록 안내를 화면 가운데쯤으로 내리는 값이라 토큰 대신 그대로 (디자인 리뷰 11/09 #4)
         padding: const EdgeInsets.only(top: 30),
-        child: Muted(text, align: TextAlign.center),
+        child: Column(children: [
+          Muted(text, align: TextAlign.center),
+          AppButton('검색·필터 지우기', kind: ButtonKind.soft, top: AppSpace.s, onPressed: onReset),
+        ]),
       );
 }
