@@ -196,6 +196,9 @@ class MealPost {
 
   /// AI가 추정한 칼로리. 같은 끼니의 '먹었어요'보다 먼저 쓴다 (결정 d1107-2)
   final int? kcal;
+
+  /// 회원이 칼로리를 고친 글 (결정 d1111-2)
+  MealPost withKcal(int value) => MealPost(date, note, reply, isToday: isToday, hasPhoto: hasPhoto, kcal: value);
 }
 
 const sampleMealReply =

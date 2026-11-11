@@ -2,6 +2,7 @@ import 'package:fitness_app/data/mock_data.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
+import 'package:fitness_app/screens/meal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,5 +79,23 @@ void main() {
     await tester.tap(findText('새로 만들기'));
     await tester.pumpAndSettle();
     expect(demo.planOutdated, isFalse);
+  });
+  testWidgets('결정 d1111-2 AI 답변 화면에서 추정 칼로리를 고친다', (tester) async {
+    demo.mealPosts.insert(0, const MealPost('오늘 점심', '비빔밥', '좋아요', isToday: true, kcal: 620));
+    tester.view.physicalSize = const Size(1200, 3600);
+    tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    await tester.pumpWidget(const FitnessApp());
+    await tester.pumpAndSettle();
+    demoNavigatorKey.currentState!.pushNamed(Routes.mealReply, arguments: const MealReplyArgs(0));
+    await tester.pumpAndSettle();
+    expect(findText('약 620 kcal로 계산했어요(AI 추정)'), findsOneWidget);
+    await tester.tap(findText('고치기'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).last, '500');
+    await tester.tap(findText('저장'));
+    await tester.pumpAndSettle();
+    expect(demo.mealPosts.first.kcal, 500);
   });
 }

@@ -324,6 +324,29 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
     });
   }
 
+  Future<void> _editKcal(int index) async {
+    var text = '${demo.mealPosts[index].kcal}';
+    final save = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: const Text('칼로리 고치기'),
+        content: NumField(label: '칼로리', suffix: 'kcal', value: text, decimal: false, onChanged: (v) => text = v),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('그만두기')),
+          TextButton(onPressed: () => Navigator.pop(dialog, true), child: const Text('저장')),
+        ],
+      ),
+    );
+    if (save != true || !mounted) return;
+    final value = int.tryParse(text.trim());
+    if (value == null || value < 1 || value > 5000) {
+      toast(context, '1에서 5,000 사이의 숫자로 적어 주세요');
+      return;
+    }
+    demo.update(() => demo.mealPosts[index] = demo.mealPosts[index].withKcal(value));
+    toast(context, '$value kcal로 고쳤어요. 홈 칼로리에도 반영돼요');
+  }
+
   @override
   Widget build(BuildContext context) {
     final index = args.index;
@@ -345,8 +368,15 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
           child: AppCard(accent: true, child: WordText(post.reply)),
         ),
       // 홈 칼로리에 더해진 숫자를 회원이 볼 수 있게 (리뷰 11/11 #4)
-      if (!waiting && !failed && post.kcal != null)
-        Muted('약 ${post.kcal} kcal로 계산했어요(AI 추정). 홈의 오늘 먹은 칼로리에 더해져요.', top: AppSpace.s),
+      // AI 추정은 틀릴 수 있어 눌러서 고치게 한다 (결정 d1111-2)
+      if (!waiting && !failed && post.kcal != null) ...[
+        LineRow(
+          onTap: () => _editKcal(index),
+          left: WordText('약 ${post.kcal} kcal로 계산했어요(AI 추정)'),
+          right: Text('고치기', style: AppText.bodyStrong.copyWith(color: AppColors.primaryDark)),
+        ),
+        const Muted('홈의 오늘 먹은 칼로리에 더해져요.', top: AppSpace.xs),
+      ],
     ]);
   }
 }
