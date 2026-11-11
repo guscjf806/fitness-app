@@ -40,6 +40,9 @@ class AuthService {
   static User? _user;
   static bool get signedIn => _user != null;
 
+  /// 지금 로그인한 실제 계정의 id. 동의 여부를 계정별로 기억할 때 쓴다 (결정 d1111-3)
+  static String? get userId => _user?.id;
+
   /// 실제 계정의 닉네임. 화면에만 쓰고 로그에는 남기지 않는다
   static String? get nickname => _user == null ? null : _nickname(_user!);
 
@@ -173,8 +176,12 @@ class AuthService {
   /// 내 정보 > 계정 삭제. 서버 계정을 지운 뒤 로그아웃한다. 목업 로그인이면 지울 서버 계정이 없다 (리뷰 11/11 #5)
   static Future<bool> deleteAccount() async {
     if (!enabled || _user == null) return true;
+    final id = _user!.id;
     final deleted = await _deleteOnServer();
-    if (deleted) await signOut();
+    if (deleted) {
+      demo.update(() => demo.consentedAccounts.remove(id));
+      await signOut();
+    }
     return deleted;
   }
 
@@ -208,6 +215,8 @@ class AuthService {
     demo.update(() {
       demo.role = 'user';
       demo.entered = true;
+      // 이 폰에서 이미 동의한 계정이면 다시 묻지 않는다 (결정 d1111-3)
+      if (demo.consentedAccounts.contains(user.id)) demo.consented = true;
       demo.lastLoginProvider = provider ?? demo.lastLoginProvider;
     });
     final name = _nickname(user);

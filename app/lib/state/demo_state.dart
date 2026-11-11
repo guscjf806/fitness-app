@@ -34,6 +34,10 @@ class DemoState extends ChangeNotifier {
   /// 로그인 직후 동의 화면(S05-1)을 마쳤는지
   bool consented = false;
 
+  /// 이 폰에서 동의를 마친 계정 id. 같은 계정으로 다시 로그인하면 동의를 다시 묻지 않는다.
+  /// 로그아웃해도 지우지 않고, 계정을 지우면 뺀다. 서버 동의 기록은 약관 검토 뒤에 만든다 (결정 d1111-3)
+  final Set<String> consentedAccounts = {};
+
   /// 못 먹는 음식·아픈 부위를 고친 뒤 아직 식단·루틴을 새로 만들지 않았는지 (결정 d1111-1)
   bool planOutdated = false;
 
@@ -346,6 +350,7 @@ class DemoState extends ChangeNotifier {
     await p.setBool('entered', entered);
     await p.setBool('consented', consented);
     await p.setBool('planOutdated', planOutdated);
+    await p.setStringList('consentedAccounts', consentedAccounts.toList());
     await p.setBool('continueToGenerate', continueToGenerate);
     await p.setStringList('profile', [
       sex, height, age, weight, muscle, '$muscleUnknown', bodyFat, '$bodyFatUnknown', goal,
@@ -370,6 +375,9 @@ class DemoState extends ChangeNotifier {
     entered = p.getBool('entered') ?? entered;
     consented = p.getBool('consented') ?? consented;
     planOutdated = p.getBool('planOutdated') ?? planOutdated;
+    consentedAccounts
+      ..clear()
+      ..addAll(p.getStringList('consentedAccounts') ?? const []);
     // 로그인 창에 나간 사이 앱이 닫혀도 만들던 식단·루틴으로 이어 간다 (리뷰 11/05 #6)
     continueToGenerate = p.getBool('continueToGenerate') ?? continueToGenerate;
     // 동의를 마치지 않은 채 앱이 꺼졌으면 로그인하지 않은 상태로 본다 (리뷰 10/29 #1)

@@ -93,7 +93,12 @@ class _ConsentScreenState extends State<ConsentScreen> {
       const Disclaimer(text: '이 앱은 AI로 식단·운동 루틴과 답변을 만들어요. AI가 만든 내용은 의료 조언이 아닙니다.'),
       AppButton('동의하고 시작하기', onPressed: requiredDone
           ? () {
-              demo.update(() => demo.consented = true);
+              demo.update(() {
+                demo.consented = true;
+                // 같은 계정으로 다시 로그인하면 묻지 않게 기억한다 (결정 d1111-3)
+                final id = AuthService.userId;
+                if (id != null) demo.consentedAccounts.add(id);
+              });
               continueAfterLogin(context);
             }
           : null),

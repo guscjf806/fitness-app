@@ -98,4 +98,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(demo.mealPosts.first.kcal, 500);
   });
+  test('결정 d1111-3 동의한 계정 목록은 로그아웃해도 남고 다시 불러온다', () async {
+    demo.consentedAccounts
+      ..clear()
+      ..add('account-1');
+    demo.logout();
+    expect(demo.consentedAccounts, contains('account-1'));
+    await demo.save();
+    demo.consentedAccounts.clear();
+    await demo.load();
+    expect(demo.consentedAccounts, contains('account-1'));
+  });
 }
