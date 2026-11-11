@@ -52,6 +52,9 @@ class _SetupPageState extends State<SetupPage> {
 
   static const _safetyKeys = ['allergies', 'allergyNote', 'painAreas'];
 
+  /// '나중에'를 고르면 다시 만들 곳을 알려 준다 (리뷰 11/11 #2)
+  static const _later = ' 나중에 내 정보 > 식단·루틴 새로 만들기에서 만들 수 있어요.';
+
   Future<void> _save() async {
     if (widget.canSave?.call() == false) return;
     saved = true;
@@ -70,9 +73,9 @@ class _SetupPageState extends State<SetupPage> {
             body: '못 먹는 음식이나 아픈 부위가 바뀌었어요. 안전을 위한 수정이라 무료 횟수를 쓰지 않아요.',
             keepLabel: '나중에',
             okLabel: '새로 만들기');
-        if (ok) regen = ' 식단·루틴도 새로 만들었어요(데모, 무료 횟수 그대로).';
+        regen = ok ? ' 식단·루틴도 새로 만들었어요(데모, 무료 횟수 그대로).' : _later;
       } else if (demo.quotaExhausted) {
-        regen = ' 이번 달 무료 횟수를 다 써서 다음 달 1일부터 새로 만들 수 있어요.';
+        regen = ' 이번 달 무료 횟수를 다 써서 다음 달 1일부터 내 정보 > 식단·루틴 새로 만들기에서 만들 수 있어요.';
       } else {
         final ok = await confirmDialog(context,
             title: '바뀐 조건으로 새로 만들까요?',
@@ -82,6 +85,8 @@ class _SetupPageState extends State<SetupPage> {
         if (ok) {
           demo.update(() => demo.aiUsed++);
           regen = ' 식단·루틴도 새로 만들었어요(데모).';
+        } else {
+          regen = _later;
         }
       }
       if (!mounted) return;
