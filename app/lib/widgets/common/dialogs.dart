@@ -25,9 +25,16 @@ void toastOn(ScaffoldMessengerState messenger, String message, {String? actionLa
       content: Text(message),
       // 버튼이 있어도 저절로 사라지게. 운동 중에도 누를 수 있게 조금 길게 띄운다 (리뷰 11/05 #1)
       persist: false,
-      duration: Duration(seconds: actionLabel == null ? 4 : 6),
+      // 긴 안내는 다 읽을 수 있게 25자마다 1초씩, 최대 8초 (디자인 리뷰 11/11 #4)
+      duration: toastDuration(message, hasAction: actionLabel != null),
       action: actionLabel == null ? null : SnackBarAction(label: actionLabel, onPressed: onAction ?? () {}),
     ));
+}
+
+/// 알림 띠를 띄워 두는 시간
+Duration toastDuration(String message, {bool hasAction = false}) {
+  final seconds = (hasAction ? 6 : 4) + message.length ~/ 25;
+  return Duration(seconds: seconds > 8 ? 8 : seconds);
 }
 
 /// 바텀시트 공용 틀: 내용에 맞는 높이, 아이폰 아래 막대·키보드 피하기, 넘치면 스크롤, 같은 여백 (디자인 리뷰 11/04 #4)
