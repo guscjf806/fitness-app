@@ -72,6 +72,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
     return Column(children: [
       Expanded(child: TabBody(children: [
       H1(demo.isGuest ? '예시 운동' : '운동'),
+      const PlanOutdatedBanner(),
       if (demo.isGuest)
         const GuestBanner('로그인하면 내 운동 장소·장비·시간에 맞춘 루틴을 AI가 만들어요. 체크는 해 볼 수 있지만 저장되지 않아요.'),
       Muted(demo.conditionText),

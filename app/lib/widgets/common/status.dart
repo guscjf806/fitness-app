@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
 import '../exercise_figure.dart';
 import '../common.dart';
@@ -118,4 +119,23 @@ class LogStatusLabels extends StatelessWidget {
         if (edited && isNew) const SizedBox(width: AppSpace.s),
         if (isNew) const Text('새 일지', style: AppText.captionAccent),
       ]);
+}
+
+/// 못 먹는 음식·아픈 부위를 고치고 '나중에'를 눌렀을 때 식단·운동 탭 맨 위에 둔다 (결정 d1111-1).
+/// 안전을 위한 수정이라 새로 만들어도 무료 횟수를 쓰지 않는다 (결정 d1107-1)
+class PlanOutdatedBanner extends StatelessWidget {
+  const PlanOutdatedBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    if (!demo.planOutdated || demo.isGuest) return const SizedBox.shrink();
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      const WarningBox('조건이 바뀌었어요. 새로 만들어 주세요', top: 0),
+      AppButton('새로 만들기', kind: ButtonKind.soft, top: AppSpace.s, onPressed: () {
+        demo.update(() => demo.planOutdated = false);
+        toast(context, '식단·루틴을 새로 만들었어요(데모, 무료 횟수 그대로)');
+      }),
+      const SizedBox(height: AppSpace.m),
+    ]);
+  }
 }

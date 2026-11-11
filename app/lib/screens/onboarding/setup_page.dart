@@ -73,7 +73,9 @@ class _SetupPageState extends State<SetupPage> {
             body: '못 먹는 음식이나 아픈 부위가 바뀌었어요. 안전을 위한 수정이라 무료 횟수를 쓰지 않아요.',
             keepLabel: '나중에',
             okLabel: '새로 만들기');
-        regen = ok ? ' 식단·루틴도 새로 만들었어요(데모, 무료 횟수 그대로).' : _later;
+        regen = ok ? ' 식단·루틴도 새로 만들었어요(데모, 무료 횟수 그대로).' : ' 식단·운동 탭 맨 위에서 새로 만들 수 있어요.';
+        // '나중에'를 누르면 식단·운동 탭 맨 위에 띠를 남긴다 (결정 d1111-1)
+        demo.update(() => demo.planOutdated = !ok);
       } else if (demo.quotaExhausted) {
         regen = ' 이번 달 무료 횟수를 다 써서 다음 달 1일부터 내 정보 > 식단·루틴 새로 만들기에서 만들 수 있어요.';
       } else {

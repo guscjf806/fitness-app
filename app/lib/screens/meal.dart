@@ -36,6 +36,7 @@ class _MealTabState extends State<MealTab> {
     }
     return TabBody(children: [
       const H1('식단'),
+      const PlanOutdatedBanner(),
       DayChips(labels: dayLabels, selected: day, today: 0, onSelect: (i) => setState(() => day = i)),
       const Muted("g(그램) 수와 칼로리는 AI가 추정한 값이에요. 같은 음식이 없으면 '없으면 →' 뒤의 음식으로 바꿔 드세요.", bottom: AppSpace.sPlus),
       for (final m in meals) _MealCard(m, canCheck: day == 0),

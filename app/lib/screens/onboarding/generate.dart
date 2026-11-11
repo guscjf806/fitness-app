@@ -35,7 +35,10 @@ class _GenerateScreenState extends State<GenerateScreen> {
       }
       return;
     }
-    demo.update(() => demo.tab = 0);
+    demo.update(() {
+      demo.tab = 0;
+      demo.planOutdated = false;
+    });
     navigator.pushNamedAndRemoveUntil(Routes.main, (_) => false);
     toastOn(messenger, '${demo.period}치 식단과 운동 루틴을 만들었어요');
   }
