@@ -48,7 +48,7 @@ class ProfileTab extends StatelessWidget {
           ]),
           ProgressBar(demo.aiUsedShown / AppConfig.freeMonthlyAiLimit),
           AppButton('더 많이 쓰기',
-              kind: ButtonKind.soft, top: 4, onPressed: () => Navigator.pushNamed(context, Routes.subscribe)),
+              kind: ButtonKind.soft, top: AppSpace.xs, onPressed: () => Navigator.pushNamed(context, Routes.subscribe)),
         ]),
       ),
       // 묶음 제목으로 나눠 찾기 쉽게 (결정 dd1029-profile-head)

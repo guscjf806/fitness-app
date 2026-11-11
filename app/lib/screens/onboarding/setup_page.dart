@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../config.dart';
 import '../../state/demo_state.dart';
+import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
 
 /// 처음 입력하는 3단계 화면의 틀.
@@ -104,7 +105,7 @@ class _SetupPageState extends State<SetupPage> {
       child: AppPage(title: widget.title, children: [
         // 얼마나 남았는지 막대와 글자로 (결정 dd1105-steps). 고치러 왔을 때는 필요 없다 (결정 dd1105-edit)
         if (!editing) ...[
-          Muted('${widget.step} / $totalSteps단계', bottom: 2),
+          Muted('${widget.step} / $totalSteps단계', bottom: AppSpace.xxs),
           ProgressBar(widget.step / totalSteps),
         ],
         ...widget.children,

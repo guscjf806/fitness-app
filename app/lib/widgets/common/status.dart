@@ -37,7 +37,7 @@ class InfoTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: AppSpace.xs),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpace.sPlus, vertical: AppSpace.xs),
         decoration: ShapeDecoration(
           shape: const StadiumBorder(),
           color: caution ? AppColors.cautionSoft : AppColors.surface,
@@ -88,7 +88,7 @@ class WarningBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: top),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpace.mPlus),
       decoration: BoxDecoration(
         color: AppColors.warningSoft,
         borderRadius: BorderRadius.circular(AppRadius.box),

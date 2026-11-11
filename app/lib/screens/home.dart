@@ -34,7 +34,7 @@ class HomeTab extends StatelessWidget {
           const Icon(Icons.local_fire_department, size: 20, color: AppColors.streakFire),
           const SizedBox(width: AppSpace.xsPlus),
           Text('연속 ${demo.streak}일째', style: AppText.bodyStrong),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpace.s),
           Expanded(
             child: Muted(
                 demo.restMode ? '쉬기 모드 중' : (demo.recordedToday ? '오늘 기록 완료!' : '오늘 하나만 기록하면 ${demo.streak + 1}일'),
@@ -64,18 +64,18 @@ class HomeTab extends StatelessWidget {
             showArrow: !g.$2,
           ),
       ],
-      const SizedBox(height: 14),
+      const SizedBox(height: AppSpace.mPlus),
       if (demo.role == 'member')
         AppCard(
           accent: true,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Muted('선생님이 준 이번 주 미션', bottom: 2),
+            const Muted('선생님이 준 이번 주 미션', bottom: AppSpace.xxs),
             Text(demo.missions[demo.memberName] ?? '아직 미션이 없어요'),
           ]),
         ),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Muted('오늘 먹은 칼로리', bottom: 2),
+          const Muted('오늘 먹은 칼로리', bottom: AppSpace.xxs),
           Text.rich(TextSpan(children: [
             TextSpan(text: formatNumber(demo.todayEatenKcal), style: AppText.number),
             TextSpan(text: ' / ${formatNumber(target)} kcal'),
@@ -135,10 +135,10 @@ class HomeTab extends StatelessWidget {
           const Text('내 칼로리', style: AppText.bodyStrong),
           const SizedBox(height: AppSpace.s),
           if (demo.calorieCalculated) ...[
-            const Muted('하루에 쓰는 칼로리', bottom: 2),
+            const Muted('하루에 쓰는 칼로리', bottom: AppSpace.xxs),
             BigNumber('${formatNumber(demo.tdee.tdee)} kcal'),
             const SizedBox(height: AppSpace.s),
-            Muted('${demo.goal} 목표 칼로리', bottom: 2),
+            Muted('${demo.goal} 목표 칼로리', bottom: AppSpace.xxs),
             BigNumber('${formatNumber(target)} kcal'),
           ] else
             const Muted('몸 정보를 입력하면 하루 소비 칼로리와 목표 칼로리를 계산해 드려요.', bottom: 0),
@@ -195,7 +195,7 @@ class _TodayWorkoutCard extends StatelessWidget {
           else ...[
             Muted(
                 '${today.items.length}종목 · ${today.items.take(2).map((e) => e.name).join(', ')}${today.items.length > 2 ? ' 외' : ''}',
-                bottom: 8),
+                bottom: AppSpace.s),
             // 좁은 폰에서 줄이 넘어가도 그림끼리 붙지 않게
             Wrap(spacing: 6, runSpacing: 6, children: [for (final e in today.items) ExerciseThumb(e.name)]),
           ],

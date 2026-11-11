@@ -19,10 +19,10 @@ class OfflineBanner extends StatelessWidget {
           : Material(
               color: AppColors.text,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+                padding: const EdgeInsets.symmetric(vertical: AppSpace.s, horizontal: AppSpace.mPlus),
                 child: Row(children: [
                   const Icon(Icons.wifi_off, size: 16, color: Colors.white),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpace.s),
                   Expanded(
                     child: WordText('인터넷 연결을 확인해 주세요. 연결되면 자동으로 다시 불러와요.',
                         style: AppText.small.copyWith(color: Colors.white)),
@@ -44,7 +44,7 @@ class FailureView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24),
+      padding: const EdgeInsets.symmetric(vertical: AppSpace.xl),
       child: Column(children: [
         const Icon(Icons.error_outline, size: 44, color: AppColors.warning),
         const SizedBox(height: AppSpace.sPlus),

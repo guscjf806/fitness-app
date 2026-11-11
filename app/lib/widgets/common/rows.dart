@@ -63,7 +63,7 @@ class LineRow extends StatelessWidget {
       child: Container(
         // 글자 한 줄이어도 누르는 자리가 48px 이상 되게 (디자인 리뷰 11/04 #5)
         constraints: const BoxConstraints(minHeight: 48),
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: AppSpace.m),
         decoration: const BoxDecoration(
             border: Border(bottom: BorderSide(color: AppColors.line))),
         child: Row(
@@ -75,7 +75,7 @@ class LineRow extends StatelessWidget {
             ),
             if (right != null && !below) ...[const SizedBox(width: AppSpace.sPlus), right!],
             if (showArrow) ...[
-              const SizedBox(width: 4),
+              const SizedBox(width: AppSpace.xs),
               const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
             ],
           ],
@@ -132,7 +132,7 @@ class ProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: AppSpace.s),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AppRadius.small),
           child: LinearProgressIndicator(

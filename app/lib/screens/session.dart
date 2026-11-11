@@ -255,7 +255,7 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
           ],
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Muted('${index + 1} / ${session.items.length}', bottom: 2),
+              Muted('${index + 1} / ${session.items.length}', bottom: AppSpace.xxs),
               WordText(ex.name, style: AppText.h1),
             ]),
           ),
@@ -375,7 +375,7 @@ class _SetRow extends StatelessWidget {
             ])
           : Row(children: [
               SizedBox(width: scaler.scale(48), child: label),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpace.s),
               ...fields,
               const SizedBox(width: AppSpace.xsPlus),
               check,
@@ -424,7 +424,7 @@ class _NumCellState extends State<_NumCell> {
             suffixText: widget.suffix,
             hintText: widget.suffix,
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: AppSpace.xs, vertical: 14)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: AppSpace.xs, vertical: AppSpace.mPlus)),
         onChanged: widget.onChanged,
       );
 }

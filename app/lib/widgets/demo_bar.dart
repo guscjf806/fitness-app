@@ -23,7 +23,7 @@ class DemoBar extends StatelessWidget {
       child: ListenableBuilder(
         listenable: demo,
         builder: (context, _) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: AppSpace.s, horizontal: AppSpace.m),
           child: Wrap(
             spacing: 6,
             runSpacing: 6,

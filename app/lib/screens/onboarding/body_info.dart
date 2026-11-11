@@ -101,7 +101,7 @@ class _OptionalField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: AppSpace.m),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(
           child: NumField(
@@ -112,7 +112,7 @@ class _OptionalField extends StatelessWidget {
               error: unknown ? null : error,
               onChanged: onChanged),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpace.s),
         SelectChip('잘 모르겠음', selected: unknown, onSelected: (_) => onUnknown()),
       ]),
     );

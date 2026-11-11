@@ -236,7 +236,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
                 if (context.mounted) toast(context, '초대 코드를 지웠어요');
               }),
             ]),
-            Muted('1회용 · ${c.daysLeft}일 남음', bottom: 2),
+            Muted('1회용 · ${c.daysLeft}일 남음', bottom: AppSpace.xxs),
             Row(children: [
               Expanded(child: BigNumber(c.code)),
               // 손으로 옮겨 적지 않게 복사 버튼

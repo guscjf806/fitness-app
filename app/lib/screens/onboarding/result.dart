@@ -18,7 +18,7 @@ class ResultScreen extends StatelessWidget {
     return AppPage(title: '내 칼로리', children: [
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Muted('하루에 쓰는 칼로리', bottom: 2),
+          const Muted('하루에 쓰는 칼로리', bottom: AppSpace.xxs),
           BigNumber('${formatNumber(r.tdee)} kcal'),
           if (hasMuscle) const Muted('근육량은 AI가 식단·운동 루틴을 짤 때 참고해요', bottom: 0),
           // 영어 공식 이름은 궁금한 사람만 펼쳐 보게 접어 둔다 (리뷰 10/29 #4)
@@ -43,11 +43,11 @@ class ResultScreen extends StatelessWidget {
       ),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Muted('${demo.goal} 목표 칼로리', bottom: 2),
+          Muted('${demo.goal} 목표 칼로리', bottom: AppSpace.xxs),
           BigNumber('${formatNumber(r.target)} kcal'),
           if (r.teen && demo.goal == '감량')
             const Muted('성장기라 감량 폭을 줄여서(−10%) 계산했어요.', bottom: 0),
-          if (r.clampedToFloor) WarningBox('너무 낮은 칼로리는 위험해서 최소 ${formatNumber(r.floor)} kcal로 맞췄어요.', top: 8),
+          if (r.clampedToFloor) WarningBox('너무 낮은 칼로리는 위험해서 최소 ${formatNumber(r.floor)} kcal로 맞췄어요.', top: AppSpace.s),
         ]),
       ),
       const Disclaimer(text: '의료 조언이 아닙니다. 건강 상태에 따라 전문가와 상의하세요.'),

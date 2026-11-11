@@ -37,7 +37,7 @@ class _MealTabState extends State<MealTab> {
     return TabBody(children: [
       const H1('식단'),
       DayChips(labels: dayLabels, selected: day, today: 0, onSelect: (i) => setState(() => day = i)),
-      const Muted("g(그램) 수와 칼로리는 AI가 추정한 값이에요. 같은 음식이 없으면 '없으면 →' 뒤의 음식으로 바꿔 드세요.", bottom: 10),
+      const Muted("g(그램) 수와 칼로리는 AI가 추정한 값이에요. 같은 음식이 없으면 '없으면 →' 뒤의 음식으로 바꿔 드세요.", bottom: AppSpace.sPlus),
       for (final m in meals) _MealCard(m, canCheck: day == 0),
       LineRow(
         left: const Text('합계', style: AppText.bodyStrong),
@@ -92,7 +92,7 @@ class _MealCard extends StatelessWidget {
                 ])),
                 // 장 볼 때 보는 정보라 50대 이상도 읽기 쉽게 본문 크기로 (리뷰 11/06 #5, 사용자 선택 14px)
                 Padding(
-                  padding: const EdgeInsets.only(top: 2),
+                  padding: const EdgeInsets.only(top: AppSpace.xxs),
                   child: WordText('없으면 → ${f.altName} ${f.altGrams}g', style: AppText.body.copyWith(color: AppColors.textSub)),
                 ),
               ]),

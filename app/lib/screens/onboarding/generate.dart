@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../routes.dart';
 import '../../state/demo_state.dart';
+import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/failure.dart';
 
@@ -69,7 +70,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
       Seg(options: const ['일주일', '한 달'], value: demo.period, onChanged: (v) => demo.update(() => demo.period = v)),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Muted('반영되는 정보', bottom: 2),
+          const Muted('반영되는 정보', bottom: AppSpace.xxs),
           WordText('목표 칼로리 ${formatNumber(r.target)} kcal · 현재 강도 ${demo.currentIntensity} · '
               '원하는 강도 ${demo.desiredIntensity} · ${demo.conditionText}'),
           if (demo.allergies.isNotEmpty || demo.allergyNote.isNotEmpty)

@@ -39,7 +39,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
     return [
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Muted('현재 연속 기록', bottom: 2),
+          const Muted('현재 연속 기록', bottom: AppSpace.xxs),
           BigNumber('${demo.streak}일'),
           Muted('최장 기록 $longest일${demo.restMode ? ' · 쉬기 모드 중이라 기록이 유지돼요' : ''}', bottom: AppSpace.sPlus),
           // 제목처럼 줄 위에 (디자인 리뷰 11/11 #3)
@@ -106,7 +106,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
       ),
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Muted('이번 주 운동 완료율', bottom: 2),
+          const Muted('이번 주 운동 완료율', bottom: AppSpace.xxs),
           Text.rich(TextSpan(children: [
             TextSpan(text: '$done', style: AppText.number),
             TextSpan(text: ' / ${demo.workoutDaysThisWeek}일 완료'),
@@ -200,7 +200,7 @@ class _BadgeRow extends StatelessWidget {
           decoration: BoxDecoration(shape: BoxShape.circle, color: earned ? AppColors.primary : AppColors.track),
           child: Icon(earned ? Icons.check : Icons.lock_outline, size: 20, color: earned ? Colors.white : AppColors.textSub),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpace.m),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(name, style: AppText.bodyStrong),

@@ -82,7 +82,7 @@ class _RestTimerState extends State<_RestTimer> {
           child: Row(children: [
             for (var i = 0; i < presets.length; i++)
               Padding(
-                padding: const EdgeInsets.only(right: 6),
+                padding: const EdgeInsets.only(right: AppSpace.xsPlus),
                 child: SelectChip(i == 0 ? '추천 ${_mmss(presets[i])}' : _mmss(presets[i]),
                     selected: total == presets[i], onSelected: (_) => _set(presets[i])),
               ),

@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
     // 각 회사 규칙대로 글자 왼쪽에 공식 로고를 20px로 둔다 (디자인 리뷰 11/03 #4)
     Widget social(String label, Color bg, Color fg, {bool outlined = false, String? logo, OAuthProvider? provider}) =>
         Padding(
-          padding: const EdgeInsets.only(top: 12),
+          padding: const EdgeInsets.only(top: AppSpace.m),
           child: FilledButton(
             onPressed: connecting != null ? null : () => _socialLogin(context, provider),
             style: FilledButton.styleFrom(

@@ -81,7 +81,7 @@ class Seg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 6, bottom: 12),
+      padding: const EdgeInsets.only(top: AppSpace.xsPlus, bottom: AppSpace.m),
       child: Row(
         children: [
           // 버튼 사이만 띄워서 양 끝이 카드·입력 칸과 줄이 맞게 (디자인 리뷰 11/06 #7)
@@ -183,14 +183,14 @@ class DayChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: AppSpace.m),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
             for (var i = 0; i < labels.length; i++)
               Padding(
-                padding: const EdgeInsets.only(right: 6),
+                padding: const EdgeInsets.only(right: AppSpace.xsPlus),
                 child: ChoiceChip(
                   label: _label(i),
                   selected: i == selected,

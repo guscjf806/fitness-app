@@ -125,14 +125,14 @@ class LogDetailScreen extends StatelessWidget {
                 const Center(child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 44)),
                 Positioned(
                   left: 12,
-                  bottom: 10,
+                  bottom: AppSpace.sPlus,
                   child: Text(log.videos[j].name, style: AppText.small.copyWith(color: Colors.white)),
                 ),
               ]),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
+            padding: const EdgeInsets.symmetric(vertical: AppSpace.xsPlus),
             child: Row(children: [
               // '서버 보관 만료' 대신 쉬운 말로, 3일 이하면 경고색 (리뷰 11/02 #7)
               Expanded(

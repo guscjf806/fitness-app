@@ -204,7 +204,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       Center(child: ExerciseFigureView(e.id, size: 200, radius: AppRadius.large)),
       // 내 아픈 부위와 겹치면 그림 바로 아래에 크게 경고한다 (리뷰 10/27 #1)
       if (painHit.isNotEmpty) WarningBox(painPhrase(painHit)),
-      const SizedBox(height: 14),
+      const SizedBox(height: AppSpace.mPlus),
       Wrap(spacing: 6, runSpacing: 6, children: [
         for (final t in [e.part, e.equipment, _placeLabel[e.place]!, _levelLabel[e.level]!]) InfoTag(t),
         if (e.impact == 'high') const InfoTag('점프·고충격', caution: true),
@@ -223,7 +223,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       AppCard(
         accent: true,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Muted('주의할 점', bottom: 2),
+          const Muted('주의할 점', bottom: AppSpace.xxs),
           WordText(e.caution),
         ]),
       ),

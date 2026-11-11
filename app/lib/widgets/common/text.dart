@@ -26,7 +26,7 @@ class H1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 6, bottom: 8),
+        padding: const EdgeInsets.only(top: AppSpace.xsPlus, bottom: AppSpace.s),
         child: WordText(text, style: AppText.h1),
       );
 }
@@ -47,7 +47,7 @@ class H2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.only(top: top, bottom: 8),
+        padding: EdgeInsets.only(top: top, bottom: AppSpace.s),
         child: WordText(text, style: AppText.title),
       );
 }
@@ -88,7 +88,7 @@ class FieldLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.only(top: AppSpace.xs),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(text, style: AppText.bodyStrong),
           if (sub != null) Muted(sub!, bottom: 0),
@@ -130,13 +130,13 @@ class BulletList extends StatelessWidget {
   Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         for (var i = 0; i < items.length; i++)
           Padding(
-            padding: EdgeInsets.only(top: i == 0 ? 0 : 6),
+            padding: EdgeInsets.only(top: i == 0 ? 0 : AppSpace.xsPlus),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const Padding(
-                padding: EdgeInsets.only(top: 2),
+                padding: EdgeInsets.only(top: AppSpace.xxs),
                 child: Icon(Icons.check_circle, size: 18, color: AppColors.primary),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpace.s),
               Expanded(child: Text(keepWords(items[i]), semanticsLabel: items[i])),
             ]),
           ),
@@ -149,7 +149,7 @@ class Disclaimer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      Padding(padding: const EdgeInsets.only(top: 10), child: Muted(text));
+      Padding(padding: const EdgeInsets.only(top: AppSpace.sPlus), child: Muted(text));
 }
 
 String formatNumber(int n) => n.toString().replaceAllMapped(

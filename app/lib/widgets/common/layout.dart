@@ -73,7 +73,7 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: AppSpace.sPlus),
       child: Material(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.card),
@@ -87,7 +87,7 @@ class AppCard extends StatelessWidget {
                     border: Border(
                         left: BorderSide(color: AppColors.primary, width: 4)))
                 : null,
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(AppSpace.mPlus),
             child: showArrow
                 ? Row(children: [
                     Expanded(child: child),

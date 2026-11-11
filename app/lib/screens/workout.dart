@@ -145,7 +145,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                   onTap: () => Navigator.pushNamed(context, Routes.records),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     const Text('오늘 운동 완료', style: AppText.bodyStrong),
-                    Muted('연속 ${demo.streak}일째예요', bottom: 2),
+                    Muted('연속 ${demo.streak}일째예요', bottom: AppSpace.xxs),
                     const MoreLink('연속 기록 보기'),
                     Align(
                       alignment: Alignment.centerRight,
@@ -202,7 +202,7 @@ class _ExerciseRow extends StatelessWidget {
           onTap: onCheck,
           child: SizedBox(width: 48, height: 48, child: Center(child: CheckCircle(checked))),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppSpace.xs),
         ExerciseThumb(name),
         const SizedBox(width: AppSpace.sPlus),
         Expanded(

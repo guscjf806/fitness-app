@@ -18,7 +18,7 @@ class FoodBodyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     void toggle(List<String> list, String v) => demo.update(() => list.contains(v) ? list.remove(v) : list.add(v));
     Widget chips(List<String> options, List<String> selected, {String? noneLabel}) => Padding(
-          padding: const EdgeInsets.only(top: 6, bottom: 12),
+          padding: const EdgeInsets.only(top: AppSpace.xsPlus, bottom: AppSpace.m),
           child: Wrap(spacing: 6, runSpacing: 6, children: [
             if (noneLabel != null)
               SelectChip(noneLabel, selected: selected.isEmpty, onSelected: (_) => demo.update(selected.clear)),
@@ -47,7 +47,7 @@ class FoodBodyScreen extends StatelessWidget {
       chips(painOptions, demo.painAreas, noneLabel: '없음'),
       if (demo.painAreas.isNotEmpty)
         const Padding(
-          padding: EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.only(bottom: AppSpace.m),
           child: WarningBox('통증이 심하거나 질환이 있다면 운동 전에 의사와 먼저 상담하세요.', top: 0),
         ),
       const FieldLabel('일주일에 운동할 수 있는 날'),
