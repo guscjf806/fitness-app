@@ -99,4 +99,25 @@ void main() {
     expect(findTextContaining('연결된 회원이 없어요'), findsOneWidget);
     expect(findText('이번 주 미션'), findsNothing);
   });
+  testWidgets('리뷰 11/11 #5 계정 삭제는 무엇이 지워지는지 확인한 뒤 로그아웃한다', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    demo.switchRole('user');
+    tester.view.physicalSize = const Size(1200, 3600);
+    tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    await tester.pumpWidget(const FitnessApp());
+    await tester.pumpAndSettle();
+    demo.update(() => demo.tab = 4);
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(findText('계정 삭제'), 200,
+        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first);
+    await tester.pumpAndSettle();
+    await tester.tap(findText('계정 삭제'));
+    await tester.pumpAndSettle();
+    expect(findTextContaining('되돌릴 수 없어요'), findsOneWidget);
+    await tester.tap(findText('지우기'));
+    await tester.pump(const Duration(seconds: 1));
+    expect(demo.isGuest, isTrue);
+  });
 }

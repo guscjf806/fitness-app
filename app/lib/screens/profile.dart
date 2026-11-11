@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../config.dart';
 import '../routes.dart';
+import '../services/auth_service.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
@@ -141,7 +142,24 @@ class ProfileTab extends StatelessWidget {
       ),
       LineRow(
         left: const Text('계정 삭제', style: TextStyle(color: AppColors.warningText)),
-        onTap: () => toast(context, '계정 삭제 확인 화면이 열려요 (데모)'),
+        // 스토어 심사에 필요한 앱 안 계정 삭제. 무엇이 지워지는지 먼저 알린다 (리뷰 11/11 #5)
+        onTap: () async {
+          final ok = await confirmDialog(context,
+              title: '계정을 지울까요?',
+              body: '로그인 계정(카카오·구글 고유번호, 닉네임, 이메일)과 이 폰에 저장된 정보가 지워지고, 되돌릴 수 없어요.',
+              keepLabel: '그만두기',
+              okLabel: '지우기',
+              danger: true);
+          if (!ok || !context.mounted) return;
+          final messenger = ScaffoldMessenger.of(context);
+          if (!await AuthService.deleteAccount()) {
+            toastOn(messenger, '계정을 지우지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요');
+            return;
+          }
+          clearLogDrafts();
+          demo.logout();
+          toastOn(messenger, AuthService.enabled ? '계정을 지웠어요' : '계정을 지웠어요 (데모)');
+        },
       ),
     ]);
   }

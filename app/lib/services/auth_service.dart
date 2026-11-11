@@ -170,6 +170,14 @@ class AuthService {
     return deleted;
   }
 
+  /// 내 정보 > 계정 삭제. 서버 계정을 지운 뒤 로그아웃한다. 목업 로그인이면 지울 서버 계정이 없다 (리뷰 11/11 #5)
+  static Future<bool> deleteAccount() async {
+    if (!enabled || _user == null) return true;
+    final deleted = await _deleteOnServer();
+    if (deleted) await signOut();
+    return deleted;
+  }
+
   /// 서버의 delete-account 함수를 부른다. 실패했다는 사실만 개발용 로그에 남긴다 (개인정보 없이)
   static Future<bool> _deleteOnServer() async {
     try {
