@@ -79,11 +79,12 @@ class LoadingView extends StatelessWidget {
       ]);
 }
 
-/// 빨간 큰 경고 상자 (디자인 리뷰 10/28 #3)
+/// 빨간 큰 경고 상자 (디자인 리뷰 10/28 #3). [caution]이면 덜 급한 주황 '주의' 상자
 class WarningBox extends StatelessWidget {
-  const WarningBox(this.text, {super.key, this.top = 12});
+  const WarningBox(this.text, {super.key, this.top = 12, this.caution = false});
   final String text;
   final double top;
+  final bool caution;
 
   @override
   Widget build(BuildContext context) {
@@ -91,16 +92,17 @@ class WarningBox extends StatelessWidget {
       margin: EdgeInsets.only(top: top),
       padding: const EdgeInsets.all(AppSpace.mPlus),
       decoration: BoxDecoration(
-        color: AppColors.warningSoft,
+        color: caution ? AppColors.cautionSoft : AppColors.warningSoft,
         borderRadius: BorderRadius.circular(AppRadius.box),
-        border: Border.all(color: AppColors.warning),
+        border: Border.all(color: caution ? AppColors.caution : AppColors.warning),
       ),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 26),
+        Icon(caution ? Icons.info_outline_rounded : Icons.warning_amber_rounded,
+            color: caution ? AppColors.caution : AppColors.warning, size: 26),
         const SizedBox(width: AppSpace.sPlus),
         Expanded(
           child: Text(text,
-              style: AppText.warning.copyWith(color: AppColors.warningText)),
+              style: AppText.warning.copyWith(color: caution ? AppColors.caution : AppColors.warningText)),
         ),
       ]),
     );
@@ -130,7 +132,8 @@ class PlanOutdatedBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!demo.planOutdated || demo.isGuest) return const SizedBox.shrink();
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      const WarningBox('조건이 바뀌었어요. 새로 만들어 주세요', top: 0),
+      // 아픈 부위 경고보다 덜 무섭게 주황 '주의'로 (사용자 요청 2026-11-11)
+      const WarningBox('조건이 바뀌었어요. 새로 만들어 주세요', top: 0, caution: true),
       AppButton('새로 만들기', kind: ButtonKind.soft, top: AppSpace.s, onPressed: () {
         demo.update(() => demo.planOutdated = false);
         toast(context, '식단·루틴을 새로 만들었어요(데모, 무료 횟수 그대로)');
