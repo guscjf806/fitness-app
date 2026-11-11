@@ -154,10 +154,11 @@ class _ConditionRows extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      LineRow(left: const Text('몸 정보 수정'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.body, arguments: 'edit')),
+      // 큰 글씨에서 낱자가 다음 줄로 넘어가지 않게 (디자인 리뷰 11/11 #1)
+      LineRow(left: const WordText('몸 정보 수정'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.body, arguments: 'edit')),
       LineRow(
         left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('운동 장소·장비 수정'),
+          const WordText('운동 장소·장비 수정'),
           Muted(demo.conditionText, bottom: 0),
         ]),
         showArrow: true,
@@ -165,7 +166,7 @@ class _ConditionRows extends StatelessWidget {
       ),
       LineRow(
         left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('못 먹는 음식·아픈 부위 수정'),
+          const WordText('못 먹는 음식·아픈 부위 수정'),
           Muted(
               [
                 demo.allergies.isEmpty && demo.allergyNote.isEmpty ? '못 먹는 음식 없음' : '못 먹는 음식 ${demo.allergies.length + (demo.allergyNote.isEmpty ? 0 : 1)}개',
