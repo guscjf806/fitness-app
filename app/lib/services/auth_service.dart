@@ -149,11 +149,22 @@ class AuthService {
     toast(nav.context, '로그인이 끊겼어요. 다시 로그인해 주세요');
   }
 
+  /// 방금 만든 계정인지. 가입 시각과 마지막 로그인 시각이 5분 안이면 새 계정으로 본다.
+  /// 이미 쓰던 계정은 동의를 거절해도 지우지 않는다 (리뷰 11/11 #1)
+  static bool get isNewAccount {
+    final u = _user;
+    if (u == null || u.lastSignInAt == null) return false;
+    final created = DateTime.tryParse(u.createdAt);
+    final last = DateTime.tryParse(u.lastSignInAt!);
+    if (created == null || last == null) return false;
+    return last.difference(created).inMinutes.abs() < 5;
+  }
+
   /// 동의를 거절하면 서버에 방금 만든 계정을 지우고 로그아웃한다 (결정 d1105-2).
   /// 지우기가 실패해도 로그아웃은 한다
   static Future<void> cancelSignIn() async {
     if (!enabled) return;
-    if (_user != null) {
+    if (_user != null && isNewAccount) {
       await Supabase.instance.client.functions.invoke('delete-account').then((_) {}, onError: (_) {});
     }
     await signOut();

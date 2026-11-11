@@ -92,7 +92,7 @@ void main() {
     expect(demo.entered, isTrue);
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
-    expect(findText('나가면 이전 화면으로 돌아가고, 방금 만든 계정은 지워져요.'), findsOneWidget);
+    expect(findText('나가면 이전 화면으로 돌아가고 로그인이 취소돼요. 계정은 그대로 남아요.'), findsOneWidget);
     await tapText(tester, '로그인 취소');
     expect(demo.isGuest, isTrue);
     expect(demo.entered, isFalse);
