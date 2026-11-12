@@ -30,15 +30,6 @@ class ProfileTab extends StatelessWidget {
           ]),
         ),
         const _ConditionRows(),
-      // 조건을 고친 뒤 '나중에'를 눌렀거나 횟수를 다 썼을 때 다시 만들 곳 (리뷰 11/11 #2)
-      LineRow(
-        left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const WordText('식단·루틴 새로 만들기'),
-          Muted('이번 달 AI ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 사용', bottom: 0),
-        ]),
-        showArrow: true,
-        onTap: () => openPlanMaker(context),
-      ),
         const Muted('둘러보며 입력한 정보는 이 기기에만 저장돼요.', bottom: 0),
       ]);
     }
@@ -65,6 +56,16 @@ class ProfileTab extends StatelessWidget {
       // 묶음 제목으로 나눠 찾기 쉽게 (결정 dd1029-profile-head)
       const H2('내 몸·조건'),
       const _ConditionRows(),
+      // 로그인한 회원 화면에 둔다. 둘러보기는 위 로그인 카드가 같은 역할 (디자인 리뷰 11/12 #1)
+      // 조건을 고친 뒤 '나중에'를 눌렀거나 횟수를 다 썼을 때 다시 만들 곳 (리뷰 11/11 #2)
+      LineRow(
+        left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const WordText('식단·루틴 새로 만들기'),
+          Muted('이번 달 AI ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 사용', bottom: 0),
+        ]),
+        showArrow: true,
+        onTap: () => openPlanMaker(context),
+      ),
       ],
       const H2('알림'),
       SwitchRow(

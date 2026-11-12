@@ -120,4 +120,19 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     expect(demo.isGuest, isTrue);
   });
+  testWidgets('디자인 리뷰 11/12 #1 로그인한 회원 내 정보에 식단·루틴 새로 만들기 줄이 있다', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    demo.switchRole('user');
+    tester.view.physicalSize = const Size(1200, 3600);
+    tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    await tester.pumpWidget(const FitnessApp());
+    await tester.pumpAndSettle();
+    demo.update(() => demo.tab = 4);
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(findText('식단·루틴 새로 만들기'), 200,
+        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first);
+    expect(findText('식단·루틴 새로 만들기'), findsOneWidget);
+  });
 }
