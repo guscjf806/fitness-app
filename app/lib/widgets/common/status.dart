@@ -133,7 +133,8 @@ class PlanOutdatedBanner extends StatelessWidget {
     if (!demo.planOutdated || demo.isGuest) return const SizedBox.shrink();
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       // 아픈 부위 경고보다 덜 무섭게 주황 '주의'로 (사용자 요청 2026-11-11)
-      const WarningBox('조건이 바뀌었어요. 새로 만들어 주세요', top: 0, caution: true),
+      // 무엇이 바뀌었는지와 무료 횟수를 쓰지 않는다는 것까지 알린다 (리뷰 11/12 #4)
+      const WarningBox('못 먹는 음식·아픈 부위가 바뀌었어요. 안전을 위해 새로 만들어 주세요. 무료 횟수는 쓰지 않아요.', top: 0, caution: true),
       AppButton('새로 만들기', kind: ButtonKind.soft, top: AppSpace.s, onPressed: () {
         demo.update(() => demo.planOutdated = false);
         toast(context, '식단·루틴을 새로 만들었어요(데모, 무료 횟수 그대로)');

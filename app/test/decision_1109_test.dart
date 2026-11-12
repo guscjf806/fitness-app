@@ -75,7 +75,7 @@ void main() {
     expect(demo.planOutdated, isTrue);
     demo.update(() => demo.tab = 1);
     await tester.pumpAndSettle();
-    expect(findText('조건이 바뀌었어요. 새로 만들어 주세요'), findsOneWidget);
+    expect(findTextContaining('못 먹는 음식·아픈 부위가 바뀌었어요'), findsOneWidget);
     await tester.tap(findText('새로 만들기'));
     await tester.pumpAndSettle();
     expect(demo.planOutdated, isFalse);
