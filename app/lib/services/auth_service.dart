@@ -216,7 +216,10 @@ class AuthService {
       demo.role = 'user';
       demo.entered = true;
       // 이 폰에서 이미 동의한 계정이면 다시 묻지 않는다 (결정 d1111-3)
-      if (demo.consentedAccounts.contains(user.id)) demo.consented = true;
+      if (demo.consentedAccounts.contains(user.id)) {
+        demo.consented = true;
+        demo.marketingOptIn = demo.marketingAccounts.contains(user.id);
+      }
       demo.lastLoginProvider = provider ?? demo.lastLoginProvider;
     });
     final name = _nickname(user);

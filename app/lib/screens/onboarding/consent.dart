@@ -98,6 +98,11 @@ class _ConsentScreenState extends State<ConsentScreen> {
                 // 같은 계정으로 다시 로그인하면 묻지 않게 기억한다 (결정 d1111-3)
                 final id = AuthService.userId;
                 if (id != null) demo.consentedAccounts.add(id);
+                // 선택 동의도 계정별로 남긴다 (리뷰 11/12 #3)
+                demo.marketingOptIn = agreed.contains(items.indexWhere((e) => !e.$2));
+                if (id != null) {
+                  demo.marketingOptIn ? demo.marketingAccounts.add(id) : demo.marketingAccounts.remove(id);
+                }
               });
               continueAfterLogin(context);
             }
