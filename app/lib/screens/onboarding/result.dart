@@ -64,7 +64,8 @@ void openPlanMaker(BuildContext context) {
   if (demo.loggedIn && !demo.consented) {
     demo.update(() => demo.continueToGenerate = true);
     Navigator.pushNamed(context, Routes.consent);
-  } else if (demo.loggedIn && demo.quotaExhausted) {
+  // 못 먹는 음식·아픈 부위가 바뀐 뒤 새로 만드는 건 안전 문제라 횟수를 따지지 않는다 (리뷰 11/12 #5, 결정 d1107-1)
+  } else if (demo.loggedIn && demo.quotaExhausted && !demo.planOutdated) {
     showQuotaExhausted(context);
   } else if (demo.loggedIn) {
     Navigator.pushNamed(context, Routes.generate);

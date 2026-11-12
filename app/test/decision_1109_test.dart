@@ -78,7 +78,7 @@ void main() {
     expect(findTextContaining('못 먹는 음식·아픈 부위가 바뀌었어요'), findsOneWidget);
     await tester.tap(findText('새로 만들기'));
     await tester.pumpAndSettle();
-    expect(demo.planOutdated, isFalse);
+    expect(findText('기간 선택'), findsWidgets, reason: '리뷰 11/12 #5 생성 화면으로 간다');
   });
   testWidgets('결정 d1111-2 AI 답변 화면에서 추정 칼로리를 고친다', (tester) async {
     demo.mealPosts.insert(0, const MealPost('오늘 점심', '비빔밥', '좋아요', isToday: true, kcal: 620));
