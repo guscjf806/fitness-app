@@ -339,23 +339,33 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
 
   Future<void> _editKcal(int index) async {
     var text = '${demo.mealPosts[index].kcal}';
-    final save = await showDialog<bool>(
+    int? valid() {
+      final v = int.tryParse(text.trim());
+      return v != null && v >= 1 && v <= 5000 ? v : null;
+    }
+
+    // 잘못 적으면 창 안에서 알려 주고, 맞는 숫자일 때만 저장을 누를 수 있다 (리뷰 11/12 #6)
+    final value = await showDialog<int>(
       context: context,
-      builder: (dialog) => AlertDialog(
-        title: const Text('칼로리 고치기'),
-        content: NumField(label: '칼로리', suffix: 'kcal', value: text, decimal: false, onChanged: (v) => text = v),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialog, false), child: const Text('그만두기')),
-          TextButton(onPressed: () => Navigator.pop(dialog, true), child: const Text('저장')),
-        ],
+      builder: (dialog) => StatefulBuilder(
+        builder: (dialog, setInner) => AlertDialog(
+          title: const Text('칼로리 고치기'),
+          content: NumField(
+            label: '칼로리',
+            suffix: 'kcal',
+            value: text,
+            decimal: false,
+            error: valid() == null ? '1에서 5,000 사이의 숫자로 적어 주세요' : null,
+            onChanged: (v) => setInner(() => text = v),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialog), child: const Text('그만두기')),
+            TextButton(onPressed: valid() == null ? null : () => Navigator.pop(dialog, valid()), child: const Text('저장')),
+          ],
+        ),
       ),
     );
-    if (save != true || !mounted) return;
-    final value = int.tryParse(text.trim());
-    if (value == null || value < 1 || value > 5000) {
-      toast(context, '1에서 5,000 사이의 숫자로 적어 주세요');
-      return;
-    }
+    if (value == null || !mounted) return;
     demo.update(() => demo.mealPosts[index] = demo.mealPosts[index].withKcal(value));
     toast(context, '$value kcal로 고쳤어요. 홈 칼로리에도 반영돼요');
   }
