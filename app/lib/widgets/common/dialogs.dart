@@ -31,6 +31,21 @@ void toastOn(ScaffoldMessengerState messenger, String message, {String? actionLa
     ));
 }
 
+/// 서버를 기다리는 동안 가운데에 로딩을 띄워 두 번 누르거나 화면을 떠나지 않게 한다 (디자인 리뷰 11/12 #4)
+Future<T> runWithLoading<T>(BuildContext context, Future<T> Function() task) async {
+  final navigator = Navigator.of(context, rootNavigator: true);
+  showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const PopScope(canPop: false, child: Center(child: CircularProgressIndicator())),
+  );
+  try {
+    return await task();
+  } finally {
+    navigator.pop();
+  }
+}
+
 /// 알림 띠를 띄워 두는 시간
 Duration toastDuration(String message, {bool hasAction = false}) {
   final seconds = (hasAction ? 6 : 4) + message.length ~/ 25;
