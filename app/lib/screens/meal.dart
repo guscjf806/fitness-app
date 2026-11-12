@@ -111,7 +111,11 @@ class _MealCard extends StatelessWidget {
                   // 올린 끼니는 먹은 것으로 보이고 AI가 계산한 칼로리를 같이 보여 준다 (리뷰 11/11 #4)
                   CheckCircle(demo.eatenMeals.contains(meal.title) || demo.postedKcal(meal.title) != null),
                   const SizedBox(width: AppSpace.s),
-                  Text(demo.postedKcal(meal.title) == null ? '먹었어요' : '올림 · 약 ${demo.postedKcal(meal.title)} kcal'),
+                  Text(demo.postedKcal(meal.title) == null
+                      ? '먹었어요'
+                      : demo.postedKcalEdited(meal.title)
+                          ? '올림 · ${demo.postedKcal(meal.title)} kcal (고친 값)'
+                          : '올림 · 약 ${demo.postedKcal(meal.title)} kcal'),
                 ]),
               ),
             ),
@@ -372,7 +376,8 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
       if (!waiting && !failed && post.kcal != null) ...[
         LineRow(
           onTap: () => _editKcal(index),
-          left: WordText('약 ${post.kcal} kcal로 계산했어요(AI 추정)'),
+          // 고친 뒤에는 AI 값처럼 보이지 않게 (리뷰 11/12 #1)
+          left: WordText(post.kcalEdited ? '${post.kcal} kcal (내가 고친 값)' : '약 ${post.kcal} kcal로 계산했어요(AI 추정)'),
           right: Text('고치기', style: AppText.bodyStrong.copyWith(color: AppColors.primaryDark)),
         ),
         const Muted('홈의 오늘 먹은 칼로리에 더해져요.', top: AppSpace.xs),

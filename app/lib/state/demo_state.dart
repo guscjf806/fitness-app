@@ -226,6 +226,9 @@ class DemoState extends ChangeNotifier {
     return sum;
   }
 
+  /// 오늘 그 끼니에 올린 식단 중 회원이 칼로리를 고친 것이 있는지 (리뷰 11/12 #1)
+  bool postedKcalEdited(String slot) => mealPosts.any((p) => p.isToday && p.date == '오늘 $slot' && p.kcalEdited);
+
   /// 오늘 그 끼니에 올린 식단의 AI 추정 칼로리 합. 같은 끼니를 두 번 올리면 더한다. 안 올렸으면 null (리뷰 11/11 #4)
   int? postedKcal(String slot) {
     final posts = mealPosts.where((p) => p.isToday && p.date == '오늘 $slot' && p.kcal != null);

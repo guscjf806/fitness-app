@@ -97,6 +97,7 @@ void main() {
     await tester.tap(findText('저장'));
     await tester.pumpAndSettle();
     expect(demo.mealPosts.first.kcal, 500);
+    expect(findText('500 kcal (내가 고친 값)'), findsOneWidget, reason: '리뷰 11/12 #1');
   });
   test('결정 d1111-3 동의한 계정 목록은 로그아웃해도 남고 다시 불러온다', () async {
     demo.consentedAccounts
