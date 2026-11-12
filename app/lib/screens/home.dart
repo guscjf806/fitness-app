@@ -59,7 +59,9 @@ class HomeTab extends StatelessWidget {
         for (final g in goals)
           LineRow(
             onTap: g.$2 ? null : g.$3,
-            left: Row(children: [CheckCircle(g.$2), const SizedBox(width: AppSpace.sPlus), Text(g.$1)]),
+            // 큰 글씨에서 '완료'와 겹쳐 넘치지 않게 (디자인 리뷰 11/12 #3)
+            rightBelowOnLargeText: true,
+            left: Row(children: [CheckCircle(g.$2), const SizedBox(width: AppSpace.sPlus), Expanded(child: WordText(g.$1))]),
             right: g.$2 ? const Muted('완료', bottom: 0) : null,
             showArrow: !g.$2,
           ),
