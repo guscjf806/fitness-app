@@ -104,7 +104,15 @@ class _MealCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: InkWell(
               borderRadius: BorderRadius.circular(AppRadius.small),
-              onTap: () => demo.update(() => demo.eatenMeals.contains(meal.title) ? demo.eatenMeals.remove(meal.title) : demo.eatenMeals.add(meal.title)),
+              // 올린 끼니는 칼로리를 보고 고칠 수 있는 AI 답변 화면을 연다 (리뷰 11/12 #2)
+              onTap: () {
+                final posted = demo.mealPosts.indexWhere((p) => p.isToday && p.date == '오늘 ${meal.title}');
+                if (posted >= 0) {
+                  Navigator.pushNamed(context, Routes.mealReply, arguments: MealReplyArgs(posted));
+                } else {
+                  demo.update(() => demo.eatenMeals.contains(meal.title) ? demo.eatenMeals.remove(meal.title) : demo.eatenMeals.add(meal.title));
+                }
+              },
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 48),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
