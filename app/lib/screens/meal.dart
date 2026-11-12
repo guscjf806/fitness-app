@@ -364,6 +364,12 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
             decimal: false,
             error: valid() == null ? '1에서 5,000 사이의 숫자로 적어 주세요' : null,
             onChanged: (v) => setInner(() => text = v),
+            // 창을 열면 바로 키보드가 뜨고, 키보드 완료로도 저장된다 (디자인 리뷰 11/12 #5)
+            autofocus: true,
+            onSubmitted: (_) {
+              final v = valid();
+              if (v != null) Navigator.pop(dialog, v);
+            },
           ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(dialog), child: const Text('그만두기')),

@@ -87,7 +87,7 @@ class LineRow extends StatelessWidget {
 
 /// 숫자 입력칸
 class NumField extends StatelessWidget {
-  const NumField({super.key, required this.label, required this.value, required this.onChanged, this.hint, this.error, this.enabled = true, this.decimal = true, this.suffix});
+  const NumField({super.key, required this.label, required this.value, required this.onChanged, this.hint, this.error, this.enabled = true, this.decimal = true, this.suffix, this.autofocus = false, this.onSubmitted});
   final String label;
   final String value;
   final String? hint;
@@ -101,11 +101,17 @@ class NumField extends StatelessWidget {
   final String? suffix;
   final ValueChanged<String> onChanged;
 
+  /// 창이 열리자마자 키보드를 띄울지, 키보드 완료 버튼을 누를 때 할 일 (디자인 리뷰 11/12 #5)
+  final bool autofocus;
+  final ValueChanged<String>? onSubmitted;
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       initialValue: value,
       enabled: enabled,
+      autofocus: autofocus,
+      onFieldSubmitted: onSubmitted,
       keyboardType: decimal ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.number,
       inputFormatters: decimal ? null : [FilteringTextInputFormatter.digitsOnly],
       decoration: InputDecoration(
