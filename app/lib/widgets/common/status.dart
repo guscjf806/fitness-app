@@ -101,7 +101,8 @@ class WarningBox extends StatelessWidget {
             color: caution ? AppColors.caution : AppColors.warning, size: 26),
         const SizedBox(width: AppSpace.sPlus),
         Expanded(
-          child: Text(text,
+          // 큰 글씨에서 낱말 중간에서 끊기지 않게 (디자인 리뷰 11/13 #2)
+          child: WordText(text,
               style: AppText.warning.copyWith(color: caution ? AppColors.caution : AppColors.warningText)),
         ),
       ]),
