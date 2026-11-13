@@ -110,4 +110,13 @@ void main() {
     await demo.load();
     expect(demo.consentedAccounts, contains('account-1'));
   });
+  testWidgets('리뷰 11/13 #3 다시 만들 때 횟수를 알리고 다 만들면 1회 센다', (tester) async {
+    final used = demo.aiUsed;
+    await openEdit(tester, Routes.generate);
+    expect(findTextContaining('무료 횟수 1회를 써요'), findsOneWidget);
+    await tester.tap(findText('식단·운동 루틴 생성하기'));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(demo.aiUsed, used + 1);
+  });
 }

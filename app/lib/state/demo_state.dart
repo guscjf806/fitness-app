@@ -45,6 +45,10 @@ class DemoState extends ChangeNotifier {
   /// 못 먹는 음식·아픈 부위를 고친 뒤 아직 식단·루틴을 새로 만들지 않았는지 (결정 d1111-1)
   bool planOutdated = false;
 
+  /// 이 계정으로 식단·루틴을 한 번이라도 만들었는지. 다시 만들 때부터 횟수를 센다.
+  /// 처음 만들 때도 셀지는 결정 d1113-1을 기다린다 (리뷰 11/13 #3)
+  bool planMade = false;
+
   // S02 몸 정보
   String sex = '남';
   String height = '175';
@@ -318,6 +322,7 @@ class DemoState extends ChangeNotifier {
       ..addAll(initialMealPosts);
     eatenMeals.clear();
     planOutdated = false;
+    planMade = false;
     marketingOptIn = false;
     checked.clear();
     checkedAdded.clear();
@@ -342,6 +347,8 @@ class DemoState extends ChangeNotifier {
     entered = newRole != 'guest';
     // 데모 바로 바꾼 역할은 이미 가입·동의를 마친 계정으로 본다
     if (newRole != 'guest') consented = true;
+    // 데모 계정은 예시 식단·루틴을 이미 만든 것으로 본다
+    planMade = newRole != 'guest';
     tab = 0;
     continueToGenerate = false;
     notifyListeners();
@@ -358,6 +365,7 @@ class DemoState extends ChangeNotifier {
     await p.setBool('entered', entered);
     await p.setBool('consented', consented);
     await p.setBool('planOutdated', planOutdated);
+    await p.setBool('planMade', planMade);
     await p.setStringList('consentedAccounts', consentedAccounts.toList());
     await p.setBool('marketingOptIn', marketingOptIn);
     await p.setStringList('marketingAccounts', marketingAccounts.toList());
@@ -385,6 +393,7 @@ class DemoState extends ChangeNotifier {
     entered = p.getBool('entered') ?? entered;
     consented = p.getBool('consented') ?? consented;
     planOutdated = p.getBool('planOutdated') ?? planOutdated;
+    planMade = p.getBool('planMade') ?? planMade;
     consentedAccounts
       ..clear()
       ..addAll(p.getStringList('consentedAccounts') ?? const []);
