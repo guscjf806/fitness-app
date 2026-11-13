@@ -110,7 +110,7 @@ class _ExercisePickerScreenState extends State<ExercisePickerScreen> {
           Muted('운동 ${list.length}개', bottom: AppSpace.xs),
         ]),
         if (list.isEmpty)
-          _EmptyExercises(favoriteOnly && demo.favorites.isEmpty ? '찜한 운동이 없어요. 하트를 눌러 모아 보세요' : '조건에 맞는 운동이 없어요',
+          _EmptyExercises(favoriteOnly && demo.favorites.isEmpty ? '즐겨찾기한 운동이 없어요. 하트를 눌러 모아 보세요' : '조건에 맞는 운동이 없어요',
               onReset: () => setState(() {
                     query = '';
                     part = '전체';
