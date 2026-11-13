@@ -76,4 +76,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
+
+  for (final scale in [1.3, 2.0]) {
+    testWidgets('디자인 리뷰 11/13 #3 글씨 $scale배에서 응원 스탬프 버튼 높이가 같다', (tester) async {
+      demo.switchRole('trainer');
+      await open(tester, scale, Routes.logWrite, arguments: '김지아');
+      await tester.scrollUntilVisible(findText('꾸준해요'), 200, scrollable: page());
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      double h(String t) => tester.getSize(find.ancestor(of: findText(t), matching: find.byType(Material)).first).height;
+      expect(h('참 잘했어요'), h('꾸준해요'));
+      expect(h('꾸준해요'), h('자세 좋아요'));
+    });
+  }
 }

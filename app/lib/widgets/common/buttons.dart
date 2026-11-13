@@ -80,20 +80,31 @@ class Seg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget button(int i) => _SegButton(label: options[i], selected: options[i] == value, onTap: () => onChanged(options[i]));
+    // 아주 큰 글씨에서 3개 이상이면 위아래로 쌓는다 (디자인 리뷰 11/13 #3, 세트 버튼과 같은 기준)
+    final stack = options.length >= 3 && MediaQuery.textScalerOf(context).scale(1) >= 1.6;
     return Padding(
       padding: const EdgeInsets.only(top: AppSpace.xsPlus, bottom: AppSpace.m),
-      child: Row(
-        children: [
-          // 버튼 사이만 띄워서 양 끝이 카드·입력 칸과 줄이 맞게 (디자인 리뷰 11/06 #7)
-          for (var i = 0; i < options.length; i++) ...[
-            if (i > 0) const SizedBox(width: AppSpace.xsPlus),
-            Expanded(
-              child: _SegButton(
-                  label: options[i], selected: options[i] == value, onTap: () => onChanged(options[i])),
+      child: stack
+          ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              for (var i = 0; i < options.length; i++) ...[
+                if (i > 0) const SizedBox(height: AppSpace.xsPlus),
+                button(i),
+              ],
+            ])
+          // 글자 줄 수가 달라도 버튼 높이를 맞춘다 (디자인 리뷰 11/13 #3)
+          : IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // 버튼 사이만 띄워서 양 끝이 카드·입력 칸과 줄이 맞게 (디자인 리뷰 11/06 #7)
+                  for (var i = 0; i < options.length; i++) ...[
+                    if (i > 0) const SizedBox(width: AppSpace.xsPlus),
+                    Expanded(child: button(i)),
+                  ],
+                ],
+              ),
             ),
-          ],
-        ],
-      ),
     );
   }
 }
