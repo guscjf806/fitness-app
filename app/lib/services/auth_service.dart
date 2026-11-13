@@ -179,7 +179,11 @@ class AuthService {
     final id = _user!.id;
     final deleted = await _deleteOnServer();
     if (deleted) {
-      demo.update(() => demo.consentedAccounts.remove(id));
+      // 이 폰에 남은 계정 기억도 함께 지운다 (리뷰 11/13 #4)
+      demo.update(() {
+        demo.consentedAccounts.remove(id);
+        demo.marketingAccounts.remove(id);
+      });
       await signOut();
     }
     return deleted;
