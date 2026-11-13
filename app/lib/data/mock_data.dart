@@ -185,7 +185,7 @@ const homeDumbbellSessions = [
 ];
 
 class MealPost {
-  const MealPost(this.date, this.note, this.reply, {this.isToday = false, this.hasPhoto = true, this.kcal, this.kcalEdited = false});
+  const MealPost(this.date, this.note, this.reply, {this.isToday = false, this.hasPhoto = true, this.kcal, this.kcalEdited = false, this.replied = true});
   final String date;
   final String note;
   final String reply;
@@ -198,7 +198,13 @@ class MealPost {
   final int? kcal;
 
   /// 회원이 칼로리를 고친 글 (결정 d1111-2)
-  MealPost withKcal(int value) => MealPost(date, note, reply, isToday: isToday, hasPhoto: hasPhoto, kcal: value, kcalEdited: true);
+  MealPost withKcal(int value) => MealPost(date, note, reply, isToday: isToday, hasPhoto: hasPhoto, kcal: value, kcalEdited: true, replied: replied);
+
+  /// AI 답변을 받은 글. 칼로리는 답변을 받은 뒤에만 채운다 (리뷰 11/13 #1)
+  MealPost withReply(int value) => MealPost(date, note, reply, isToday: isToday, hasPhoto: hasPhoto, kcal: value, replied: true);
+
+  /// AI 답변을 받았는지. 실패한 글은 다시 열어도 답변이 온 것처럼 보이지 않게 한다
+  final bool replied;
 
   /// 회원이 칼로리를 고쳤는지. 고친 값을 AI 추정처럼 보이지 않게 (리뷰 11/12 #1)
   final bool kcalEdited;

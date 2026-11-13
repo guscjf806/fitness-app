@@ -181,7 +181,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
       return;
     }
     demo.update(() => demo.mealPosts.insert(
-        0, MealPost('오늘 $slot', note.isEmpty ? '(설명 없음)' : note, sampleMealReply, isToday: true, hasPhoto: photoPicked, kcal: _estimateKcal(slot))));
+        0, MealPost('오늘 $slot', note.isEmpty ? '(설명 없음)' : note, sampleMealReply, isToday: true, hasPhoto: photoPicked, replied: false)));
     Navigator.pushReplacementNamed(context, Routes.mealReply, arguments: const MealReplyArgs(0, fresh: true));
   }
 
@@ -296,9 +296,6 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
   bool waiting = true;
   bool failed = false;
 
-  /// 이번 답변을 횟수에 이미 셌는지 (다시 시도해도 한 번만 센다)
-  bool counted = false;
-
   MealReplyArgs get args => switch (ModalRoute.of(context)?.settings.arguments) {
         final MealReplyArgs a => a,
         final int i => MealReplyArgs(i),
@@ -317,6 +314,8 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
       _wait();
     } else {
       waiting = false;
+      // 답변을 받지 못한 글은 다시 열어도 실패로 보이고 다시 시도할 수 있다 (리뷰 11/13 #1)
+      failed = !demo.mealPosts[args.index].replied;
     }
   }
 
@@ -335,10 +334,13 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
           waiting = false;
           failed = demo.failMode == 'AI 실패';
         });
-        // 답변을 받았을 때만 이번 달 횟수를 1회 올린다. 실패하면 세지 않는다 (리뷰 11/01 #1)
-        if (!failed && args.fresh && !counted) {
-          counted = true;
-          demo.update(() => demo.aiUsed++);
+        // 답변을 받았을 때만 이번 달 횟수를 1회 올리고 칼로리를 채운다. 실패하면 둘 다 하지 않는다 (리뷰 11/01 #1, 11/13 #1)
+        final post = demo.mealPosts[args.index];
+        if (!failed && !post.replied) {
+          demo.update(() {
+            demo.mealPosts[args.index] = post.withReply(_estimateKcal(post.date.replaceFirst('오늘 ', '')));
+            demo.aiUsed++;
+          });
         }
       }
     });

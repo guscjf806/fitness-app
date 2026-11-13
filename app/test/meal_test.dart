@@ -52,6 +52,8 @@ void main() {
     await tap(tester, findText('올리기'));
     expect(findText('AI 답변을 받지 못했어요'), findsOneWidget);
     expect(demo.aiUsed, 3);
+    expect(demo.mealPosts.first.kcal, isNull, reason: '리뷰 11/13 #1 실패하면 칼로리를 더하지 않는다');
+    expect(demo.mealPosts.first.replied, isFalse);
   });
 
   testWidgets('#2 사진을 다시 눌러도 빠지지 않고, 사진 빼기로만 뺀다', (tester) async {
