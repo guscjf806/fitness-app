@@ -119,4 +119,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(demo.aiUsed, used + 1);
   });
+  test('리뷰 11/13 #5 같은 끼니 중 하나만 고치면 고친 값으로 보지 않는다', () {
+    demo.mealPosts.insert(0, const MealPost('오늘 저녁', 'a', '', isToday: true, kcal: 300, kcalEdited: true));
+    demo.mealPosts.insert(0, const MealPost('오늘 저녁', 'b', '', isToday: true, kcal: 200));
+    expect(demo.postedKcalEdited('저녁'), isFalse);
+  });
 }
