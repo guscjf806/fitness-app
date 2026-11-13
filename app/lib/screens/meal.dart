@@ -357,7 +357,9 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
     final value = await showDialog<int>(
       context: context,
       builder: (dialog) => StatefulBuilder(
+        // 큰 글씨에 키보드가 올라와도 창 안에서 스크롤되게 (디자인 리뷰 11/13 #1)
         builder: (dialog, setInner) => AlertDialog(
+          scrollable: true,
           title: const Text('칼로리 고치기'),
           content: NumField(
             label: '칼로리',

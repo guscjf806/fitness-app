@@ -1,5 +1,7 @@
+import 'package:fitness_app/data/mock_data.dart';
 import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
+import 'package:fitness_app/screens/meal.dart';
 import 'package:fitness_app/state/demo_state.dart';
 import 'package:fitness_app/state/workout_session.dart';
 import 'package:flutter/material.dart';
@@ -60,5 +62,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(findText('검색·필터 지우기'), findsNothing);
     expect(tester.widget<TextField>(find.byType(TextField).first).controller!.text, '');
+  });
+
+  testWidgets('디자인 리뷰 11/13 #1 큰 글씨와 키보드에서 칼로리 칸을 비워도 그리기 오류가 없다', (tester) async {
+    demo.mealPosts.insert(0, const MealPost('오늘 점심', '비빔밥', '좋아요', isToday: true, kcal: 620));
+    await open(tester, 2.0, Routes.mealReply, arguments: const MealReplyArgs(0));
+    await tester.scrollUntilVisible(findText('고치기'), 200, scrollable: page());
+    await tester.tap(findText('고치기'));
+    await tester.pumpAndSettle();
+    tester.view.viewInsets = const FakeViewPadding(bottom: 290 * 3);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).last, '');
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
   });
 }

@@ -109,6 +109,8 @@ Future<bool> confirmDialog(BuildContext context,
   final ok = await showDialog<bool>(
     context: context,
     builder: (dialog) => AlertDialog(
+      // 큰 글씨에서 내용이 넘치면 창 안에서 스크롤 (디자인 리뷰 11/13 #1)
+      scrollable: true,
       title: Text(title),
       content: body == null ? null : Text(body),
       actions: [
