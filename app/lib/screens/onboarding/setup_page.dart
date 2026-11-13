@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../config.dart';
+import '../../routes.dart';
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
@@ -66,6 +67,8 @@ class _SetupPageState extends State<SetupPage> {
     final safety = _safetyKeys.any(changed);
     final other = now.keys.any((k) => !_safetyKeys.contains(k) && changed(k));
     String regen = '';
+    // 창의 [새로 만들기]도 띠·내 정보와 같은 길(기간 선택 → 만드는 중)로 보낸다 (리뷰 11/13 #2)
+    var goGenerate = false;
     if (editing && !demo.isGuest && (safety || other)) {
       if (safety) {
         final ok = await confirmDialog(context,
@@ -73,9 +76,10 @@ class _SetupPageState extends State<SetupPage> {
             body: '못 먹는 음식이나 아픈 부위가 바뀌었어요. 안전을 위한 수정이라 무료 횟수를 쓰지 않아요.',
             keepLabel: '나중에',
             okLabel: '새로 만들기');
-        regen = ok ? ' 식단·루틴도 새로 만들었어요(데모, 무료 횟수 그대로).' : ' 식단·운동 탭 맨 위에서 새로 만들 수 있어요.';
-        // '나중에'를 누르면 식단·운동 탭 맨 위에 띠를 남긴다 (결정 d1111-1)
-        demo.update(() => demo.planOutdated = !ok);
+        regen = ok ? '' : ' 식단·운동 탭 맨 위에서 새로 만들 수 있어요.';
+        // 다 만들 때까지 식단·운동 탭 맨 위에 띠를 남기고, 만들어도 횟수를 세지 않는다 (결정 d1111-1, d1107-1)
+        demo.update(() => demo.planOutdated = true);
+        goGenerate = ok;
       } else if (demo.quotaExhausted) {
         regen = ' 이번 달 무료 횟수를 다 써서 다음 달 1일부터 내 정보 > 식단·루틴 새로 만들기에서 만들 수 있어요.';
       } else {
@@ -84,18 +88,17 @@ class _SetupPageState extends State<SetupPage> {
             body: '무료 횟수 1회를 써요. 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 썼어요.',
             keepLabel: '나중에',
             okLabel: '새로 만들기');
-        if (ok) {
-          demo.update(() => demo.aiUsed++);
-          regen = ' 식단·루틴도 새로 만들었어요(데모).';
-        } else {
-          regen = _later;
-        }
+        // 횟수는 다 만들었을 때 센다
+        goGenerate = ok;
+        regen = ok ? '' : _later;
       }
       if (!mounted) return;
     }
     final messenger = ScaffoldMessenger.of(context);
-    Navigator.pop(context);
+    final navigator = Navigator.of(context);
+    navigator.pop();
     toastOn(messenger, (target == targetBefore ? '저장했어요.' : '저장했어요. 목표 칼로리가 ${formatNumber(targetBefore)} → ${formatNumber(target)} kcal로 바뀌었어요.') + regen);
+    if (goGenerate) navigator.pushNamed(Routes.generate);
   }
 
   void _next() {

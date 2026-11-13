@@ -52,7 +52,7 @@ void main() {
     await tester.tap(findText('새로 만들기'));
     await tester.pumpAndSettle();
     expect(demo.aiUsed, used, reason: '안전 수정은 횟수를 세지 않는다');
-    expect(findTextContaining('무료 횟수 그대로'), findsOneWidget);
+    expect(findText('기간 선택'), findsWidgets, reason: '리뷰 11/13 #2 생성 화면으로 간다');
   });
 
   testWidgets('결정 d1107-1 아무것도 안 고치면 묻지 않는다', (tester) async {
