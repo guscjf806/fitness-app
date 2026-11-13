@@ -359,7 +359,8 @@ class _ExerciseFiltersState extends State<_ExerciseFilters> {
           controller: controller,
           decoration: InputDecoration(
             hintText: '운동 이름 검색',
-            prefixIcon: const Icon(Icons.search),
+            // 글씨 크기를 따라 커지되 32px까지 (디자인 리뷰 11/13 #5)
+            prefixIcon: Icon(Icons.search, size: MediaQuery.textScalerOf(context).scale(20).clamp(20, 32).toDouble()),
             // 검색어를 한 번에 지운다 (리뷰 11/11 #6)
             suffixIcon: widget.query.isEmpty
                 ? null
