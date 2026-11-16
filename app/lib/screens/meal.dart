@@ -325,6 +325,11 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
   }
 
   void _ask() {
+    // 올리기 버튼처럼 다시 시도도 무료 횟수를 다 썼으면 막는다 (리뷰 11/16 #2)
+    if (demo.quotaExhausted) {
+      showQuotaExhausted(context);
+      return;
+    }
     setState(() {
       waiting = true;
       failed = false;
