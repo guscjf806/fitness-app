@@ -91,7 +91,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
       if (demo.planOutdated)
         const Muted('안전을 위한 수정이라 무료 횟수를 쓰지 않아요.', top: AppSpace.s)
       else if (demo.planMade)
-        Muted('무료 횟수 1회를 써요 (이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회)', top: AppSpace.s),
+        Muted('무료 횟수 1회를 써요. 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 썼어요.', top: AppSpace.s),
       AppButton('식단·운동 루틴 생성하기', onPressed: _generate),
     ]);
   }
