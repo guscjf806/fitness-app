@@ -246,6 +246,10 @@ class DemoState extends ChangeNotifier {
     return posts.isEmpty ? null : posts.fold<int>(0, (s, p) => s + p.kcal!);
   }
 
+  /// 오늘 그 끼니에 올렸지만 AI 답변을 하나도 못 받았는지. 먹은 것으로 체크는 하고 칼로리는 안 더한다 (결정 d1113-2)
+  bool postedUnreplied(String slot) =>
+      postedKcal(slot) == null && mealPosts.any((p) => p.isToday && p.date == '오늘 $slot');
+
   bool get recordedToday => mealPostedToday || workoutDone;
   int get streak => 6 + (recordedToday ? 1 : 0);
   /// 이번 달 무료 횟수를 다 썼는지 (실제로 다 쓴 경우와 목업의 '횟수 소진' 미리 보기)

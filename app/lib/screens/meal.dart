@@ -123,20 +123,25 @@ class _MealCard extends StatelessWidget {
                 constraints: const BoxConstraints(minHeight: 48),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   // 올린 끼니는 먹은 것으로 보이고 AI가 계산한 칼로리를 같이 보여 준다 (리뷰 11/11 #4)
-                  CheckCircle(demo.eatenMeals.contains(meal.title) || demo.postedKcal(meal.title) != null),
+                  CheckCircle(demo.eatenMeals.contains(meal.title) ||
+                      demo.postedKcal(meal.title) != null ||
+                      demo.postedUnreplied(meal.title)),
                   const SizedBox(width: AppSpace.s),
                   // 큰 글씨에서 넘치지 않게 두 줄까지 허용 (디자인 리뷰 11/12 #2)
                   Flexible(
                     child: WordText(
-                        demo.postedKcal(meal.title) == null
-                            ? '먹었어요'
-                            : demo.postedKcalEdited(meal.title)
-                                ? '올림 · ${demo.postedKcal(meal.title)} kcal (고친 값)'
-                                : '올림 · 약 ${demo.postedKcal(meal.title)} kcal',
+                        // 답변을 못 받은 끼니는 칼로리 없이 알린다 (결정 d1113-2)
+                        demo.postedUnreplied(meal.title)
+                            ? '올림 · 답변 못 받음'
+                            : demo.postedKcal(meal.title) == null
+                                ? '먹었어요'
+                                : demo.postedKcalEdited(meal.title)
+                                    ? '올림 · ${demo.postedKcal(meal.title)} kcal (고친 값)'
+                                    : '올림 · 약 ${demo.postedKcal(meal.title)} kcal',
                         textAlign: TextAlign.end),
                   ),
                   // 누르면 화면이 열리는 줄이라 화살표로 알린다
-                  if (demo.postedKcal(meal.title) != null) const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
+                  if (demo.postedKcal(meal.title) != null || demo.postedUnreplied(meal.title)) const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
                 ]),
               ),
             ),
