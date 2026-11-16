@@ -46,7 +46,8 @@ class FailureView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpace.xl),
       child: Column(children: [
-        const Icon(Icons.error_outline, size: 44, color: AppColors.warning),
+        // 잠깐 생긴 문제는 빨강(몸 위험) 대신 주황 (디자인 리뷰 11/16 #5, 결정 d1111-1)
+        const Icon(Icons.error_outline, size: 44, color: AppColors.caution),
         const SizedBox(height: AppSpace.sPlus),
         // 큰 글씨에서 낱말 중간에서 끊기지 않게 (디자인 리뷰 11/16 #1)
         WordText(title, textAlign: TextAlign.center, style: AppText.title),
