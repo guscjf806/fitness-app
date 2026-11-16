@@ -55,7 +55,12 @@ class _MealTabState extends State<MealTab> {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(demo.mealPosts[i].date, style: AppText.bodyStrong),
             Muted(demo.mealPosts[i].note, bottom: AppSpace.xs),
-            Text(demo.mealPosts[i].reply, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.caption),
+            // 답변을 못 받은 글에 답변 첫 줄이 보이면 답이 온 줄 안다 (리뷰 11/16 #1)
+            if (demo.mealPosts[i].replied)
+              Text(demo.mealPosts[i].reply, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.caption)
+            else
+              WordText('답변을 못 받았어요 · 눌러서 다시 받기',
+                  style: AppText.caption.copyWith(color: AppColors.caution, fontWeight: FontWeight.w700)),
           ]),
         ),
       AppButton('오늘 식단 올리기', onPressed: () => Navigator.pushNamed(context, Routes.mealPost)),
