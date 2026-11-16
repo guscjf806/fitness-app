@@ -87,6 +87,17 @@ class ProfileTab extends StatelessWidget {
         right: Text(demo.pushTime.format(context),
             style: AppText.bodyStrong.copyWith(color: demo.pushOn ? AppColors.primaryDark : AppColors.textSub)),
       ),
+      // 처음 동의할 때 고른 선택 동의를 나중에 바꾸는 곳 (결정 d1112-3)
+      SwitchRow(
+        title: '이벤트·혜택 알림',
+        subtitle: '새 기능, 할인 소식 (선택)',
+        value: demo.marketingOptIn,
+        onChanged: (v) => demo.update(() {
+          demo.marketingOptIn = v;
+          final id = AuthService.userId;
+          if (id != null) v ? demo.marketingAccounts.add(id) : demo.marketingAccounts.remove(id);
+        }),
+      ),
       if (role != 'trainer')
         SwitchRow(
           title: '휴식 끝 알림음',
