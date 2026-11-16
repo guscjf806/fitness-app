@@ -48,7 +48,8 @@ class FailureView extends StatelessWidget {
       child: Column(children: [
         const Icon(Icons.error_outline, size: 44, color: AppColors.warning),
         const SizedBox(height: AppSpace.sPlus),
-        Text(title, textAlign: TextAlign.center, style: AppText.title),
+        // 큰 글씨에서 낱말 중간에서 끊기지 않게 (디자인 리뷰 11/16 #1)
+        WordText(title, textAlign: TextAlign.center, style: AppText.title),
         const SizedBox(height: AppSpace.xsPlus),
         const Muted('잠시 후 다시 시도해 주세요. 이번 시도는 사용 횟수에서 빠지지 않았어요.', align: TextAlign.center),
         AppButton('다시 시도', onPressed: onRetry),
