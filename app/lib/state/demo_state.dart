@@ -216,6 +216,10 @@ class DemoState extends ChangeNotifier {
   /// 오늘 식단표에서 '먹었어요'를 누른 끼니 (결정 d1101-3)
   final Set<String> eatenMeals = {};
 
+  /// '먹었어요'를 누른 끼니에서 고른 양: '조금' · '다 먹음' · '더 먹음'. 없으면 '다 먹음' (결정 d1112-2)
+  final Map<String, String> eatenAmounts = {};
+  String eatenAmount(String slot) => eatenAmounts[slot] ?? '다 먹음';
+
   /// 올렸거나 '먹었어요'를 눌렀으면 오늘 식단을 기록한 것으로 본다
   bool get mealPostedToday => mealPosts.any((p) => p.isToday) || eatenMeals.isNotEmpty;
   /// 오늘 먹은 칼로리: '먹었어요'를 누른 끼니는 식단표 칼로리, 같은 끼니에 올린 식단이 있으면 AI 추정값.
@@ -227,7 +231,7 @@ class DemoState extends ChangeNotifier {
       if (posted != null) {
         sum += posted;
       } else if (eatenMeals.contains(m.title)) {
-        sum += m.kcal;
+        sum += (m.kcal * (AppConfig.mealAmountFactors[eatenAmount(m.title)] ?? 1.0)).round();
       }
     }
     return sum;
@@ -328,6 +332,7 @@ class DemoState extends ChangeNotifier {
       ..clear()
       ..addAll(initialMealPosts);
     eatenMeals.clear();
+    eatenAmounts.clear();
     planOutdated = false;
     planMade = false;
     marketingOptIn = false;

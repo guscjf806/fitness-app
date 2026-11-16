@@ -161,7 +161,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(demo.mealPostedToday, isFalse);
     await tap(tester, findText('먹었어요').first);
+    // 먹은 양을 고르면 체크된다 (결정 d1112-2)
+    await tap(tester, findText('조금'));
     expect(demo.eatenMeals, isNotEmpty);
+    expect(demo.eatenAmount(demo.eatenMeals.first), '조금');
+    expect(findText('먹었어요 · 조금'), findsOneWidget);
     expect(demo.mealPostedToday, isTrue);
   });
 }

@@ -116,7 +116,7 @@ class _MealCard extends StatelessWidget {
                 if (posted >= 0) {
                   Navigator.pushNamed(context, Routes.mealReply, arguments: MealReplyArgs(posted));
                 } else {
-                  demo.update(() => demo.eatenMeals.contains(meal.title) ? demo.eatenMeals.remove(meal.title) : demo.eatenMeals.add(meal.title));
+                  _pickAmount(context, meal.title);
                 }
               },
               child: ConstrainedBox(
@@ -134,7 +134,7 @@ class _MealCard extends StatelessWidget {
                         demo.postedUnreplied(meal.title)
                             ? '올림 · 답변 못 받음'
                             : demo.postedKcal(meal.title) == null
-                                ? '먹었어요'
+                                ? (demo.eatenMeals.contains(meal.title) ? '먹었어요 · ${demo.eatenAmount(meal.title)}' : '먹었어요')
                                 : demo.postedKcalEdited(meal.title)
                                     ? '올림 · ${demo.postedKcal(meal.title)} kcal (고친 값)'
                                     : '올림 · 약 ${demo.postedKcal(meal.title)} kcal',
@@ -149,6 +149,35 @@ class _MealCard extends StatelessWidget {
       ]),
     );
   }
+}
+
+/// '먹었어요'를 누르면 먹은 양을 고른다. 이미 고른 끼니는 양을 바꾸거나 되돌릴 수 있다 (결정 d1112-2)
+void _pickAmount(BuildContext context, String slot) {
+  final eaten = demo.eatenMeals.contains(slot);
+  showAppSheet<void>(
+    context,
+    builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+      SheetTitle('$slot, 얼마나 먹었어요?'),
+      const Muted('고른 양에 맞춰 오늘 먹은 칼로리를 어림해요.', top: AppSpace.xs),
+      for (final amount in AppConfig.mealAmountFactors.keys)
+        AppButton(amount,
+            kind: eaten && demo.eatenAmount(slot) == amount ? ButtonKind.primary : ButtonKind.soft, onPressed: () {
+          demo.update(() {
+            demo.eatenMeals.add(slot);
+            demo.eatenAmounts[slot] = amount;
+          });
+          Navigator.pop(sheet);
+        }),
+      if (eaten)
+        AppButton('안 먹은 걸로 되돌리기', kind: ButtonKind.quiet, onPressed: () {
+          demo.update(() {
+            demo.eatenMeals.remove(slot);
+            demo.eatenAmounts.remove(slot);
+          });
+          Navigator.pop(sheet);
+        }),
+    ]),
+  );
 }
 
 /// 지금 시각에 맞는 끼니 (식단 올리기의 처음 값)

@@ -34,4 +34,7 @@ class AppConfig {
 
   /// 한 번에 고를 수 있는 운동 수
   static const maxExercisePick = 10;
+
+  /// '먹었어요'에서 고른 양에 곱하는 값. 식단표 칼로리 × 이 값 (결정 d1112-2, 초안 값)
+  static const mealAmountFactors = {'조금': 0.5, '다 먹음': 1.0, '더 먹음': 1.3};
 }

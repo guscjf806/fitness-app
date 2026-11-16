@@ -11,4 +11,16 @@ void main() {
     expect(demo.postedUnreplied(slot), isTrue);
     expect(demo.todayEatenKcal, before);
   });
+  test('결정 d1112-2 고른 양만큼 칼로리를 더한다', () {
+    final m = mealDays[0].firstWhere((m) => !demo.mealPosts.any((p) => p.isToday && p.date == '오늘 ${m.title}'));
+    final before = demo.todayEatenKcal;
+    addTearDown(() {
+      demo.eatenMeals.remove(m.title);
+      demo.eatenAmounts.remove(m.title);
+    });
+    demo.eatenMeals.add(m.title);
+    expect(demo.todayEatenKcal - before, m.kcal);
+    demo.eatenAmounts[m.title] = '조금';
+    expect(demo.todayEatenKcal - before, (m.kcal * 0.5).round());
+  });
 }
