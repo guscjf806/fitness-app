@@ -185,7 +185,8 @@ const homeDumbbellSessions = [
 ];
 
 class MealPost {
-  const MealPost(this.date, this.note, this.reply, {this.isToday = false, this.hasPhoto = true, this.kcal, this.kcalEdited = false, this.replied = true});
+  const MealPost(this.date, this.note, this.reply,
+      {this.isToday = false, this.hasPhoto = true, this.kcal, this.kcalEdited = false, this.replied = true, this.seen = true});
   final String date;
   final String note;
   final String reply;
@@ -198,16 +199,26 @@ class MealPost {
   final int? kcal;
 
   /// 회원이 칼로리를 고친 글 (결정 d1111-2)
-  MealPost withKcal(int value) => MealPost(date, note, reply, isToday: isToday, hasPhoto: hasPhoto, kcal: value, kcalEdited: true, replied: replied);
+  MealPost withKcal(int value) =>
+      MealPost(date, note, reply, isToday: isToday, hasPhoto: hasPhoto, kcal: value, kcalEdited: true, replied: replied, seen: seen);
 
   /// AI 답변을 받은 글. 칼로리는 답변을 받은 뒤에만 채운다 (리뷰 11/13 #1)
-  MealPost withReply(int value) => MealPost(date, note, reply, isToday: isToday, hasPhoto: hasPhoto, kcal: value, replied: true);
+  /// 화면을 나가 있는 동안 받은 답변은 아직 안 본 것으로 둔다 (결정 d1116-1)
+  MealPost withReply(int value, {bool seen = true}) =>
+      MealPost(date, note, reply, isToday: isToday, hasPhoto: hasPhoto, kcal: value, replied: true, seen: seen);
+
+  /// 회원이 답변 화면을 열어 본 글
+  MealPost withSeen() =>
+      MealPost(date, note, reply, isToday: isToday, hasPhoto: hasPhoto, kcal: kcal, kcalEdited: kcalEdited, replied: replied);
 
   /// AI 답변을 받았는지. 실패한 글은 다시 열어도 답변이 온 것처럼 보이지 않게 한다
   final bool replied;
 
   /// 회원이 칼로리를 고쳤는지. 고친 값을 AI 추정처럼 보이지 않게 (리뷰 11/12 #1)
   final bool kcalEdited;
+
+  /// 받은 답변을 회원이 봤는지. false면 목록에 '답변 왔어요'로 보인다 (결정 d1116-1)
+  final bool seen;
 }
 
 const sampleMealReply =

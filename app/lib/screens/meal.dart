@@ -56,9 +56,14 @@ class _MealTabState extends State<MealTab> {
             Text(demo.mealPosts[i].date, style: AppText.bodyStrong),
             Muted(demo.mealPosts[i].note, bottom: AppSpace.xs),
             // 답변을 못 받은 글에 답변 첫 줄이 보이면 답이 온 줄 안다 (리뷰 11/16 #1)
-            if (demo.mealPosts[i].replied)
-              Text(demo.mealPosts[i].reply, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.caption)
-            else
+            if (demo.replyPending.contains(demo.mealPosts[i]))
+              const Muted('AI 답변을 받는 중이에요', bottom: 0)
+            else if (demo.mealPosts[i].replied) ...[
+              // 나가 있는 동안 온 답변은 열어 볼 때까지 표시한다 (결정 d1116-1)
+              if (!demo.mealPosts[i].seen)
+                Text('답변 왔어요', style: AppText.caption.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
+              Text(demo.mealPosts[i].reply, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.caption),
+            ] else
               WordText('답변을 못 받았어요 · 눌러서 다시 받기',
                   style: AppText.caption.copyWith(color: AppColors.caution, fontWeight: FontWeight.w700)),
           ]),
@@ -331,9 +336,39 @@ class MealReplyScreen extends StatefulWidget {
   State<MealReplyScreen> createState() => _MealReplyScreenState();
 }
 
+/// 지금 답변 화면에 열려 있는 글. 이 글의 답변이 오면 알림 대신 화면에 바로 보여 준다
+MealPost? _viewingPost;
+ModalRoute<Object?>? _viewingRoute;
+
+/// AI 답변을 받는다. 화면을 나가도 뒤에서 계속 받고, 나가 있으면 다 된 뒤 알린다 (결정 d1116-1)
+/// 실제로는 서버가 답변을 저장하고 푸시 알림을 보낸다. 지금은 앱 안 알림 띠로 대신한다
+void requestMealReply(MealPost post, ScaffoldMessengerState messenger) {
+  // 화면을 그리는 중에 불릴 수 있어 바로 넣고, 다른 화면에는 그린 뒤 알린다
+  demo.replyPending.add(post);
+  Future.microtask(() => demo.update(() {}));
+  Future<void>.delayed(const Duration(milliseconds: 1200), () {
+    // 뒤로 나가는 중인 화면은 보고 있지 않은 것으로 본다
+    final viewing = identical(_viewingPost, post) && (_viewingRoute?.isCurrent ?? false);
+    final failed = demo.failMode == 'AI 실패';
+    demo.update(() {
+      demo.replyPending.remove(post);
+      final i = demo.mealPosts.indexWhere((p) => identical(p, post));
+      // 답변을 받았을 때만 이번 달 횟수를 1회 올리고 칼로리를 채운다. 실패하면 둘 다 하지 않는다 (리뷰 11/01 #1, 11/13 #1)
+      if (i < 0 || failed || post.replied) return;
+      final updated = post.withReply(_estimateKcal(post.date.replaceFirst('오늘 ', '')), seen: viewing);
+      demo.mealPosts[i] = updated;
+      demo.aiUsed++;
+      if (viewing) _viewingPost = updated;
+    });
+    if (viewing) return;
+    final i = demo.mealPosts.indexWhere((p) => p.date == post.date && p.note == post.note);
+    toastOn(messenger, failed ? '${post.date} 식단의 AI 답변을 받지 못했어요' : '${post.date} 식단에 AI 답변이 왔어요',
+        actionLabel: i < 0 ? null : '보기',
+        onAction: () => demoNavigatorKey.currentState?.pushNamed(Routes.mealReply, arguments: MealReplyArgs(i)));
+  });
+}
+
 class _MealReplyScreenState extends State<MealReplyScreen> {
-  bool waiting = true;
-  bool failed = false;
 
   MealReplyArgs get args => switch (ModalRoute.of(context)?.settings.arguments) {
         final MealReplyArgs a => a,
@@ -342,20 +377,26 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
       };
 
   bool started = false;
+  ModalRoute<Object?>? _route;
 
-  /// 방금 올린 글만 AI 답변을 기다린다. 이미 받은 지난 답변은 바로 보여 준다 (리뷰 11/01 #5)
+  /// 방금 올린 글만 AI 답변을 받는다. 이미 받은 지난 답변은 바로 보여 준다 (리뷰 11/01 #5)
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (started) return;
     started = true;
-    if (args.fresh) {
-      _wait();
-    } else {
-      waiting = false;
-      // 답변을 받지 못한 글은 다시 열어도 실패로 보이고 다시 시도할 수 있다 (리뷰 11/13 #1)
-      failed = !demo.mealPosts[args.index].replied;
+    _viewingPost = demo.mealPosts[args.index];
+    _route = _viewingRoute = ModalRoute.of(context);
+    if (args.fresh) requestMealReply(demo.mealPosts[args.index], ScaffoldMessenger.of(context));
+  }
+
+  @override
+  void dispose() {
+    if (identical(_viewingRoute, _route)) {
+      _viewingPost = null;
+      _viewingRoute = null;
     }
+    super.dispose();
   }
 
   void _ask() {
@@ -364,30 +405,7 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
       showQuotaExhausted(context);
       return;
     }
-    setState(() {
-      waiting = true;
-      failed = false;
-    });
-    _wait();
-  }
-
-  void _wait() {
-    Future<void>.delayed(const Duration(milliseconds: 1200), () {
-      if (mounted) {
-        setState(() {
-          waiting = false;
-          failed = demo.failMode == 'AI 실패';
-        });
-        // 답변을 받았을 때만 이번 달 횟수를 1회 올리고 칼로리를 채운다. 실패하면 둘 다 하지 않는다 (리뷰 11/01 #1, 11/13 #1)
-        final post = demo.mealPosts[args.index];
-        if (!failed && !post.replied) {
-          demo.update(() {
-            demo.mealPosts[args.index] = post.withReply(_estimateKcal(post.date.replaceFirst('오늘 ', '')));
-            demo.aiUsed++;
-          });
-        }
-      }
-    });
+    requestMealReply(demo.mealPosts[args.index], ScaffoldMessenger.of(context));
   }
 
   Future<void> _editKcal(int index) async {
@@ -432,9 +450,20 @@ class _MealReplyScreenState extends State<MealReplyScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ListenableBuilder(listenable: demo, builder: (context, _) => _build(context));
+
+  Widget _build(BuildContext context) {
     final index = args.index;
     final post = demo.mealPosts[index];
+    // 받는 중이면 기다림, 답변을 못 받았으면 실패. 화면을 나갔다 와도 그대로 이어진다 (결정 d1116-1)
+    final waiting = demo.replyPending.contains(post);
+    final failed = !waiting && !post.replied;
+    // 열어 봤으니 '답변 왔어요' 표시를 지운다
+    if (post.replied && !post.seen) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && identical(demo.mealPosts[index], post)) demo.update(() => demo.mealPosts[index] = post.withSeen());
+      });
+    }
     return AppPage(title: 'AI 답변', children: [
       if (post.hasPhoto) const _PhotoBox(label: '식단 사진'),
       Text(post.date, style: AppText.bodyStrong),

@@ -168,4 +168,28 @@ void main() {
     expect(findText('먹었어요 · 조금'), findsOneWidget);
     expect(demo.mealPostedToday, isTrue);
   });
+  testWidgets('결정 d1116-1 기다리는 중에 나가도 뒤에서 답변을 받고, 목록에 답변 왔어요가 보인다', (tester) async {
+    await openPost(tester);
+    await tap(tester, findText('눌러서 사진 선택'));
+    await tester.ensureVisible(findText('올리기'));
+    await tester.tap(findText('올리기'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    // 답변을 기다리는 중에 뒤로 나간다
+    demoNavigatorKey.currentState!.pop();
+    demo.update(() => demo.tab = 1);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(demo.replyPending, isNotEmpty);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(demo.replyPending, isEmpty);
+    expect(demo.mealPosts.first.replied, isTrue);
+    expect(demo.mealPosts.first.seen, isFalse);
+    expect(demo.aiUsed, 3);
+    expect(findTextContaining('AI 답변이 왔어요'), findsOneWidget);
+    await tester.scrollUntilVisible(findText('답변 왔어요'), 200, scrollable: find.byType(Scrollable).first);
+    // 열어 보면 표시가 지워진다
+    await tap(tester, findText('답변 왔어요'));
+    expect(demo.mealPosts.first.seen, isTrue);
+  });
 }

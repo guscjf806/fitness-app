@@ -216,6 +216,9 @@ class DemoState extends ChangeNotifier {
   /// 오늘 식단표에서 '먹었어요'를 누른 끼니 (결정 d1101-3)
   final Set<String> eatenMeals = {};
 
+  /// AI 답변을 받는 중인 식단 글. 화면을 나가도 뒤에서 계속 받는다 (결정 d1116-1)
+  final Set<MealPost> replyPending = Set.identity();
+
   /// '먹었어요'를 누른 끼니에서 고른 양: '조금' · '다 먹음' · '더 먹음'. 없으면 '다 먹음' (결정 d1112-2)
   final Map<String, String> eatenAmounts = {};
   String eatenAmount(String slot) => eatenAmounts[slot] ?? '다 먹음';
@@ -333,6 +336,7 @@ class DemoState extends ChangeNotifier {
       ..addAll(initialMealPosts);
     eatenMeals.clear();
     eatenAmounts.clear();
+    replyPending.clear();
     planOutdated = false;
     planMade = false;
     marketingOptIn = false;
