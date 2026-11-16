@@ -71,12 +71,16 @@ class LoadingView extends StatelessWidget {
   final String? sub;
 
   @override
-  Widget build(BuildContext context) => Column(mainAxisSize: MainAxisSize.min, children: [
-        const CircularProgressIndicator(color: AppColors.primary),
-        const SizedBox(height: AppSpace.l),
-        Text(message, textAlign: TextAlign.center, style: AppText.bodyStrong),
-        if (sub != null) Muted(sub!, align: TextAlign.center),
-      ]);
+  // 큰 글씨에서 화면 끝에 붙지 않게 좌우 여백을 두고, 낱말 중간에서 끊기지 않게 (디자인 리뷰 11/16 #2)
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpace.page),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const CircularProgressIndicator(color: AppColors.primary),
+          const SizedBox(height: AppSpace.l),
+          WordText(message, textAlign: TextAlign.center, style: AppText.bodyStrong),
+          if (sub != null) Muted(sub!, align: TextAlign.center),
+        ]),
+      );
 }
 
 /// 빨간 큰 경고 상자 (디자인 리뷰 10/28 #3). [caution]이면 덜 급한 주황 '주의' 상자
