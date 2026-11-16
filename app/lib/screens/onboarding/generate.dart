@@ -78,8 +78,10 @@ class _GenerateScreenState extends State<GenerateScreen> {
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Muted('반영되는 정보', bottom: AppSpace.xxs),
-          WordText('목표 칼로리 ${formatNumber(r.target)} kcal · 현재 강도 ${demo.currentIntensity} · '
-              '원하는 강도 ${demo.desiredIntensity} · ${demo.conditionText}'),
+          // 한 줄로 이어 쓰면 읽기 어려워 항목마다 나눈다 (디자인 리뷰 11/16 #3)
+          WordText('목표 칼로리 ${formatNumber(r.target)} kcal'),
+          WordText('운동 강도 지금 ${demo.currentIntensity} → 원하는 ${demo.desiredIntensity}'),
+          WordText(demo.conditionText),
           if (demo.allergies.isNotEmpty || demo.allergyNote.isNotEmpty)
             WordText('빼는 음식: ${[...demo.allergies, if (demo.allergyNote.isNotEmpty) demo.allergyNote].join(', ')}'),
           if (demo.painAreas.isNotEmpty) WordText('조심할 부위: ${demo.painAreas.join(', ')}'),
