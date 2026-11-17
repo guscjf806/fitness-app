@@ -398,6 +398,8 @@ void main() {
     await tap(tester, findText('초대 코드 만들기'));
     expect(findText('회원 이름이나 메모를 적어 주세요'), findsOneWidget);
     expect(demo.inviteCodes, isEmpty);
+    // 맨 위 수업 일정 카드가 생겨 초대 칸이 화면 아래로 밀릴 수 있다
+    await tester.scrollUntilVisible(find.widgetWithText(TextField, '예: 김지아 회원님'), 200, scrollable: find.byType(Scrollable).first);
     await tester.enterText(find.widgetWithText(TextField, '예: 김지아 회원님'), '최민수');
     await tester.pumpAndSettle();
     await tap(tester, findText('초대 코드 만들기'));
@@ -468,6 +470,8 @@ void main() {
     demoNavigatorKey.currentState!.pop();
     demo.update(() => demo.tab = 3);
     await tester.pumpAndSettle();
+    // 맨 위 수업 일정 카드가 생겨 초대 칸이 화면 아래로 밀릴 수 있다
+    await tester.scrollUntilVisible(find.widgetWithText(TextField, '예: 김지아 회원님'), 200, scrollable: find.byType(Scrollable).first);
     await tester.enterText(find.widgetWithText(TextField, '예: 김지아 회원님'), '최민수');
     await tester.pumpAndSettle();
     await tap(tester, findText('초대 코드 만들기'));
@@ -506,6 +510,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.ancestor(of: findText('이번 주 미션'), matching: find.byType(FieldLabel)), findsOneWidget);
     expect(findText('만든 초대 코드 1개'), findsNothing);
+    // 맨 위 수업 일정 카드가 생겨 초대 칸이 화면 아래로 밀릴 수 있다
+    await tester.scrollUntilVisible(find.widgetWithText(TextField, '예: 김지아 회원님'), 200, scrollable: find.byType(Scrollable).first);
     await tester.enterText(find.widgetWithText(TextField, '예: 김지아 회원님'), '최민수');
     await tester.pumpAndSettle();
     await tap(tester, findText('초대 코드 만들기'));
