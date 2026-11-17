@@ -23,4 +23,16 @@ void main() {
     demo.eatenAmounts[m.title] = '조금';
     expect(demo.todayEatenKcal - before, (m.kcal * 0.5).round());
   });
+  test('리뷰 11/17 #1 답변을 받는 중인 끼니는 실패가 아니라 받는 중으로 본다', () {
+    final slot = mealDays[0].first.title;
+    final post = MealPost('오늘 $slot', '시험', '', isToday: true, replied: false);
+    demo.mealPosts.insert(0, post);
+    demo.replyPending.add(post);
+    addTearDown(() {
+      demo.replyPending.remove(post);
+      demo.mealPosts.remove(post);
+    });
+    expect(demo.postedReplying(slot), isTrue);
+    expect(demo.postedUnreplied(slot), isFalse);
+  });
 }
