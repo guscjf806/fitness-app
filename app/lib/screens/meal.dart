@@ -354,21 +354,25 @@ void requestMealReply(MealPost post, ScaffoldMessengerState messenger) {
     // 뒤로 나가는 중인 화면은 보고 있지 않은 것으로 본다
     final viewing = identical(_viewingPost, post) && (_viewingRoute?.isCurrent ?? false);
     final failed = demo.failMode == 'AI 실패';
+    var target = post;
     demo.update(() {
       demo.replyPending.remove(post);
       final i = demo.mealPosts.indexWhere((p) => identical(p, post));
       // 답변을 받았을 때만 이번 달 횟수를 1회 올리고 칼로리를 채운다. 실패하면 둘 다 하지 않는다 (리뷰 11/01 #1, 11/13 #1)
       if (i < 0 || failed || post.replied) return;
       final updated = post.withReply(_estimateKcal(post.date.replaceFirst('오늘 ', '')), seen: viewing);
-      demo.mealPosts[i] = updated;
+      demo.mealPosts[i] = target = updated;
       demo.aiUsed++;
       if (viewing) _viewingPost = updated;
     });
     if (viewing) return;
-    final i = demo.mealPosts.indexWhere((p) => p.date == post.date && p.note == post.note);
+    // 띠가 떠 있는 동안 새 글을 올리면 순서가 밀리니, 누르는 순간 그 글을 다시 찾는다 (리뷰 11/17 #5)
     toastOn(messenger, failed ? '${post.date} 식단의 AI 답변을 받지 못했어요' : '${post.date} 식단에 AI 답변이 왔어요',
-        actionLabel: i < 0 ? null : '보기',
-        onAction: () => demoNavigatorKey.currentState?.pushNamed(Routes.mealReply, arguments: MealReplyArgs(i)));
+        actionLabel: '보기', onAction: () {
+      var i = demo.mealPosts.indexWhere((p) => identical(p, target));
+      if (i < 0) i = demo.mealPosts.indexWhere((p) => p.date == post.date && p.note == post.note);
+      if (i >= 0) demoNavigatorKey.currentState?.pushNamed(Routes.mealReply, arguments: MealReplyArgs(i));
+    });
   });
 }
 
