@@ -57,15 +57,13 @@ class _MealTabState extends State<MealTab> {
             Muted(demo.mealPosts[i].note, bottom: AppSpace.xs),
             // 답변을 못 받은 글에 답변 첫 줄이 보이면 답이 온 줄 안다 (리뷰 11/16 #1)
             if (demo.replyPending.contains(demo.mealPosts[i]))
-              const Muted('AI 답변을 받는 중이에요', bottom: 0)
+              const MealPostStatus(MealReplyState.pending)
             else if (demo.mealPosts[i].replied) ...[
               // 나가 있는 동안 온 답변은 열어 볼 때까지 표시한다 (결정 d1116-1)
-              if (!demo.mealPosts[i].seen)
-                Text('답변 왔어요', style: AppText.caption.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
+              if (!demo.mealPosts[i].seen) const MealPostStatus(MealReplyState.newReply),
               Text(demo.mealPosts[i].reply, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppText.caption),
             ] else
-              WordText('답변을 못 받았어요 · 눌러서 다시 받기',
-                  style: AppText.caption.copyWith(color: AppColors.caution, fontWeight: FontWeight.w700)),
+              const MealPostStatus(MealReplyState.failed),
           ]),
         ),
       AppButton('오늘 식단 올리기', onPressed: () => Navigator.pushNamed(context, Routes.mealPost)),

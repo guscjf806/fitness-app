@@ -101,6 +101,9 @@ class AppText {
 
   /// '새 일지'처럼 눈에 띄어야 하는 작은 표시 (디자인 리뷰 11/08 #2)
   static const captionAccent = TextStyle(fontFamily: fontFamily, fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primaryDark);
+
+  /// '답변을 못 받았어요'처럼 잠깐 생긴 문제를 알리는 작은 주황 표시 (디자인 리뷰 11/17 #1)
+  static const captionCaution = TextStyle(fontFamily: fontFamily, fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.caution);
   static const title = TextStyle(fontFamily: fontFamily, fontSize: 18, fontWeight: FontWeight.w700);
   static const number = TextStyle(fontFamily: fontFamily, fontSize: 22, fontWeight: FontWeight.w700);
 

@@ -128,6 +128,22 @@ class LogStatusLabels extends StatelessWidget {
       ]);
 }
 
+/// '내가 올린 식단' 글의 AI 답변 상태 (디자인 리뷰 11/17 #1)
+enum MealReplyState { pending, newReply, failed }
+
+/// 받는 중(회색)·답변 왔어요(청록 굵게)·못 받았어요(주황 굵게)를 한 곳에서 꾸민다
+class MealPostStatus extends StatelessWidget {
+  const MealPostStatus(this.state, {super.key});
+  final MealReplyState state;
+
+  @override
+  Widget build(BuildContext context) => switch (state) {
+        MealReplyState.pending => const Muted('AI 답변을 받는 중이에요', bottom: 0),
+        MealReplyState.newReply => const Text('답변 왔어요', style: AppText.captionAccent),
+        MealReplyState.failed => const WordText('답변을 못 받았어요 · 눌러서 다시 받기', style: AppText.captionCaution),
+      };
+}
+
 /// 못 먹는 음식·아픈 부위를 고치고 '나중에'를 눌렀을 때 식단·운동 탭 맨 위에 둔다 (결정 d1111-1).
 /// 안전을 위한 수정이라 새로 만들어도 무료 횟수를 쓰지 않는다 (결정 d1107-1)
 class PlanOutdatedBanner extends StatelessWidget {
