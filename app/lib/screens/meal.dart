@@ -169,7 +169,8 @@ void _pickAmount(BuildContext context, String slot, int planKcal) {
       const Muted('고른 양에 맞춰 오늘 먹은 칼로리를 대략 계산해요.', top: AppSpace.xs),
       for (final MapEntry(key: amount, value: factor) in AppConfig.mealAmountFactors.entries)
         AppButton('$amount · 약 ${formatNumber((planKcal * factor).round())} kcal',
-            kind: eaten && demo.eatenAmount(slot) == amount ? ButtonKind.primary : ButtonKind.soft, onPressed: () {
+            kind: eaten && demo.eatenAmount(slot) == amount ? ButtonKind.primary : ButtonKind.soft,
+            selected: eaten && demo.eatenAmount(slot) == amount, onPressed: () {
           demo.update(() {
             demo.eatenMeals.add(slot);
             demo.eatenAmounts[slot] = amount;

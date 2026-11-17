@@ -17,11 +17,14 @@ enum ButtonKind { primary, soft, quiet }
 
 class AppButton extends StatelessWidget {
   const AppButton(this.label,
-      {super.key, required this.onPressed, this.kind = ButtonKind.primary, this.top = 12});
+      {super.key, required this.onPressed, this.kind = ButtonKind.primary, this.top = 12, this.selected = false});
   final String label;
   final VoidCallback? onPressed;
   final ButtonKind kind;
   final double top;
+
+  /// 여러 개 중에 지금 고른 버튼. 색만으로 구분하지 않게 글 앞에 체크를 붙이고 읽어 주기에도 알린다 (디자인 리뷰 11/17 #2)
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +41,16 @@ class AppButton extends StatelessWidget {
               side: const BorderSide(color: AppColors.line)),
         },
         // 큰 글씨에서 단어 중간에 끊기지 않게 (디자인 리뷰 11/07 #3)
-        child: WordText(label, textAlign: TextAlign.center),
+        child: !selected
+            ? WordText(label, textAlign: TextAlign.center)
+            : Semantics(
+                selected: true,
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Icon(Icons.check, size: MediaQuery.textScalerOf(context).scale(18)),
+                  const SizedBox(width: AppSpace.xsPlus),
+                  Flexible(child: WordText(label, textAlign: TextAlign.center)),
+                ]),
+              ),
       ),
     );
   }
