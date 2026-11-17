@@ -128,6 +128,18 @@ class LogStatusLabels extends StatelessWidget {
       ]);
 }
 
+/// 글 앞에 두는 작은 로딩 원. '답변 받는 중'처럼 한 줄 안에서 기다림을 알린다 (디자인 리뷰 11/17 #3)
+class InlineSpinner extends StatelessWidget {
+  const InlineSpinner({super.key, this.size = 14});
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => SizedBox.square(
+        dimension: size,
+        child: const CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+      );
+}
+
 /// '내가 올린 식단' 글의 AI 답변 상태 (디자인 리뷰 11/17 #1)
 enum MealReplyState { pending, newReply, failed }
 
@@ -138,7 +150,12 @@ class MealPostStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (state) {
-        MealReplyState.pending => const Muted('AI 답변을 받는 중이에요', bottom: 0),
+        // 멈춘 것처럼 보이지 않게 작은 로딩 원을 앞에 둔다 (디자인 리뷰 11/17 #3)
+        MealReplyState.pending => const Row(children: [
+            InlineSpinner(),
+            SizedBox(width: AppSpace.xsPlus),
+            Flexible(child: Muted('AI 답변을 받는 중이에요', bottom: 0)),
+          ]),
         MealReplyState.newReply => const Text('답변 왔어요', style: AppText.captionAccent),
         MealReplyState.failed => const WordText('답변을 못 받았어요 · 눌러서 다시 받기', style: AppText.captionCaution),
       };

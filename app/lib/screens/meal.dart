@@ -126,10 +126,13 @@ class _MealCard extends StatelessWidget {
                 constraints: const BoxConstraints(minHeight: 48),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   // 올린 끼니는 먹은 것으로 보이고 AI가 계산한 칼로리를 같이 보여 준다 (리뷰 11/11 #4)
-                  CheckCircle(demo.eatenMeals.contains(meal.title) ||
-                      demo.postedKcal(meal.title) != null ||
-                      demo.postedUnreplied(meal.title) ||
-                      demo.postedReplying(meal.title)),
+                  // 답변을 받는 중이면 다 된 체크 대신 로딩 원 (디자인 리뷰 11/17 #3)
+                  if (demo.postedReplying(meal.title))
+                    const SizedBox.square(dimension: 22, child: Center(child: InlineSpinner(size: 16)))
+                  else
+                    CheckCircle(demo.eatenMeals.contains(meal.title) ||
+                        demo.postedKcal(meal.title) != null ||
+                        demo.postedUnreplied(meal.title)),
                   const SizedBox(width: AppSpace.s),
                   // 큰 글씨에서 넘치지 않게 두 줄까지 허용 (디자인 리뷰 11/12 #2)
                   Flexible(
