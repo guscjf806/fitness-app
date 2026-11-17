@@ -121,7 +121,7 @@ class _MealCard extends StatelessWidget {
                 if (posted >= 0) {
                   Navigator.pushNamed(context, Routes.mealReply, arguments: MealReplyArgs(posted));
                 } else {
-                  _pickAmount(context, meal.title);
+                  _pickAmount(context, meal.title, meal.kcal);
                 }
               },
               child: ConstrainedBox(
@@ -161,15 +161,16 @@ String _checkLabel(String slot) {
 }
 
 /// '먹었어요'를 누르면 먹은 양을 고른다. 이미 고른 끼니는 양을 바꾸거나 되돌릴 수 있다 (결정 d1112-2)
-void _pickAmount(BuildContext context, String slot) {
+void _pickAmount(BuildContext context, String slot, int planKcal) {
   final eaten = demo.eatenMeals.contains(slot);
   showAppSheet<void>(
     context,
     builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
       SheetTitle('$slot, 얼마나 먹었어요?'),
-      const Muted('고른 양에 맞춰 오늘 먹은 칼로리를 어림해요.', top: AppSpace.xs),
-      for (final amount in AppConfig.mealAmountFactors.keys)
-        AppButton(amount,
+      // 쉬운 말로, 고르기 전에 칼로리를 보여 준다 (리뷰 11/17 #6)
+      const Muted('고른 양에 맞춰 오늘 먹은 칼로리를 대략 계산해요.', top: AppSpace.xs),
+      for (final MapEntry(key: amount, value: factor) in AppConfig.mealAmountFactors.entries)
+        AppButton('$amount · 약 ${formatNumber((planKcal * factor).round())} kcal',
             kind: eaten && demo.eatenAmount(slot) == amount ? ButtonKind.primary : ButtonKind.soft, onPressed: () {
           demo.update(() {
             demo.eatenMeals.add(slot);
