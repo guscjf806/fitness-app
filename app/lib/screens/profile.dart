@@ -92,11 +92,16 @@ class ProfileTab extends StatelessWidget {
         title: '이벤트·혜택 알림',
         subtitle: '새 기능, 할인 소식 (선택)',
         value: demo.marketingOptIn,
-        onChanged: (v) => demo.update(() {
-          demo.marketingOptIn = v;
-          final id = AuthService.userId;
-          if (id != null) v ? demo.marketingAccounts.add(id) : demo.marketingAccounts.remove(id);
-        }),
+        onChanged: (v) {
+          demo.update(() {
+            demo.marketingOptIn = v;
+            final id = AuthService.userId;
+            if (id != null) v ? demo.marketingAccounts.add(id) : demo.marketingAccounts.remove(id);
+          });
+          // 광고 알림 동의·철회는 처리 결과를 날짜와 함께 알린다 (리뷰 11/17 #2)
+          final now = DateTime.now();
+          toast(context, '${now.month}월 ${now.day}일, 이벤트·혜택 알림 ${v ? '받기에 동의했어요' : '받지 않기로 했어요'}');
+        },
       ),
       if (role != 'trainer')
         SwitchRow(
