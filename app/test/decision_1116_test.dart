@@ -1,3 +1,4 @@
+import 'package:fitness_app/config.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitness_app/data/mock_data.dart';
 import 'package:fitness_app/state/demo_state.dart';
@@ -34,5 +35,20 @@ void main() {
     });
     expect(demo.postedReplying(slot), isTrue);
     expect(demo.postedUnreplied(slot), isFalse);
+  });
+  test('리뷰 11/17 #4 답변을 받는 중인 글도 무료 횟수에 같이 센다', () {
+    final before = demo.aiUsed;
+    final mode = demo.failMode;
+    demo.failMode = '정상';
+    demo.aiUsed = AppConfig.freeMonthlyAiLimit - 1;
+    final post = MealPost('오늘 점심', '시험', '', isToday: true, replied: false);
+    addTearDown(() {
+      demo.replyPending.remove(post);
+      demo.aiUsed = before;
+      demo.failMode = mode;
+    });
+    expect(demo.quotaExhausted, isFalse);
+    demo.replyPending.add(post);
+    expect(demo.quotaExhausted, isTrue);
   });
 }

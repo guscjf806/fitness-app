@@ -267,7 +267,8 @@ class DemoState extends ChangeNotifier {
   bool get recordedToday => mealPostedToday || workoutDone;
   int get streak => 6 + (recordedToday ? 1 : 0);
   /// 이번 달 무료 횟수를 다 썼는지 (실제로 다 쓴 경우와 목업의 '횟수 소진' 미리 보기)
-  bool get quotaExhausted => failMode == '횟수 소진' || aiUsed >= AppConfig.freeMonthlyAiLimit;
+  /// 답변을 받는 중인 글도 곧 1회가 되니 같이 센다. 연달아 올려 한도를 넘지 않게 (리뷰 11/17 #4)
+  bool get quotaExhausted => failMode == '횟수 소진' || aiUsed + replyPending.length >= AppConfig.freeMonthlyAiLimit;
 
   /// 화면에 보여 줄 이번 달 사용 횟수 (식단 올리기·내 정보가 같은 숫자를 쓴다, 리뷰 11/01 #1)
   int get aiUsedShown => quotaExhausted ? AppConfig.freeMonthlyAiLimit : aiUsed;
