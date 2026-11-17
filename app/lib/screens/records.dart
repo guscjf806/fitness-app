@@ -56,7 +56,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
                   Text(i == 7 ? '오늘' : dayLabels[DateTime(2026, 10, demoToday - 7 + i).weekday - 1],
                       softWrap: false,
                       style: i == 7
-                          ? AppText.small.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)
+                          ? AppText.smallAccent
                           : AppText.small.copyWith(color: AppColors.textSub)),
                 ]),
               ),

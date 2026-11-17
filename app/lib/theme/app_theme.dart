@@ -99,6 +99,9 @@ class AppText {
   static const body = TextStyle(fontFamily: fontFamily, fontSize: 14);
   static const bodyStrong = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700);
 
+  /// 달력의 '오늘'처럼 가장 작은 글씨의 청록 굵은 표시 (디자인 리뷰 11/17 #6)
+  static const smallAccent = TextStyle(fontFamily: fontFamily, fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primaryDark);
+
   /// '새 일지'처럼 눈에 띄어야 하는 작은 표시 (디자인 리뷰 11/08 #2)
   static const captionAccent = TextStyle(fontFamily: fontFamily, fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primaryDark);
 

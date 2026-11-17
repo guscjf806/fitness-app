@@ -112,7 +112,7 @@ class NumberedList extends StatelessWidget {
                 height: 24,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
-                child: Text('${i + 1}', style: AppText.caption.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
+                child: Text('${i + 1}', style: AppText.captionAccent),
               ),
               const SizedBox(width: AppSpace.sPlus),
               Expanded(child: WordText(items[i])),
