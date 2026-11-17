@@ -253,12 +253,15 @@ class DemoState extends ChangeNotifier {
     return posts.isEmpty ? null : posts.fold<int>(0, (s, p) => s + p.kcal!);
   }
 
+  /// 오늘 그 끼니에 식단을 올렸는지. 받는 중·받음·못 받음 모두 포함 (디자인 리뷰 11/17 #4)
+  bool postedToday(String slot) => mealPosts.any((p) => p.isToday && p.date == '오늘 $slot');
+
   /// 오늘 그 끼니에 올렸지만 AI 답변을 하나도 못 받았는지. 먹은 것으로 체크는 하고 칼로리는 안 더한다 (결정 d1113-2)
   /// 답변을 받는 중인 글은 실패로 보이지 않게 뺀다 (리뷰 11/17 #1)
   bool postedUnreplied(String slot) =>
       postedKcal(slot) == null &&
       !postedReplying(slot) &&
-      mealPosts.any((p) => p.isToday && p.date == '오늘 $slot');
+      postedToday(slot);
 
   /// 오늘 그 끼니에 올린 글의 AI 답변을 아직 받는 중인지 (리뷰 11/17 #1)
   bool postedReplying(String slot) =>

@@ -130,17 +130,14 @@ class _MealCard extends StatelessWidget {
                   if (demo.postedReplying(meal.title))
                     const SizedBox.square(dimension: 22, child: Center(child: InlineSpinner(size: 16)))
                   else
-                    CheckCircle(demo.eatenMeals.contains(meal.title) ||
-                        demo.postedKcal(meal.title) != null ||
-                        demo.postedUnreplied(meal.title)),
+                    CheckCircle(demo.eatenMeals.contains(meal.title) || demo.postedToday(meal.title)),
                   const SizedBox(width: AppSpace.s),
                   // 큰 글씨에서 넘치지 않게 두 줄까지 허용 (디자인 리뷰 11/12 #2)
                   Flexible(
                     child: WordText(_checkLabel(meal.title), textAlign: TextAlign.end),
                   ),
                   // 누르면 화면이 열리는 줄이라 화살표로 알린다
-                  if (demo.postedKcal(meal.title) != null || demo.postedUnreplied(meal.title) || demo.postedReplying(meal.title))
-                    const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
+                  if (demo.postedToday(meal.title)) const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
                 ]),
               ),
             ),
