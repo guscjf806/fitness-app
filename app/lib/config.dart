@@ -37,4 +37,17 @@ class AppConfig {
 
   /// '먹었어요'에서 고른 양에 곱하는 값. 식단표 칼로리 × 이 값 (결정 d1112-2, 초안 값)
   static const mealAmountFactors = {'조금': 0.5, '다 먹음': 1.0, '더 먹음': 1.3};
+
+  /// PT 예약 (docs/PT예약_설계.md, 결정 d1117-pt1~5). 선생님이 이 시간 안에 답하지 않으면 자동 거절
+  static const ptAutoRejectHours = 5;
+
+  /// 수업 몇 시간 전까지 무료로 취소할 수 있는지. 지나면 1회 차감 (결정 d1117-pt2·pt3)
+  static const ptFreeCancelHours = 24;
+
+  /// 오늘부터 며칠 앞까지 신청할 수 있는지 (결정 d1117-pt4)
+  static const ptBookingDays = 14;
+
+  /// 선생님이 열고 닫을 수 있는 수업 시각(시). 목업에서 처음 열려 있는 시각은 ptDefaultOpenHours
+  static const ptLessonHours = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+  static const ptDefaultOpenHours = [7, 8, 12, 18, 19, 20, 21];
 }

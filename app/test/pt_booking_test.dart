@@ -1,0 +1,99 @@
+import 'package:fitness_app/logic/pt_booking.dart';
+import 'package:fitness_app/main.dart';
+import 'package:fitness_app/routes.dart';
+import 'package:fitness_app/state/demo_state.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'finders.dart';
+
+/// PT 예약 연습용 화면 (docs/PT예약_설계.md, 결정 d1117-pt1~5)
+void main() {
+  final now = DateTime(2026, 11, 17, 10);
+
+  group('예약 규칙', () {
+    test('5시간 안에 답이 없으면 자동 거절', () {
+      final b = PtBooking(member: '김지아', start: DateTime(2026, 11, 19, 19), requestedAt: now);
+      expect(ptStatusAt(b, now.add(const Duration(hours: 4, minutes: 59))), PtStatus.requested);
+      expect(ptStatusAt(b, now.add(const Duration(hours: 5))), PtStatus.autoRejected);
+      expect(ptCharged(b..status = ptStatusAt(b, now.add(const Duration(hours: 5)))), isFalse);
+    });
+
+    test('급한 신청은 받고, 답 없이 수업 시간이 지나면 지난 신청 (차감 없음)', () {
+      final b = PtBooking(member: '김지아', start: DateTime(2026, 11, 17, 13), requestedAt: now);
+      expect(b.urgent, isTrue);
+      expect(ptStatusAt(b, DateTime(2026, 11, 17, 12, 59)), PtStatus.requested);
+      expect(ptStatusAt(b, DateTime(2026, 11, 17, 13)), PtStatus.expired);
+    });
+
+    test('24시간 전까지는 무료 취소, 그 뒤는 차감', () {
+      final b = PtBooking(member: '김지아', start: DateTime(2026, 11, 18, 10), requestedAt: now, status: PtStatus.approved);
+      expect(ptFreeCancel(b, now), isTrue);
+      expect(ptFreeCancel(b, now.add(const Duration(minutes: 1))), isFalse);
+      b.status = PtStatus.lateCancelled;
+      expect(ptCharged(b), isTrue);
+      b.waived = true;
+      expect(ptCharged(b), isFalse, reason: '이번만 빼 주기');
+    });
+  });
+
+  group('화면', () {
+    setUp(() {
+      SharedPreferences.setMockInitialValues({});
+      demo.resetPt();
+    });
+
+    Future<void> open(WidgetTester tester, String role, String route) async {
+      tester.view.physicalSize = const Size(1200, 2400);
+      addTearDown(tester.view.reset);
+      demo.switchRole(role);
+      await tester.pumpWidget(const FitnessApp());
+      await tester.pumpAndSettle();
+      demoNavigatorKey.currentState!.pushNamed(route);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('회원은 빈 시간을 신청하고, 승인 기다리는 중으로 보인다', (tester) async {
+      await open(tester, 'member', Routes.ptBooking);
+      expect(findText('수업 예약'), findsWidgets);
+      expect(findText('6회'), findsOneWidget);
+      // 내일로 가서 신청 가능한 첫 칸을 누른다
+      await tester.tap(findText('${DateTime.now().add(const Duration(days: 1)).day}일').first);
+      await tester.pumpAndSettle();
+      final before = demo.ptBookings.length;
+      final slot = findText('신청 가능');
+      if (slot.evaluate().isEmpty) return; // 내일이 일요일이면 열린 시간이 없다
+      await tester.ensureVisible(slot.first);
+      await tester.tap(slot.first);
+      await tester.pumpAndSettle();
+      await tester.tap(findText('신청하기'));
+      await tester.pumpAndSettle();
+      expect(demo.ptBookings.length, before + 1);
+      expect(ptStatusAt(demo.ptBookings.last, DateTime.now()), PtStatus.requested);
+      expect(findText('승인 기다리는 중'), findsOneWidget);
+    });
+
+    testWidgets('선생님은 급한 신청을 맨 위에서 보고 승인한다', (tester) async {
+      await open(tester, 'trainer', Routes.ptSchedule);
+      expect(findTextContaining('급한 신청'), findsOneWidget);
+      await tester.tap(findText('승인').first);
+      await tester.pumpAndSettle();
+      final urgent = demo.ptBookings.firstWhere((b) => b.urgent);
+      expect(urgent.status, PtStatus.approved);
+    });
+
+    testWidgets('선생님이 안 왔어요를 누르면 차감, 이번만 빼 주기로 되돌린다', (tester) async {
+      await open(tester, 'trainer', Routes.ptSchedule);
+      final left = demo.ptLeft['박서연']!;
+      await tester.ensureVisible(findText('안 왔어요'));
+      await tester.tap(findText('안 왔어요'));
+      await tester.pumpAndSettle();
+      expect(demo.ptLeft['박서연'], left - 1);
+      await tester.ensureVisible(findText('이번만 빼 주기'));
+      await tester.tap(findText('이번만 빼 주기'));
+      await tester.pumpAndSettle();
+      expect(demo.ptLeft['박서연'], left);
+    });
+  });
+}

@@ -9,6 +9,7 @@ import 'screens/main_shell.dart';
 import 'screens/meal.dart';
 import 'screens/onboarding.dart';
 import 'screens/profile.dart';
+import 'screens/pt_booking.dart';
 import 'screens/records.dart';
 import 'screens/session.dart';
 import 'widgets/common.dart';
@@ -34,6 +35,8 @@ class Routes {
   static const exercisePick = '/exercise/pick'; // S21
   static const exerciseDetail = '/exercise/detail'; // S22
   static const session = '/workout/session'; // S23
+  static const ptBooking = '/pt/booking'; // S24 수업 예약 (연습용)
+  static const ptSchedule = '/pt/schedule'; // S25 수업 일정 (연습용)
 
   static final table = <String, WidgetBuilder>{
     start: (_) => watch(() => StartScreen()),
@@ -55,5 +58,7 @@ class Routes {
     exercisePick: (_) => watch(() => ExercisePickerScreen()),
     exerciseDetail: (_) => watch(() => ExerciseDetailScreen()),
     session: (_) => watch(() => WorkoutSessionScreen()),
+    ptBooking: (_) => watch(() => PtBookingScreen()),
+    ptSchedule: (_) => watch(() => PtScheduleScreen()),
   };
 }

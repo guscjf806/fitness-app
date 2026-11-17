@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../data/mock_data.dart';
+import '../../logic/pt_booking.dart';
 import '../../routes.dart';
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
@@ -143,6 +144,22 @@ class _MemberManageTabState extends State<MemberManageTab> {
     final member = this.member;
     return TabBody(children: [
       const H1('회원 관리'),
+      // 답을 기다리는 신청이 있으면 바로 보이게 (연습용, docs/PT예약_설계.md)
+      AppCard(
+        showArrow: true,
+        onTap: () => Navigator.pushNamed(context, Routes.ptSchedule),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('수업 일정', style: AppText.bodyStrong),
+          Builder(builder: (context) {
+            final now = DateTime.now();
+            final waiting = demo.ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList();
+            final urgent = waiting.where((b) => b.urgent).length;
+            if (waiting.isEmpty) return const Muted('답할 신청이 없어요 · 수업 시간 열고 닫기', bottom: 0);
+            return Text('답을 기다리는 신청 ${waiting.length}건${urgent > 0 ? ' · 급한 신청 $urgent건' : ''}',
+                style: urgent > 0 ? AppText.captionCaution : AppText.captionAccent);
+          }),
+        ]),
+      ),
       // 수업 끝나고 가장 자주 쓰는 회원 목록을 맨 위로, 가끔 쓰는 초대 코드는 맨 아래로 (리뷰 11/04 #3)
       if (demo.activeMembers.isEmpty) const Muted('연결된 회원이 없어요. 아래에서 초대 코드를 만들어 보세요.'),
       for (final m in demo.activeMembers) MemberLogRow(m),

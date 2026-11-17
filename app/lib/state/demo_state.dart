@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
 import '../data/mock_data.dart';
 import '../logic/intensity.dart';
+import '../logic/pt_booking.dart';
 import '../logic/routine.dart';
 import '../logic/tdee.dart';
 import '../routes.dart';
@@ -135,6 +136,36 @@ class DemoState extends ChangeNotifier {
 
   /// 지금 로그인한 PT 회원 이름 (목업). 실제 연결 때는 계정 정보에서 가져온다 (리뷰 10/30 #7)
   String memberName = '김지아';
+
+  /// PT 예약 연습용 화면의 데이터 (docs/PT예약_설계.md). 폰 메모리에만 두고 저장하지 않는다.
+  /// 예약 기록은 개인정보라 서버 표는 약관 검토 뒤에 만든다
+  List<PtBooking>? _ptBookings;
+  List<PtBooking> get ptBookings => _ptBookings ??= seedPtBookings(DateTime.now(), memberName);
+
+  /// 선생님이 열어 둔 수업 시각. 처음에는 일요일을 빼고 기본 시각을 연다
+  Set<DateTime>? _ptOpenSlots;
+  Set<DateTime> get ptOpenSlots => _ptOpenSlots ??= {
+        for (var d = 0; d < AppConfig.ptBookingDays; d++)
+          if (ptDay(DateTime.now()).add(Duration(days: d)).weekday != DateTime.sunday)
+            for (final h in AppConfig.ptDefaultOpenHours) ptDay(DateTime.now()).add(Duration(days: d, hours: h)),
+        // 급한 신청 예시가 들어간 칸
+        for (final b in ptBookings) b.start,
+      };
+
+  /// 회원별 남은 PT 횟수 (목업)
+  final Map<String, int> ptLeft = {'김지아': 6, '이도현': 10, '박서연': 3};
+
+  /// 그 시각 칸을 차지한 예약 (신청 중이거나 확정)
+  PtBooking? ptBookingAt(DateTime start, DateTime now) =>
+      ptBookings.where((b) => b.start == start && ptHoldsSlot(ptStatusAt(b, now))).firstOrNull;
+
+  void resetPt() {
+    _ptBookings = null;
+    _ptOpenSlots = null;
+    ptLeft
+      ..clear()
+      ..addAll({'김지아': 6, '이도현': 10, '박서연': 3});
+  }
   final List<InviteCode> inviteCodes = [];
   final Set<String> savedVideos = {};
 
@@ -315,6 +346,7 @@ class DemoState extends ChangeNotifier {
   void logout() {
     consented = false;
     ptEnded = false; // 다음 사람에게 앞사람 일지가 보이지 않게 (리뷰 11/07 #1)
+    resetPt();
     // 폰에 남은 몸 정보를 지운다 (결정 d1104-4). 계정에서 다시 불러오는 건 회원 정보 표를 만들 때
     sex = '남';
     height = '175';
