@@ -281,11 +281,10 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               WordText('${b.member} · ${ptWhen(b.start)}', style: AppText.bodyStrong),
               const Muted('수업을 했는지 기록해 주세요. 어느 쪽이든 PT 1회가 차감돼요.', bottom: 0),
-              Row(children: [
-                Expanded(child: AppButton('수업 했어요', onPressed: () => _finish(b, PtStatus.done))),
-                const SizedBox(width: AppSpace.s),
-                Expanded(child: AppButton('안 왔어요', kind: ButtonKind.quiet, onPressed: () => _finish(b, PtStatus.noShow))),
-              ]),
+              ButtonPair(
+                left: AppButton('수업 했어요', onPressed: () => _finish(b, PtStatus.done)),
+                right: AppButton('안 왔어요', kind: ButtonKind.quiet, onPressed: () => _finish(b, PtStatus.noShow)),
+              ),
             ]),
           ),
         for (final b in toWaive)
@@ -330,11 +329,10 @@ class _RequestCard extends StatelessWidget {
           top: AppSpace.xxs,
           bottom: 0,
         ),
-        Row(children: [
-          Expanded(child: AppButton('승인', onPressed: () => onAnswer(true))),
-          const SizedBox(width: AppSpace.s),
-          Expanded(child: AppButton('거절', kind: ButtonKind.quiet, onPressed: () => onAnswer(false))),
-        ]),
+        ButtonPair(
+          left: AppButton('승인', onPressed: () => onAnswer(true)),
+          right: AppButton('거절', kind: ButtonKind.quiet, onPressed: () => onAnswer(false)),
+        ),
       ]),
     );
   }

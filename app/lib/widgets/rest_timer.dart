@@ -112,11 +112,11 @@ class _RestTimerState extends State<_RestTimer> {
           ]),
         ),
         const SizedBox(height: 20),
-        Row(children: [
-          Expanded(child: AppButton('− 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(-10))),
-          const SizedBox(width: AppSpace.sPlus),
-          Expanded(child: AppButton('+ 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(10))),
-        ]),
+        ButtonPair(
+          left: AppButton('− 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(-10)),
+          right: AppButton('+ 10초', kind: ButtonKind.soft, top: 0, onPressed: () => _adjust(10)),
+          gap: AppSpace.sPlus,
+        ),
         const SizedBox(height: AppSpace.m),
         // 운동을 그만두는 버튼처럼 보이지 않게 기본 색으로 (리뷰 10/28 #4)
         AppButton('휴식 끝내기', top: 0, onPressed: () => Navigator.pop(context)),

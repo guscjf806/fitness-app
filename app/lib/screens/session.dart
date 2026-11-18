@@ -296,23 +296,15 @@ class _WorkoutSessionScreenState extends State<WorkoutSessionScreen> {
           ),
         if (stackButtons) ...[addButton, deleteButton]
         else
-          Row(children: [
-            Expanded(child: deleteButton),
-            const SizedBox(width: AppSpace.sPlus),
-            Expanded(flex: 2, child: addButton),
-          ]),
+          ButtonPair(left: deleteButton, right: addButton, rightFlex: 2, gap: AppSpace.sPlus),
       ]),
       bottomNavigationBar: BottomActionBar(
-          child: Row(children: [
-            if (index > 0) ...[
-              Expanded(child: AppButton('이전', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => index--))),
-              const SizedBox(width: AppSpace.sPlus),
-            ],
-            Expanded(
-              flex: 2,
-              child: AppButton(last ? '운동 완료' : '다음 운동', top: 0, onPressed: last ? _finish : () => setState(() => index++)),
-            ),
-          ]),
+          child: ButtonPair(
+            left: index > 0 ? AppButton('이전', kind: ButtonKind.soft, top: 0, onPressed: () => setState(() => index--)) : null,
+            right: AppButton(last ? '운동 완료' : '다음 운동', top: 0, onPressed: last ? _finish : () => setState(() => index++)),
+            rightFlex: 2,
+            gap: AppSpace.sPlus,
+          ),
       ),
     );
   }

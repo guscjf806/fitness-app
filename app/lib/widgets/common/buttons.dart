@@ -56,6 +56,27 @@ class AppButton extends StatelessWidget {
   }
 }
 
+/// 나란히 놓는 두 버튼. 큰 글씨에서 한쪽만 두 줄이 되어도 두 버튼 높이를 맞춘다 (디자인 리뷰 11/18 #1)
+/// [left]가 없으면 [right]만 꽉 채운다. [rightFlex]로 오른쪽을 더 넓게 둘 수 있다
+class ButtonPair extends StatelessWidget {
+  const ButtonPair({super.key, this.left, required this.right, this.rightFlex = 1, this.gap = AppSpace.s});
+  final Widget? left;
+  final Widget right;
+  final int rightFlex;
+  final double gap;
+
+  @override
+  Widget build(BuildContext context) => IntrinsicHeight(
+        child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          if (left != null) ...[
+            Expanded(child: left!),
+            SizedBox(width: gap),
+          ],
+          Expanded(flex: rightFlex, child: right),
+        ]),
+      );
+}
+
 /// 지우기·빼기 글자 버튼. 글자색만 바꾸면 눌림 물결이 초록이라 물결까지 경고색으로 (디자인 리뷰 11/07 #7)
 class DangerTextButton extends StatelessWidget {
   const DangerTextButton(this.label, {super.key, required this.onPressed});
