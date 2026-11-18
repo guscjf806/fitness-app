@@ -10,6 +10,7 @@ import '../logic/pt_booking.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
+import '../widgets/pt_slot.dart';
 
 /// 오늘부터 신청할 수 있는 날들
 List<DateTime> _bookingDays(DateTime now) =>
@@ -123,7 +124,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       if (slots.isEmpty)
         const AppCard(child: WordText('이날은 선생님이 수업 시간을 열지 않았어요. 다른 날을 골라 주세요.'))
       else
-        Wrap(spacing: AppSpace.s, runSpacing: AppSpace.s, children: [
+        SlotGrid(children: [
           for (final s in slots) _MemberSlot(start: s, now: now, me: me, onRequest: () => _request(s)),
         ]),
       const SizedBox(height: AppSpace.l),
@@ -182,28 +183,12 @@ class _MemberSlot extends StatelessWidget {
     final taken = demo.ptBookingAt(start, now);
     final mine = taken?.member == me;
     final label = mine ? '내 신청' : (taken != null ? '마감' : '신청 가능');
-    return SizedBox(
-      width: 96,
-      child: Semantics(
-        selected: mine,
-        child: FilledButton(
-          onPressed: taken == null ? onRequest : null,
-          style: FilledButton.styleFrom(
-            backgroundColor: mine ? AppColors.primary : AppColors.primarySoft,
-            foregroundColor: mine ? Colors.white : AppColors.primaryDark,
-            disabledBackgroundColor: mine ? AppColors.primary : AppColors.line,
-            disabledForegroundColor: mine ? Colors.white : AppColors.textSub,
-            padding: const EdgeInsets.symmetric(vertical: AppSpace.s),
-          ),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(_hourText(start), style: const TextStyle(fontWeight: FontWeight.w700)),
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              if (mine) const Icon(Icons.check, size: 14),
-              Flexible(child: Text(label, style: AppText.small.copyWith(color: null))),
-            ]),
-          ]),
-        ),
-      ),
+    return TimeSlotButton(
+      time: _hourText(start),
+      label: label,
+      tone: mine ? SlotTone.filled : (taken != null ? SlotTone.taken : SlotTone.open),
+      selected: mine,
+      onTap: taken == null ? onRequest : null,
     );
   }
 }
@@ -316,7 +301,7 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
       const H2('수업 시간 열기'),
       const Muted('눌러서 회원이 신청할 수 있는 시간을 열고 닫아요.'),
       DayChips(labels: _dayChipLabels(days), selected: day, today: 0, onSelect: (i) => setState(() => day = i)),
-      Wrap(spacing: AppSpace.s, runSpacing: AppSpace.s, children: [
+      SlotGrid(children: [
         for (final h in AppConfig.ptLessonHours)
           if (days[day].add(Duration(hours: h)).isAfter(now))
             _TrainerSlot(start: days[day].add(Duration(hours: h)), now: now, onTap: () => _toggle(days[day].add(Duration(hours: h)), now)),
@@ -369,21 +354,11 @@ class _TrainerSlot extends StatelessWidget {
     final label = b != null
         ? '${b.member} ${ptStatusAt(b, now) == PtStatus.approved ? '예약' : '신청'}'
         : (open ? '열림' : '닫힘');
-    return SizedBox(
-      width: 96,
-      child: OutlinedButton(
-        onPressed: onTap,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: b != null ? AppColors.primary : (open ? AppColors.primarySoft : null),
-          foregroundColor: b != null ? Colors.white : (open ? AppColors.primaryDark : AppColors.textSub),
-          side: BorderSide(color: open || b != null ? AppColors.primary : AppColors.line),
-          padding: const EdgeInsets.symmetric(vertical: AppSpace.s),
-        ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(_hourText(start), style: const TextStyle(fontWeight: FontWeight.w700)),
-          Text(label, style: AppText.small.copyWith(color: null), maxLines: 1, overflow: TextOverflow.ellipsis),
-        ]),
-      ),
+    return TimeSlotButton(
+      time: _hourText(start),
+      label: label,
+      tone: b != null ? SlotTone.filled : (open ? SlotTone.open : SlotTone.closed),
+      onTap: onTap,
     );
   }
 }
