@@ -105,3 +105,13 @@ List<PtBooking> seedPtBookings(DateTime now, String me) {
     PtBooking(member: '박서연', start: at(-1, 18), requestedAt: now.subtract(const Duration(days: 3)), status: PtStatus.approved),
   ];
 }
+
+/// 오늘부터 신청할 수 있는 날들
+List<DateTime> ptBookingDays(DateTime now) =>
+    [for (var d = 0; d < AppConfig.ptBookingDays; d++) ptDay(now).add(Duration(days: d))];
+
+/// 날짜 칩 글: 위는 요일, 아래는 날짜
+List<String> ptDayChipLabels(List<DateTime> days) => [for (final d in days) '${dayLabels[d.weekday - 1]} ${d.day}일'];
+
+/// '19:00'
+String ptHourText(DateTime d) => '${d.hour.toString().padLeft(2, '0')}:00';

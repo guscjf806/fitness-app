@@ -159,6 +159,18 @@ class DemoState extends ChangeNotifier {
   PtBooking? ptBookingAt(DateTime start, DateTime now) =>
       ptBookings.where((b) => b.start == start && ptHoldsSlot(ptStatusAt(b, now))).firstOrNull;
 
+  /// 잘못 눌렀을 때 바로 앞 상태(상태·차감·남은 횟수)로 되돌리는 함수. 알림 띠의 '되돌리기'에 쓴다 (디자인 리뷰 11/18 #2)
+  VoidCallback ptUndo(PtBooking b) {
+    final status = b.status;
+    final waived = b.waived;
+    final left = ptLeft[b.member];
+    return () => update(() {
+          b.status = status;
+          b.waived = waived;
+          if (left != null) ptLeft[b.member] = left;
+        });
+  }
+
   void resetPt() {
     _ptBookings = null;
     _ptOpenSlots = null;
