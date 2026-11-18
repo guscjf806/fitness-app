@@ -18,6 +18,18 @@ List<DateTime> _bookingDays(DateTime now) =>
 /// 날짜 칩 글: 위는 요일, 아래는 날짜
 List<String> _dayChipLabels(List<DateTime> days) => [for (final d in days) '${dayLabels[d.weekday - 1]} ${d.day}일'];
 
+/// 잘못 눌렀을 때 바로 앞 상태(상태·차감·남은 횟수)로 되돌리는 함수. 알림 띠의 '되돌리기'에 쓴다 (디자인 리뷰 11/18 #2)
+VoidCallback _undoOf(PtBooking b) {
+  final status = b.status;
+  final waived = b.waived;
+  final left = demo.ptLeft[b.member];
+  return () => demo.update(() {
+        b.status = status;
+        b.waived = waived;
+        if (left != null) demo.ptLeft[b.member] = left;
+      });
+}
+
 String _hourText(DateTime d) => '${d.hour.toString().padLeft(2, '0')}:00';
 
 /// S24 수업 예약 (PT 회원)
@@ -60,8 +72,9 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     final now = DateTime.now();
     final status = ptStatusAt(b, now);
     if (status == PtStatus.requested) {
+      final undo = _undoOf(b);
       demo.update(() => b.status = PtStatus.cancelled);
-      toast(context, '신청을 취소했어요');
+      toast(context, '신청을 취소했어요', actionLabel: '되돌리기', onAction: undo);
       return;
     }
     // 24시간 전까지는 무료, 지나면 1회 차감 (결정 d1117-pt2·pt3)
@@ -225,17 +238,21 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
   int day = 0;
 
   void _answer(PtBooking b, bool approve) {
+    final undo = _undoOf(b);
     demo.update(() => b.status = approve ? PtStatus.approved : PtStatus.rejected);
-    toast(context, '${b.member} 님 ${ptWhen(b.start)} 신청을 ${approve ? '승인' : '거절'}했어요. 회원에게 알려 드려요');
+    toast(context, '${b.member} 님 ${ptWhen(b.start)} 신청을 ${approve ? '승인' : '거절'}했어요. 회원에게 알려 드려요',
+        actionLabel: '되돌리기', onAction: undo);
   }
 
   /// 지난 수업: 했으면 1회 차감, 안 왔으면 1회 차감 (결정 d1117-pt3)
   void _finish(PtBooking b, PtStatus result) {
+    final undo = _undoOf(b);
     demo.update(() {
       b.status = result;
       demo.ptLeft[b.member] = (demo.ptLeft[b.member] ?? 0) - 1;
     });
-    toast(context, result == PtStatus.done ? '${b.member} 님 수업을 기록했어요. PT 1회가 차감됐어요' : '${b.member} 님이 오지 않은 것으로 기록했어요. PT 1회가 차감됐어요');
+    toast(context, result == PtStatus.done ? '${b.member} 님 수업을 기록했어요. PT 1회가 차감됐어요' : '${b.member} 님이 오지 않은 것으로 기록했어요. PT 1회가 차감됐어요',
+        actionLabel: '되돌리기', onAction: undo);
   }
 
   /// 사정이 있으면 차감을 되돌린다 (결정 d1117-pt3)

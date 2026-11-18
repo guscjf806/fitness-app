@@ -95,5 +95,19 @@ void main() {
       await tester.pumpAndSettle();
       expect(demo.ptLeft['박서연'], left);
     });
+
+    testWidgets('디자인 리뷰 11/18 #2 안 왔어요를 잘못 눌러도 되돌리기로 횟수가 돌아온다', (tester) async {
+      await open(tester, 'trainer', Routes.ptSchedule);
+      final left = demo.ptLeft['박서연']!;
+      await tester.ensureVisible(findText('안 왔어요'));
+      await tester.tap(findText('안 왔어요'));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      expect(demo.ptLeft['박서연'], left - 1);
+      await tester.tap(find.widgetWithText(SnackBarAction, '되돌리기'));
+      await tester.pumpAndSettle();
+      expect(demo.ptLeft['박서연'], left);
+      expect(demo.ptBookings.any((b) => b.member == '박서연' && b.status == PtStatus.approved && !b.start.isAfter(DateTime.now())), isTrue);
+    });
   });
 }
