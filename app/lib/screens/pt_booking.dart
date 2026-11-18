@@ -163,7 +163,10 @@ class _MyBookingCard extends StatelessWidget {
           Muted('${ptLeftText(left)} 안에 답이 없으면 자동으로 취소돼요', top: AppSpace.xxs, bottom: 0),
         Align(
           alignment: Alignment.centerRight,
-          child: TextButton(onPressed: onCancel, child: Text(status == PtStatus.requested ? '신청 취소' : '수업 취소')),
+          // 차감될 수 있는 수업 취소는 다른 화면의 지우기·빼기처럼 경고색 (디자인 리뷰 11/18 #6)
+          child: status == PtStatus.requested
+              ? TextButton(onPressed: onCancel, child: const Text('신청 취소'))
+              : DangerTextButton('수업 취소', onPressed: onCancel),
         ),
       ]),
     );
