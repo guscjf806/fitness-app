@@ -77,6 +77,14 @@ String ptStatusLabel(PtStatus s, {bool waived = false}) => switch (s) {
       PtStatus.noShow => waived ? '안 옴 · 차감 안 함' : '안 옴 · 1회 차감',
     };
 
+/// 남은 시간을 쉬운 말로: '2시간 15분', 0이 들어가는 쪽은 뺀다('3시간', '40분'). 1분 안 남았으면 '1분' (디자인 리뷰 11/18 #4)
+String ptLeftText(Duration d) {
+  final h = d.inHours;
+  final m = d.inMinutes % 60;
+  if (h <= 0) return '${m < 1 ? 1 : m}분';
+  return m == 0 ? '$h시간' : '$h시간 $m분';
+}
+
 /// '11월 18일(화) 19:00'
 String ptWhen(DateTime d) =>
     '${d.month}월 ${d.day}일(${dayLabels[d.weekday - 1]}) ${d.hour.toString().padLeft(2, '0')}:00';

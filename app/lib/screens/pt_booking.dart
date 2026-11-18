@@ -160,7 +160,7 @@ class _MyBookingCard extends StatelessWidget {
         WordText(ptWhen(b.start), style: AppText.bodyStrong),
         Text(ptStatusLabel(status), style: status == PtStatus.approved ? AppText.captionAccent : AppText.caption),
         if (status == PtStatus.requested && !b.urgent)
-          Muted('${left.inHours}시간 ${left.inMinutes % 60}분 안에 답이 없으면 자동으로 취소돼요', top: AppSpace.xxs, bottom: 0),
+          Muted('${ptLeftText(left)} 안에 답이 없으면 자동으로 취소돼요', top: AppSpace.xxs, bottom: 0),
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(onPressed: onCancel, child: Text(status == PtStatus.requested ? '신청 취소' : '수업 취소')),
@@ -327,7 +327,7 @@ class _RequestCard extends StatelessWidget {
         Muted(
           b.urgent
               ? '수업 시간이 지나도록 답하지 않으면 지난 신청으로 정리돼요'
-              : '${left.inHours}시간 ${left.inMinutes % 60}분 안에 답하지 않으면 자동으로 거절돼요',
+              : '${ptLeftText(left)} 안에 답하지 않으면 자동으로 거절돼요',
           top: AppSpace.xxs,
           bottom: 0,
         ),

@@ -38,6 +38,13 @@ void main() {
     });
   });
 
+  test('디자인 리뷰 11/18 #4 남은 시간에 0이 보이지 않는다', () {
+    expect(ptLeftText(const Duration(hours: 1)), '1시간');
+    expect(ptLeftText(const Duration(minutes: 40)), '40분');
+    expect(ptLeftText(const Duration(hours: 2, minutes: 15)), '2시간 15분');
+    expect(ptLeftText(const Duration(seconds: 20)), '1분');
+  });
+
   group('화면', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});
