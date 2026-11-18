@@ -82,3 +82,30 @@ class SlotGrid extends StatelessWidget {
         ]);
       });
 }
+
+/// 시간 칸 색 설명. 견본은 칸과 같은 바탕·테두리이고 글씨 크기를 따라 커진다 (디자인 리뷰 11/18 #5)
+class SlotLegend extends StatelessWidget {
+  const SlotLegend(this.items, {super.key});
+  final List<(SlotTone, String)> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.textScalerOf(context).scale(12);
+    return Wrap(spacing: AppSpace.m, runSpacing: AppSpace.xs, children: [
+      for (final (tone, text) in items)
+        Row(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: slotColors(tone).bg,
+              border: Border.all(color: slotColors(tone).border),
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+          const SizedBox(width: AppSpace.xs),
+          Text(text, style: AppText.caption.copyWith(color: AppColors.textSub)),
+        ]),
+    ]);
+  }
+}

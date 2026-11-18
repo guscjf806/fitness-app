@@ -128,7 +128,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
           for (final s in slots) _MemberSlot(start: s, now: now, me: me, onRequest: () => _request(s)),
         ]),
       const SizedBox(height: AppSpace.l),
-      const _SlotLegend(),
+      const SlotLegend([(SlotTone.open, '신청 가능'), (SlotTone.taken, '마감'), (SlotTone.filled, '내 신청·예약')]),
       if (past.isNotEmpty) ...[
         const H2('지난 신청'),
         for (final b in past)
@@ -190,24 +190,6 @@ class _MemberSlot extends StatelessWidget {
       selected: mine,
       onTap: taken == null ? onRequest : null,
     );
-  }
-}
-
-class _SlotLegend extends StatelessWidget {
-  const _SlotLegend();
-
-  @override
-  Widget build(BuildContext context) {
-    Widget item(Color c, String t) => Row(mainAxisSize: MainAxisSize.min, children: [
-          Container(width: 12, height: 12, decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(3))),
-          const SizedBox(width: AppSpace.xs),
-          Text(t, style: AppText.caption.copyWith(color: AppColors.textSub)),
-        ]);
-    return Wrap(spacing: AppSpace.m, runSpacing: AppSpace.xs, children: [
-      item(AppColors.primarySoft, '신청 가능'),
-      item(AppColors.line, '마감'),
-      item(AppColors.primary, '내 신청·예약'),
-    ]);
   }
 }
 
@@ -306,6 +288,8 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
           if (days[day].add(Duration(hours: h)).isAfter(now))
             _TrainerSlot(start: days[day].add(Duration(hours: h)), now: now, onTap: () => _toggle(days[day].add(Duration(hours: h)), now)),
       ]),
+      const SizedBox(height: AppSpace.m),
+      const SlotLegend([(SlotTone.closed, '닫힘'), (SlotTone.open, '열림'), (SlotTone.filled, '회원 신청·예약')]),
     ]);
   }
 }
