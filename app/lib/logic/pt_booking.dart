@@ -71,7 +71,8 @@ bool ptCharged(PtBooking b) =>
 String ptStatusLabel(PtStatus s, {bool waived = false}) => switch (s) {
       PtStatus.requested => '승인 기다리는 중',
       PtStatus.approved => '예약 확정',
-      PtStatus.rejected => '거절됨',
+      // 이유 대신 다음에 할 일을 고정 문구로 알린다 (결정 d1119-2)
+      PtStatus.rejected => '거절됨 · 다른 시간을 신청해 주세요',
       PtStatus.autoRejected => '선생님이 답하지 않아 취소됨',
       PtStatus.expired => '지난 신청',
       PtStatus.cancelled => '취소함',
