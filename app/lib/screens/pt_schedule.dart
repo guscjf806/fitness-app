@@ -41,11 +41,13 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
 
   /// 사정이 있으면 차감을 되돌린다 (결정 d1117-pt3)
   void _waive(PtBooking b) {
+    final undo = demo.ptUndo(b);
     demo.update(() {
       b.waived = true;
       demo.ptLeft[b.member] = (demo.ptLeft[b.member] ?? 0) + 1;
     });
-    toast(context, '${b.member} 님 차감을 이번만 빼 줬어요');
+    // 다른 처리처럼 잘못 눌렀을 때 되돌릴 수 있게 (디자인 리뷰 11/19 #2)
+    toast(context, '${b.member} 님 차감을 이번만 빼 줬어요', actionLabel: '되돌리기', onAction: undo);
   }
 
   void _toggle(DateTime start, DateTime now) {
