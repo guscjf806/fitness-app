@@ -38,10 +38,11 @@ bool exerciseAllowed(
   return e.gear.every((g) => g == '벽' || homeGear.contains(_gearAnswer[g]));
 }
 
-/// 한 번에 운동할 시간에 맞는 종목 수 (기획서 초안: 15분 3종목, 30분 4~5종목, 45분 6~7종목)
+/// 한 번에 운동할 시간에 맞는 최대 종목 수. 트레이너 검수(rv-7, 2026-11-19): 15분 2~3종목, 30분 3~4종목, 45분 이상 5종목 이상.
+/// 강도별 휴식이 길면 시간에 맞게 더 줄어든다(최소 2종목)
 int maxExercisesFor(String minutes) => switch (minutes) {
       '15분' => 3,
-      '30분' => 5,
+      '30분' => 4,
       _ => 7,
     };
 
