@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../config.dart';
 import '../../data/mock_data.dart';
@@ -34,8 +35,7 @@ class LogIntroTab extends StatelessWidget {
         ),
       ),
       // 카카오톡 채널로 바로 연결한다 (결정 d1104-5). 채널 주소를 받기 전까지는 자리만
-      AppButton('카카오톡으로 PT 문의하기',
-          onPressed: () => toast(context, AppConfig.kakaoChannelUrl.isEmpty ? '카카오톡 채널을 준비하고 있어요. 곧 연결할게요' : '카카오톡 채널로 이동해요 (데모)')),
+      AppButton('카카오톡으로 PT 문의하기', onPressed: () => openKakaoChannel(context)),
       AppButton('PT 코드가 있어요',
           kind: ButtonKind.soft,
           onPressed: () => demo.isGuest
@@ -185,4 +185,16 @@ class LogDetailScreen extends StatelessWidget {
       ),
     ]);
   }
+}
+
+/// 카카오톡 채널 대화방을 연다. 카카오톡이 있으면 앱으로, 없으면 브라우저로 열린다 (결정 d1104-5)
+Future<void> openKakaoChannel(BuildContext context) async {
+  if (AppConfig.kakaoChannelUrl.isEmpty) {
+    toast(context, '카카오톡 채널을 준비하고 있어요. 곧 연결할게요');
+    return;
+  }
+  final messenger = ScaffoldMessenger.of(context);
+  final ok = await launchUrl(Uri.parse(AppConfig.kakaoChannelUrl), mode: LaunchMode.externalApplication)
+      .catchError((_) => false);
+  if (!ok) toastOn(messenger, '카카오톡 채널을 열지 못했어요. 카카오톡에서 @movenote를 검색해 주세요');
 }
