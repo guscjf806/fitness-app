@@ -168,7 +168,10 @@ class _MemberSlot extends StatelessWidget {
   Widget build(BuildContext context) {
     final taken = demo.ptBookingAt(start, now);
     final mine = taken?.member == me;
-    final label = mine ? '내 신청' : (taken != null ? '마감' : '신청 가능');
+    // 위 카드의 '예약 확정'과 맞게, 확정이면 '내 예약', 기다리는 중이면 '내 신청' (디자인 리뷰 11/19 #3)
+    final label = mine
+        ? (ptStatusAt(taken!, now) == PtStatus.approved ? '내 예약' : '내 신청')
+        : (taken != null ? '마감' : '신청 가능');
     return TimeSlotButton(
       time: ptHourText(start),
       label: label,
