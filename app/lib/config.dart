@@ -18,9 +18,9 @@ class AppConfig {
   /// 무료 회원의 월 기록 지키기권(스트릭 프리즈) 횟수. 초안 값
   static const freeMonthlyFreezes = 1;
 
-  /// 구독 예시 가격(원). 실제 가격은 출시 전에 정한다
-  static const monthlyPrice = 9900;
-  static const yearlyPrice = 79000;
+  /// 구독 가격(원). 월 2,900원 (사용자 결정 2026-11-19). 연 가격은 약 2달 할인한 임시값
+  static const monthlyPrice = 2900;
+  static const yearlyPrice = 29000;
 
   /// Supabase 연결 정보. 공개용 키라 앱에 넣어도 된다 (데이터는 RLS가 지킨다)
   static const supabaseUrl = 'https://feqxciztzgadnvamwakv.supabase.co';
