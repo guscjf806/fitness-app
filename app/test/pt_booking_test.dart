@@ -45,6 +45,12 @@ void main() {
     expect(ptLeftText(const Duration(seconds: 20)), '1분');
   });
 
+  test('리뷰 11/19 #1 시간이 지난 확정 수업은 선생님 확인 기다리는 중', () {
+    final b = PtBooking(member: '김지아', start: DateTime(2026, 11, 17, 9), requestedAt: now.subtract(const Duration(days: 1)), status: PtStatus.approved);
+    expect(ptMemberLabel(b, now), '선생님 확인 기다리는 중');
+    expect(ptMemberLabel(b, DateTime(2026, 11, 17, 8)), '예약 확정');
+  });
+
   group('화면', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});

@@ -85,6 +85,13 @@ String ptLeftText(Duration d) {
   return m == 0 ? '$h시간' : '$h시간 $m분';
 }
 
+/// 회원에게 보여 줄 상태 글. 시간이 지난 확정 수업은 선생님이 기록할 때까지 '확인 기다리는 중' (리뷰 11/19 #1)
+String ptMemberLabel(PtBooking b, DateTime now) {
+  final s = ptStatusAt(b, now);
+  if (s == PtStatus.approved && !b.start.isAfter(now)) return '선생님 확인 기다리는 중';
+  return ptStatusLabel(s, waived: b.waived);
+}
+
 /// '11월 18일(화) 19:00'
 String ptWhen(DateTime d) =>
     '${d.month}월 ${d.day}일(${dayLabels[d.weekday - 1]}) ${d.hour.toString().padLeft(2, '0')}:00';

@@ -83,8 +83,10 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     final now = DateTime.now();
     final days = ptBookingDays(now);
     final mine = demo.ptBookings.where((b) => b.member == me).toList()..sort((a, b) => a.start.compareTo(b.start));
-    final upcoming = [for (final b in mine) if (ptHoldsSlot(ptStatusAt(b, now))) b];
-    final past = [for (final b in mine.reversed) if (!ptHoldsSlot(ptStatusAt(b, now))) b].take(3).toList();
+    // 시간이 지난 수업은 취소할 수 없게 '내 예약'에서 빼고 아래 기록으로 (리뷰 11/19 #1)
+    bool isUpcoming(PtBooking b) => ptHoldsSlot(ptStatusAt(b, now)) && b.start.isAfter(now);
+    final upcoming = [for (final b in mine) if (isUpcoming(b)) b];
+    final past = [for (final b in mine.reversed) if (!isUpcoming(b)) b].take(3).toList();
     final opened = [
       for (final h in AppConfig.ptLessonHours)
         if (demo.ptOpenSlots.contains(days[day].add(Duration(hours: h)))) days[day].add(Duration(hours: h)),
@@ -116,7 +118,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
         for (final b in past)
           LineRow(
             left: WordText(ptWhen(b.start)),
-            right: Muted(ptStatusLabel(ptStatusAt(b, now), waived: b.waived), bottom: 0),
+            right: Muted(ptMemberLabel(b, now), bottom: 0),
           ),
       ],
       const SizedBox(height: AppSpace.l),
