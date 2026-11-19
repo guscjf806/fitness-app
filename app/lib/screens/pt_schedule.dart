@@ -71,6 +71,11 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
       for (final b in demo.ptBookings)
         if (!b.waived && (b.status == PtStatus.lateCancelled || b.status == PtStatus.noShow)) b
     ];
+    // 지나간 시각은 열고 닫을 수 없어 뺀다. 오늘 시간이 다 지나면 안내만 보인다 (디자인 리뷰 11/19 #1)
+    final hours = [
+      for (final h in AppConfig.ptLessonHours)
+        if (days[day].add(Duration(hours: h)).isAfter(now)) days[day].add(Duration(hours: h)),
+    ];
     return AppPage(title: '수업 일정', children: [
       const H2('답을 기다리는 신청'),
       if (waiting.isEmpty) const Muted('답할 신청이 없어요.'),
@@ -100,11 +105,12 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
       const H2('수업 시간 열기'),
       const Muted('눌러서 회원이 신청할 수 있는 시간을 열고 닫아요.'),
       DayChips(labels: ptDayChipLabels(days), selected: day, today: 0, onSelect: (i) => setState(() => day = i)),
-      SlotGrid(children: [
-        for (final h in AppConfig.ptLessonHours)
-          if (days[day].add(Duration(hours: h)).isAfter(now))
-            _TrainerSlot(start: days[day].add(Duration(hours: h)), now: now, onTap: () => _toggle(days[day].add(Duration(hours: h)), now)),
-      ]),
+      if (hours.isEmpty)
+        const SlotEmpty.passed()
+      else
+        SlotGrid(children: [
+          for (final s in hours) _TrainerSlot(start: s, now: now, onTap: () => _toggle(s, now)),
+        ]),
       const SizedBox(height: AppSpace.m),
       const SlotLegend([(SlotTone.closed, '닫힘'), (SlotTone.open, '열림'), (SlotTone.filled, '회원 신청·예약')]),
     ]);

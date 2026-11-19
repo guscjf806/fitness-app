@@ -83,6 +83,19 @@ class SlotGrid extends StatelessWidget {
       });
 }
 
+/// 고를 시간 칸이 없을 때의 안내 카드. 회원·선생님 화면이 같이 쓴다 (디자인 리뷰 11/19 #1)
+class SlotEmpty extends StatelessWidget {
+  const SlotEmpty(this.message, {super.key});
+
+  /// 오늘 시간이 다 지나서 빈 날
+  const SlotEmpty.passed({super.key}) : message = '오늘 수업 시간은 다 지났어요. 다른 날을 골라 주세요.';
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) => AppCard(child: WordText(message));
+}
+
 /// 시간 칸 색 설명. 견본은 칸과 같은 바탕·테두리이고 글씨 크기를 따라 커진다 (디자인 리뷰 11/18 #5)
 class SlotLegend extends StatelessWidget {
   const SlotLegend(this.items, {super.key});

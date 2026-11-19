@@ -85,11 +85,11 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     final mine = demo.ptBookings.where((b) => b.member == me).toList()..sort((a, b) => a.start.compareTo(b.start));
     final upcoming = [for (final b in mine) if (ptHoldsSlot(ptStatusAt(b, now))) b];
     final past = [for (final b in mine.reversed) if (!ptHoldsSlot(ptStatusAt(b, now))) b].take(3).toList();
-    final slots = [
+    final opened = [
       for (final h in AppConfig.ptLessonHours)
-        if (demo.ptOpenSlots.contains(days[day].add(Duration(hours: h))) && days[day].add(Duration(hours: h)).isAfter(now))
-          days[day].add(Duration(hours: h)),
+        if (demo.ptOpenSlots.contains(days[day].add(Duration(hours: h)))) days[day].add(Duration(hours: h)),
     ];
+    final slots = [for (final s in opened) if (s.isAfter(now)) s];
     return AppPage(title: '수업 예약', children: [
       LineRow(
         left: const Text('남은 PT', style: AppText.bodyStrong),
@@ -101,8 +101,11 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       const H2('시간 고르기'),
       Muted('${AppConfig.ptBookingDays ~/ 7}주 앞까지, 하루 한 번 신청할 수 있어요.'),
       DayChips(labels: ptDayChipLabels(days), selected: day, today: 0, onSelect: (i) => setState(() => day = i)),
-      if (slots.isEmpty)
-        const AppCard(child: WordText('이날은 선생님이 수업 시간을 열지 않았어요. 다른 날을 골라 주세요.'))
+      // 열린 시간이 다 지나서 빈 날과, 처음부터 안 연 날을 나눠 알린다 (디자인 리뷰 11/19 #1)
+      if (slots.isEmpty && opened.isNotEmpty)
+        const SlotEmpty.passed()
+      else if (slots.isEmpty)
+        const SlotEmpty('이날은 선생님이 수업 시간을 열지 않았어요. 다른 날을 골라 주세요.')
       else
         SlotGrid(children: [
           for (final s in slots) _MemberSlot(start: s, now: now, me: me, onRequest: () => _request(s)),
