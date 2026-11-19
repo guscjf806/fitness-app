@@ -123,7 +123,7 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
         SlotGrid(children: [
           for (final s in hours) _TrainerSlot(start: s, now: now, onTap: () => _toggle(s, now)),
         ]),
-      const SlotLegend([(SlotTone.closed, '닫힘'), (SlotTone.open, '열림'), (SlotTone.filled, '회원 신청·예약')]),
+      const SlotLegend([(SlotTone.closed, '닫힘'), (SlotTone.open, '열림'), (SlotTone.pending, '답할 신청'), (SlotTone.filled, '확정 예약')]),
     ]);
   }
 }
@@ -170,12 +170,15 @@ class _TrainerSlot extends StatelessWidget {
     final open = demo.ptOpenSlots.contains(start);
     final b = demo.ptBookingAt(start, now);
     final label = b != null
-        ? '${b.member} ${ptStatusAt(b, now) == PtStatus.approved ? '예약' : '신청'}'
+        ? '${b.member} ${ptStatusAt(b, now) == PtStatus.approved ? '예약' : '대기'}'
         : (open ? '열림' : '닫힘');
     return TimeSlotButton(
       time: ptHourText(start),
       label: label,
-      tone: b != null ? SlotTone.filled : (open ? SlotTone.open : SlotTone.closed),
+      // 답해야 할 신청은 주황으로 바로 눈에 띄게 (결정 d1118-1)
+      tone: b == null
+          ? (open ? SlotTone.open : SlotTone.closed)
+          : (ptStatusAt(b, now) == PtStatus.approved ? SlotTone.filled : SlotTone.pending),
       onTap: onTap,
     );
   }

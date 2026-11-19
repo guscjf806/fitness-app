@@ -115,7 +115,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
         SlotGrid(children: [
           for (final s in slots) _MemberSlot(start: s, now: now, me: me, onRequest: () => _request(s)),
         ]),
-      const SlotLegend([(SlotTone.open, '신청 가능'), (SlotTone.taken, '마감'), (SlotTone.filled, '내 신청·예약')]),
+      const SlotLegend([(SlotTone.open, '신청 가능'), (SlotTone.taken, '마감'), (SlotTone.pending, '내 신청'), (SlotTone.filled, '내 예약')]),
       if (past.isNotEmpty) ...[
         // 안의 상태 글 '지난 신청'과 헷갈리지 않게, 수업 완료도 들어가니 '지난 기록' (리뷰 11/19 #7)
         const H2('지난 기록'),
@@ -186,13 +186,13 @@ class _MemberSlot extends StatelessWidget {
     final taken = demo.ptBookingAt(start, now);
     final mine = taken?.member == me;
     // 위 카드의 '예약 확정'과 맞게, 확정이면 '내 예약', 기다리는 중이면 '내 신청' (디자인 리뷰 11/19 #3)
-    final label = mine
-        ? (ptStatusAt(taken!, now) == PtStatus.approved ? '내 예약' : '내 신청')
-        : (taken != null ? '마감' : '신청 가능');
+    final approved = mine && ptStatusAt(taken!, now) == PtStatus.approved;
+    final label = mine ? (approved ? '내 예약' : '내 신청') : (taken != null ? '마감' : '신청 가능');
     return TimeSlotButton(
       time: ptHourText(start),
       label: label,
-      tone: mine ? SlotTone.filled : (taken != null ? SlotTone.taken : SlotTone.open),
+      // 승인을 기다리는 내 신청은 주황, 확정은 초록 (결정 d1118-1)
+      tone: mine ? (approved ? SlotTone.filled : SlotTone.pending) : (taken != null ? SlotTone.taken : SlotTone.open),
       selected: mine,
       onTap: taken == null ? onRequest : null,
     );

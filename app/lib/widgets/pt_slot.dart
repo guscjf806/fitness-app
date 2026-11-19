@@ -11,8 +11,11 @@ enum SlotTone {
   /// 다른 회원이 잡음: 회색, 누를 수 없음
   taken,
 
-  /// 내 신청·예약 / 회원 신청·예약: 진한 초록
+  /// 확정된 예약: 진한 초록
   filled,
+
+  /// 승인을 기다리는 신청: 주황 (결정 d1118-1, '급한 신청' 주황과 같은 뜻)
+  pending,
 
   /// 선생님이 닫아 둔 시간: 테두리만
   closed,
@@ -22,6 +25,7 @@ enum SlotTone {
       SlotTone.open => (bg: AppColors.primarySoft, fg: AppColors.primaryDark, border: AppColors.primary),
       SlotTone.taken => (bg: AppColors.line, fg: AppColors.textSub, border: AppColors.line),
       SlotTone.filled => (bg: AppColors.primary, fg: Colors.white, border: AppColors.primary),
+      SlotTone.pending => (bg: AppColors.cautionSoft, fg: AppColors.caution, border: AppColors.caution),
       SlotTone.closed => (bg: null, fg: AppColors.textSub, border: AppColors.line),
     };
 
