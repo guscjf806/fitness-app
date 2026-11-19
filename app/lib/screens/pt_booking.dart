@@ -34,6 +34,12 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       toast(context, '하루에 한 번만 신청할 수 있어요. 이미 신청한 날이에요');
       return;
     }
+    // 남은 횟수가 잡아 둔 수업만큼 다 찼으면 신청을 막는다 (결정 d1119-1)
+    final booked = demo.ptBookings.where((b) => b.member == me && ptHoldsSlot(ptStatusAt(b, now)) && b.start.isAfter(now)).length;
+    if ((demo.ptLeft[me] ?? 0) - booked <= 0) {
+      toast(context, '남은 PT가 없어요. 선생님께 재등록을 문의해 주세요');
+      return;
+    }
     final urgent = start.difference(now) < const Duration(hours: AppConfig.ptAutoRejectHours);
     // 무료 취소 기한이 이미 지난 칸이면 승인 뒤 취소가 차감된다는 걸 미리 알린다 (리뷰 11/19 #2)
     final late = start.difference(now) < const Duration(hours: AppConfig.ptFreeCancelHours);

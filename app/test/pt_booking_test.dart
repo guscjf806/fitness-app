@@ -122,5 +122,18 @@ void main() {
       expect(demo.ptLeft['박서연'], left);
       expect(demo.ptBookings.any((b) => b.member == '박서연' && b.status == PtStatus.approved && !b.start.isAfter(DateTime.now())), isTrue);
     });
+
+    testWidgets('결정 d1119-1 남은 PT가 잡아 둔 수업만큼 다 찼으면 신청을 막는다', (tester) async {
+      demo.ptLeft['김지아'] = 1; // 처음 데이터에 확정 예약 1건이 있다
+      await open(tester, 'member', Routes.ptBooking);
+      final before = demo.ptBookings.length;
+      final slot = findText('신청 가능');
+      if (slot.evaluate().isEmpty) return;
+      await tester.ensureVisible(slot.first);
+      await tester.tap(slot.first);
+      await tester.pump();
+      expect(findTextContaining('재등록'), findsOneWidget);
+      expect(demo.ptBookings.length, before);
+    });
   });
 }
