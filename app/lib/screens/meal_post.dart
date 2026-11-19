@@ -33,6 +33,11 @@ class _MealPostScreenState extends State<MealPostScreen> {
   String slot = mealSlotFor(DateTime.now());
 
   void _post() {
+    // 무료 PT 회원은 하루 사진 수로 막는다 (사용자 결정 2026-11-19)
+    if (demo.photoLimitReached) {
+      toast(context, '오늘 올릴 수 있는 식단 ${AppConfig.ptDailyPhotoLimit}장을 다 올렸어요. 내일 다시 올려 주세요');
+      return;
+    }
     if (demo.quotaExhausted) {
       showQuotaExhausted(context);
       return;
@@ -88,7 +93,9 @@ class _MealPostScreenState extends State<MealPostScreen> {
       if (demo.quotaExhausted)
         const WarningBox('이번 달 무료 횟수를 다 썼어요', top: 0)
       else
-        Muted('올리면 AI가 확인해서 답변해요 · 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 사용'),
+        Muted(demo.ptFree
+            ? '올리면 AI가 확인해서 답변해요 · PT 회원은 무료예요 (오늘 ${demo.photosToday} / ${AppConfig.ptDailyPhotoLimit}장)'
+            : '올리면 AI가 확인해서 답변해요 · 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 사용'),
       AppButton('올리기', onPressed: _post),
     ]),
     );

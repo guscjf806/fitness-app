@@ -85,7 +85,9 @@ class _SetupPageState extends State<SetupPage> {
       } else {
         final ok = await confirmDialog(context,
             title: '바뀐 조건으로 새로 만들까요?',
-            body: '무료 횟수 1회를 써요. 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 썼어요.',
+            body: demo.ptFree
+                ? 'PT 회원은 무료라 횟수를 쓰지 않아요.'
+                : '무료 횟수 1회를 써요. 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 썼어요.',
             keepLabel: '나중에',
             okLabel: '새로 만들기');
         // 횟수는 다 만들었을 때 센다

@@ -42,6 +42,24 @@ class ProfileTab extends StatelessWidget {
               : '일반 회원'),
       // 선생님 계정에는 회원용 항목을 숨기고 회원 관리·초대 코드·알림만 (결정 d1103-4)
       if (role != 'trainer') ...[
+      // PT 회원은 무료. PT가 끝나면 유예 기간이 끝나는 날을 알린다 (사용자 결정 2026-11-19)
+      if (demo.ptFree)
+        AppCard(
+          accent: true,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('PT 회원 무료 이용 중', style: AppText.bodyStrong),
+            Muted(
+              demo.ptFreeUntil == null
+                  ? 'PT를 받는 동안 AI 기능을 횟수 걱정 없이 쓸 수 있어요. 식단 사진은 하루 ${AppConfig.ptDailyPhotoLimit}장까지예요.'
+                  : 'PT가 끝났어요. ${demo.ptFreeUntil!.month}월 ${demo.ptFreeUntil!.day}일까지는 무료로 쓸 수 있고, 그 뒤에는 구독으로 이어 쓸 수 있어요.',
+              bottom: 0,
+            ),
+            if (demo.ptFreeUntil != null)
+              AppButton('구독 알아보기',
+                  kind: ButtonKind.soft, top: AppSpace.s, onPressed: () => Navigator.pushNamed(context, Routes.subscribe)),
+          ]),
+        )
+      else
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
@@ -61,7 +79,7 @@ class ProfileTab extends StatelessWidget {
       LineRow(
         left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const WordText('식단·루틴 새로 만들기'),
-          Muted('이번 달 AI ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 사용', bottom: 0),
+          Muted(demo.aiUsageText, bottom: 0),
         ]),
         showArrow: true,
         onTap: () => openPlanMaker(context),

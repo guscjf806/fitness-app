@@ -51,7 +51,7 @@ void requestMealReply(MealPost post, ScaffoldMessengerState messenger) {
       if (i < 0 || failed || post.replied) return;
       final updated = post.withReply(_estimateKcal(post.date.replaceFirst('오늘 ', '')), seen: viewing);
       demo.mealPosts[i] = target = updated;
-      demo.aiUsed++;
+      if (!demo.ptFree) demo.aiUsed++;
       if (viewing) _viewingPost = updated;
     });
     if (viewing) return;

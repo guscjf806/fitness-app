@@ -38,7 +38,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
     }
     demo.update(() {
       // 다시 만들면 1회 센다. 조건이 바뀌어 다시 만드는 건 안전 문제라 세지 않는다 (리뷰 11/13 #3, 결정 d1107-1)
-      if (demo.planMade && !demo.planOutdated) demo.aiUsed++;
+      if (demo.planMade && !demo.planOutdated && !demo.ptFree) demo.aiUsed++;
       demo.planMade = true;
       demo.tab = 0;
       demo.planOutdated = false;
@@ -90,6 +90,8 @@ class _GenerateScreenState extends State<GenerateScreen> {
       // 무료 횟수를 쓰는지 누르기 전에 알린다 (리뷰 11/13 #3)
       if (demo.planOutdated)
         const Muted('안전을 위한 수정이라 무료 횟수를 쓰지 않아요.', top: AppSpace.s)
+      else if (demo.ptFree)
+        const Muted('PT 회원은 무료라 횟수를 쓰지 않아요.', top: AppSpace.s)
       else if (demo.planMade)
         Muted('무료 횟수 1회를 써요. 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 썼어요.', top: AppSpace.s),
       AppButton('식단·운동 루틴 생성하기', onPressed: _generate),

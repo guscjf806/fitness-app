@@ -177,9 +177,32 @@ class DemoState extends ChangeNotifier {
         });
   }
 
+  /// PT 중: 선생님과 연결돼 있고 남은 PT가 1회 이상 (추천 기준, 사용자 요청 2026-11-19)
+  bool get ptActive => role == 'member' && !ptEnded && (ptLeft[memberName] ?? 0) > 0;
+
+  /// PT가 끝난(남은 횟수 0 또는 연결 끊김) 때. 그 뒤 [AppConfig.ptGraceDays]일 동안은 무료
+  DateTime? ptFinishedAt;
+
+  /// PT 회원 무료로 쓰는 중인지 (PT 중이거나 끝난 뒤 유예 기간). 월 무료 횟수를 세지 않는다
+  bool get ptFree => ptActive || (ptFreeUntil?.isAfter(DateTime.now()) ?? false);
+
+  /// 유예 기간이 끝나는 때. PT 중이면 null
+  DateTime? get ptFreeUntil => ptActive ? null : ptFinishedAt?.add(const Duration(days: AppConfig.ptGraceDays));
+
+  /// 오늘 올린 식단 사진(글) 수
+  int get photosToday => mealPosts.where((p) => p.isToday).length;
+
+  /// 무료 PT 회원이 오늘 올릴 수 있는 사진을 다 올렸는지
+  bool get photoLimitReached => ptFree && photosToday >= AppConfig.ptDailyPhotoLimit;
+
+  /// 내 정보·식단 올리기 등에서 쓰는 사용량 한 줄
+  String get aiUsageText =>
+      ptFree ? 'PT 회원은 무료예요' : '이번 달 AI $aiUsedShown / ${AppConfig.freeMonthlyAiLimit}회 사용';
+
   void resetPt() {
     _ptBookings = null;
     _ptOpenSlots = null;
+    ptFinishedAt = null;
     ptLeft
       ..clear()
       ..addAll({'김지아': 6, '이도현': 10, '박서연': 3});
@@ -214,7 +237,11 @@ class DemoState extends ChangeNotifier {
   String failMode = '정상';
 
   void update(VoidCallback change) {
+    final wasActive = ptActive;
     change();
+    // PT가 끝난 날을 기억해 유예 기간을 센다. 다시 등록하면 지운다
+    if (wasActive && !ptActive) ptFinishedAt = DateTime.now();
+    if (ptActive) ptFinishedAt = null;
     notifyListeners();
     save();
   }
@@ -320,7 +347,9 @@ class DemoState extends ChangeNotifier {
   int get streak => 6 + (recordedToday ? 1 : 0);
   /// 이번 달 무료 횟수를 다 썼는지 (실제로 다 쓴 경우와 목업의 '횟수 소진' 미리 보기)
   /// 답변을 받는 중인 글도 곧 1회가 되니 같이 센다. 연달아 올려 한도를 넘지 않게 (리뷰 11/17 #4)
-  bool get quotaExhausted => failMode == '횟수 소진' || aiUsed + replyPending.length >= AppConfig.freeMonthlyAiLimit;
+  /// PT 회원 무료 이용 중에는 월 횟수를 세지 않는다 (사용자 결정 2026-11-19)
+  bool get quotaExhausted =>
+      failMode == '횟수 소진' || (!ptFree && aiUsed + replyPending.length >= AppConfig.freeMonthlyAiLimit);
 
   /// 화면에 보여 줄 이번 달 사용 횟수 (식단 올리기·내 정보가 같은 숫자를 쓴다, 리뷰 11/01 #1)
   int get aiUsedShown => quotaExhausted ? AppConfig.freeMonthlyAiLimit : aiUsed;

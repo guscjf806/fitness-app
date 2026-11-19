@@ -38,6 +38,12 @@ class AppConfig {
   /// '먹었어요'에서 고른 양에 곱하는 값. 식단표 칼로리 × 이 값 (결정 d1112-2, 초안 값)
   static const mealAmountFactors = {'조금': 0.5, '다 먹음': 1.0, '더 먹음': 1.3};
 
+  /// PT 회원은 앱이 무료. PT가 끝난 뒤 이 날수만큼 더 무료로 쓰고 구독으로 넘어간다 (사용자 결정 2026-11-19)
+  static const ptGraceDays = 7;
+
+  /// 무료로 쓰는 PT 회원이 하루에 올릴 수 있는 식단 사진 수. 너무 많이 써서 비용이 커지지 않게 (사용자 결정 2026-11-19)
+  static const ptDailyPhotoLimit = 10;
+
   /// 이벤트·혜택(광고성) 알림을 보내지 않는 밤 시간: 21시부터 다음 날 8시 전까지 (결정 d1117-1)
   static const marketingQuietStartHour = 21;
   static const marketingQuietEndHour = 8;
