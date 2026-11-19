@@ -35,12 +35,15 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       return;
     }
     final urgent = start.difference(now) < const Duration(hours: AppConfig.ptAutoRejectHours);
+    // 무료 취소 기한이 이미 지난 칸이면 승인 뒤 취소가 차감된다는 걸 미리 알린다 (리뷰 11/19 #2)
+    final late = start.difference(now) < const Duration(hours: AppConfig.ptFreeCancelHours);
     final ok = await confirmDialog(
       context,
       title: '${ptWhen(start)} 수업을 신청할까요?',
-      body: urgent
-          ? '곧 시작하는 수업이라 선생님께 바로 알려 드려요. 선생님이 승인하면 예약이 확정돼요.'
-          : '선생님이 승인하면 예약이 확정돼요. ${AppConfig.ptAutoRejectHours}시간 안에 답이 없으면 자동으로 취소돼요.',
+      body: (urgent
+              ? '곧 시작하는 수업이라 선생님께 바로 알려 드려요. 선생님이 승인하면 예약이 확정돼요.'
+              : '선생님이 승인하면 예약이 확정돼요. ${AppConfig.ptAutoRejectHours}시간 안에 답이 없으면 자동으로 취소돼요.') +
+          (late ? '\n\n수업 ${AppConfig.ptFreeCancelHours}시간 전이 지나서, 승인된 뒤 취소하면 PT 1회가 차감돼요.' : ''),
       keepLabel: '그만두기',
       okLabel: '신청하기',
     );
