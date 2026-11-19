@@ -148,6 +148,15 @@ class _MyBookingCard extends StatelessWidget {
         WordText(ptStatusLabel(status), style: status == PtStatus.approved ? AppText.captionAccent : AppText.caption),
         if (status == PtStatus.requested && !b.urgent)
           Muted('${ptLeftText(left)} 안에 답이 없으면 자동으로 취소돼요', top: AppSpace.xxs, bottom: 0),
+        // 날짜 계산을 하지 않아도 되게 무료 취소 기한을 바로 적는다 (리뷰 11/19 #3)
+        if (status == PtStatus.approved)
+          ptFreeCancel(b, now)
+              ? Muted('${ptWhen(b.start.subtract(const Duration(hours: AppConfig.ptFreeCancelHours)))}까지 무료로 취소할 수 있어요',
+                  top: AppSpace.xxs, bottom: 0)
+              : const Padding(
+                  padding: EdgeInsets.only(top: AppSpace.xxs),
+                  child: WordText('지금 취소하면 PT 1회가 차감돼요', style: AppText.captionCaution),
+                ),
         Align(
           alignment: Alignment.centerRight,
           // 차감될 수 있는 수업 취소는 다른 화면의 지우기·빼기처럼 경고색 (디자인 리뷰 11/18 #6)
