@@ -41,8 +41,9 @@ const intensityRules = {
   '중': IntensityRule(
       compoundSets: 4, compoundReps: '8~12개', isolationSets: 3, isolationReps: '12개', holdSeconds: '30~40초',
       repsInReserve: '2개', restSeconds: 75, restText: '60~90초'),
+  // 상: 큰 운동 5→4세트, 작은 운동 4→3세트. 45분에 5종목쯤 들어가게 (트레이너 검수 rv-1·rv-2·rv-7, 2026-11-19)
   '상': IntensityRule(
-      compoundSets: 5, compoundReps: '6~8개', isolationSets: 4, isolationReps: '10~12개', holdSeconds: '45~60초',
+      compoundSets: 4, compoundReps: '6~8개', isolationSets: 3, isolationReps: '10~12개', holdSeconds: '45~60초',
       repsInReserve: '1개', restSeconds: 105, restText: '90~120초'),
 };
 

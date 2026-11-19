@@ -16,7 +16,7 @@ void main() {
     expect(find(week('하'), '벤치프레스').amount, '12~15개');
     expect(find(week('중'), '벤치프레스').sets, 4);
     expect(find(week('중'), '벤치프레스').amount, '8~12개');
-    expect(find(week('상'), '벤치프레스').sets, 5);
+    expect(find(week('상'), '벤치프레스').sets, 4, reason: '트레이너 검수 2026-11-19: 상도 4세트, 개수가 더 적고 무거움');
     expect(find(week('상'), '벤치프레스').amount, '6~8개');
   });
 
