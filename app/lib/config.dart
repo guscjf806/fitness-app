@@ -3,8 +3,14 @@ class AppConfig {
   /// 앱 이름. 스토어 등록·홍보 전에 상표 확인을 마친다 (2026-11-09 사용자 결정)
   static const appName = '무브노트';
 
-  /// 무료 회원의 월 AI 사용 횟수 (식단·운동 루틴 생성 + 식단 AI 답변). 초안 값
+  /// 일반(무료) 회원의 월 AI 사용 횟수 (식단·운동 루틴 생성 + 식단 AI 답변). 확정 5회 (사용자 결정 2026-11-19)
   static const freeMonthlyAiLimit = 5;
+
+  /// 수업 일지 영상 보관 기간: 올린 날부터 30일 (사용자 결정 2026-11-19)
+  static const videoKeepDays = 30;
+
+  /// 쉬기 모드 최대 기간 (사용자 결정 2026-11-19)
+  static const restModeMaxDays = 7;
 
   /// 무료 횟수가 다시 채워지는 날: 매월 1일 (확정, 기획서 12번 B8)
   static DateTime nextQuotaReset(DateTime now) => DateTime(now.year, now.month + 1, 1);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../config.dart';
 import '../../data/exercise_lookup.dart';
 import '../../data/mock_data.dart';
 import '../../routes.dart';
@@ -245,10 +246,10 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         for (final r in rows)
           LogItem(r.name, r.kg.trim().isEmpty ? '체중' : '${r.kg.trim()}kg', '${int.parse(r.reps.trim())}${r.isHold ? '초' : '개'}', int.parse(r.sets.trim())),
       ],
-      // 기획서 6번 초안: 올린 날부터 30일. 고친 일지에 원래 있던 영상은 처음 기간 그대로 (결정 d1108-3)
+      // 올린 날부터 30일(확정 2026-11-19). 고친 일지에 원래 있던 영상은 처음 기간 그대로 (결정 d1108-3)
       [
         for (final r in rows)
-          for (final v in r.videos) LogVideo(r.videoLabel(v), editing?.videos.where((x) => x.name == v).firstOrNull?.daysLeft ?? 30),
+          for (final v in r.videos) LogVideo(r.videoLabel(v), editing?.videos.where((x) => x.name == v).firstOrNull?.daysLeft ?? AppConfig.videoKeepDays),
       ],
       comment.trim(),
       stamp,

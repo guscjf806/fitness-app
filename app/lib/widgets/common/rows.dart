@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../config.dart';
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
 import '../common.dart';
@@ -33,7 +34,7 @@ class RestModeSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SwitchRow(
         title: '쉬기 모드',
-        subtitle: '아프거나 다칠 때 켜 두세요. 연속 기록이 유지돼요 (최대 7일)',
+        subtitle: '아프거나 다칠 때 켜 두세요. 연속 기록이 유지돼요 (최대 ${AppConfig.restModeMaxDays}일)',
         value: demo.restMode,
         onChanged: (v) {
           demo.update(() => demo.restMode = v);
