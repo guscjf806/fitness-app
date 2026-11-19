@@ -117,7 +117,8 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
         ]),
       const SlotLegend([(SlotTone.open, '신청 가능'), (SlotTone.taken, '마감'), (SlotTone.filled, '내 신청·예약')]),
       if (past.isNotEmpty) ...[
-        const H2('지난 신청'),
+        // 안의 상태 글 '지난 신청'과 헷갈리지 않게, 수업 완료도 들어가니 '지난 기록' (리뷰 11/19 #7)
+        const H2('지난 기록'),
         for (final b in past)
           LineRow(
             left: WordText(ptWhen(b.start)),
@@ -148,6 +149,9 @@ class _MyBookingCard extends StatelessWidget {
         WordText(ptStatusLabel(status), style: status == PtStatus.approved ? AppText.captionAccent : AppText.caption),
         if (status == PtStatus.requested && !b.urgent)
           Muted('${ptLeftText(left)} 안에 답이 없으면 자동으로 취소돼요', top: AppSpace.xxs, bottom: 0),
+        // 급한 신청도 어떻게 되는지 알린다 (리뷰 11/19 #7)
+        if (status == PtStatus.requested && b.urgent)
+          const Muted('수업 시간 전까지 답이 없으면 신청이 정리돼요', top: AppSpace.xxs, bottom: 0),
         // 날짜 계산을 하지 않아도 되게 무료 취소 기한을 바로 적는다 (리뷰 11/19 #3)
         if (status == PtStatus.approved)
           ptFreeCancel(b, now)
