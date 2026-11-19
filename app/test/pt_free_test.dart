@@ -47,4 +47,12 @@ void main() {
     expect(demo.photoLimitReached, isTrue);
     demo.mealPosts.removeWhere((p) => p.isToday);
   });
+
+  test('영상은 PT 중에는 계속 보관하고, PT가 끝난 날부터 30일', () {
+    expect(demo.videoDaysLeft, isNull);
+    demo.update(() => demo.ptLeft[demo.memberName] = 0);
+    expect(demo.videoDaysLeft, AppConfig.videoKeepDays);
+    demo.ptFinishedAt = DateTime.now().subtract(const Duration(days: 10));
+    expect(demo.videoDaysLeft, AppConfig.videoKeepDays - 10);
+  });
 }

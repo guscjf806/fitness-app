@@ -189,6 +189,14 @@ class DemoState extends ChangeNotifier {
   /// 유예 기간이 끝나는 때. PT 중이면 null
   DateTime? get ptFreeUntil => ptActive ? null : ptFinishedAt?.add(const Duration(days: AppConfig.ptGraceDays));
 
+  /// 수업 영상이 지워지기까지 남은 날. PT 중이면 null(계속 보관), PT가 끝나면 끝난 날부터 30일 (사용자 결정 2026-11-19)
+  int? get videoDaysLeft {
+    if (ptActive) return null;
+    final from = ptFinishedAt;
+    if (from == null) return AppConfig.videoKeepDays;
+    return AppConfig.videoKeepDays - DateTime.now().difference(from).inDays;
+  }
+
   /// 오늘 올린 식단 사진(글) 수
   int get photosToday => mealPosts.where((p) => p.isToday).length;
 

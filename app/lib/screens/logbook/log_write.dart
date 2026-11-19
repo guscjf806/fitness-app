@@ -246,7 +246,8 @@ class _LogWriteScreenState extends State<LogWriteScreen> {
         for (final r in rows)
           LogItem(r.name, r.kg.trim().isEmpty ? '체중' : '${r.kg.trim()}kg', '${int.parse(r.reps.trim())}${r.isHold ? '초' : '개'}', int.parse(r.sets.trim())),
       ],
-      // 올린 날부터 30일(확정 2026-11-19). 고친 일지에 원래 있던 영상은 처음 기간 그대로 (결정 d1108-3)
+      // 영상별 남은 날(목업 값). 실제 보관은 PT 중 계속, PT가 끝난 날부터 30일 (demo.videoDaysLeft, 2026-11-19).
+      // 고친 일지에 원래 있던 영상은 처음 값 그대로 (결정 d1108-3)
       [
         for (final r in rows)
           for (final v in r.videos) LogVideo(r.videoLabel(v), editing?.videos.where((x) => x.name == v).firstOrNull?.daysLeft ?? AppConfig.videoKeepDays),

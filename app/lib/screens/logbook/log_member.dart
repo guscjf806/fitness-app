@@ -143,9 +143,15 @@ class LogDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: AppSpace.xsPlus),
             child: Row(children: [
               // '서버 보관 만료' 대신 쉬운 말로, 3일 이하면 경고색 (리뷰 11/02 #7)
+              // PT 중에는 계속 보관, PT가 끝나면 30일 뒤 지운다 (사용자 결정 2026-11-19)
               Expanded(
-                child: WordText('${log.videos[j].daysLeft}일 뒤 사라져요. 남기려면 내 폰에 저장하세요',
-                    style: AppText.caption.copyWith(color: log.videos[j].daysLeft <= 3 ? AppColors.warningText : AppColors.textSub)),
+                child: Builder(builder: (context) {
+                  final left = demo.videoDaysLeft;
+                  if (left == null) return const Muted('PT를 받는 동안은 계속 보관돼요', bottom: 0);
+                  return WordText(
+                      left <= 0 ? '보관 기간이 끝나 곧 지워져요. 남기려면 내 폰에 저장하세요' : 'PT가 끝나서 $left일 뒤 사라져요. 남기려면 내 폰에 저장하세요',
+                      style: AppText.caption.copyWith(color: left <= 3 ? AppColors.warningText : AppColors.textSub));
+                }),
               ),
               if (demo.savedVideos.contains(videoKey(j)))
                 const Muted('내 폰에 저장됨', bottom: 0)
