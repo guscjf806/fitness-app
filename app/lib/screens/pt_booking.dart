@@ -141,7 +141,7 @@ class _MyBookingCard extends StatelessWidget {
       accent: status == PtStatus.approved,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         WordText(ptWhen(b.start), style: AppText.bodyStrong),
-        Text(ptStatusLabel(status), style: status == PtStatus.approved ? AppText.captionAccent : AppText.caption),
+        WordText(ptStatusLabel(status), style: status == PtStatus.approved ? AppText.captionAccent : AppText.caption),
         if (status == PtStatus.requested && !b.urgent)
           Muted('${ptLeftText(left)} 안에 답이 없으면 자동으로 취소돼요', top: AppSpace.xxs, bottom: 0),
         Align(

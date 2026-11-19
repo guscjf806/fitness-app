@@ -99,7 +99,7 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
           AppCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               WordText('${b.member} · ${ptWhen(b.start)}', style: AppText.bodyStrong),
-              Text(ptStatusLabel(b.status), style: AppText.captionCaution),
+              WordText(ptStatusLabel(b.status), style: AppText.captionCaution),
               AppButton('이번만 빼 주기', kind: ButtonKind.soft, onPressed: () => _waive(b)),
             ]),
           ),
@@ -131,7 +131,7 @@ class _RequestCard extends StatelessWidget {
     return AppCard(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // 수업이 곧이라 먼저 봐야 하는 신청 (사용자 결정 2026-11-17)
-        if (b.urgent) const Text('급한 신청 · 곧 시작하는 수업', style: AppText.captionCaution),
+        if (b.urgent) const WordText('급한 신청 · 곧 시작하는 수업', style: AppText.captionCaution),
         WordText('${b.member} · ${ptWhen(b.start)}', style: AppText.bodyStrong),
         Muted(
           b.urgent
