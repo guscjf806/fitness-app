@@ -97,6 +97,7 @@ class SlotEmpty extends StatelessWidget {
 }
 
 /// 시간 칸 색 설명. 견본은 칸과 같은 바탕·테두리이고 글씨 크기를 따라 커진다 (디자인 리뷰 11/18 #5)
+/// 위 여백은 여기 한 곳에서 정해 회원·선생님 화면이 같게 둔다 (디자인 리뷰 11/19 #5)
 class SlotLegend extends StatelessWidget {
   const SlotLegend(this.items, {super.key});
   final List<(SlotTone, String)> items;
@@ -104,7 +105,9 @@ class SlotLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.textScalerOf(context).scale(12);
-    return Wrap(spacing: AppSpace.m, runSpacing: AppSpace.xs, children: [
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpace.l),
+      child: Wrap(spacing: AppSpace.m, runSpacing: AppSpace.xs, children: [
       for (final (tone, text) in items)
         Row(mainAxisSize: MainAxisSize.min, children: [
           Container(
@@ -113,12 +116,14 @@ class SlotLegend extends StatelessWidget {
             decoration: BoxDecoration(
               color: slotColors(tone).bg,
               border: Border.all(color: slotColors(tone).border),
-              borderRadius: BorderRadius.circular(3),
+              // 12px 작은 견본이라 칸 모서리(AppRadius.small 10)를 그대로 쓰면 동그라미가 된다. 비율을 맞춰 1/4로
+              borderRadius: BorderRadius.circular(AppRadius.small / 4),
             ),
           ),
           const SizedBox(width: AppSpace.xs),
           Text(text, style: AppText.caption.copyWith(color: AppColors.textSub)),
         ]),
-    ]);
+      ]),
+    );
   }
 }

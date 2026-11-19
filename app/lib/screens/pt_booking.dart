@@ -110,7 +110,6 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
         SlotGrid(children: [
           for (final s in slots) _MemberSlot(start: s, now: now, me: me, onRequest: () => _request(s)),
         ]),
-      const SizedBox(height: AppSpace.l),
       const SlotLegend([(SlotTone.open, '신청 가능'), (SlotTone.taken, '마감'), (SlotTone.filled, '내 신청·예약')]),
       if (past.isNotEmpty) ...[
         const H2('지난 신청'),

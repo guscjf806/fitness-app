@@ -113,7 +113,6 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
         SlotGrid(children: [
           for (final s in hours) _TrainerSlot(start: s, now: now, onTap: () => _toggle(s, now)),
         ]),
-      const SizedBox(height: AppSpace.m),
       const SlotLegend([(SlotTone.closed, '닫힘'), (SlotTone.open, '열림'), (SlotTone.filled, '회원 신청·예약')]),
     ]);
   }
