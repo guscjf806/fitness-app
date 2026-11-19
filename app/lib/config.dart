@@ -38,6 +38,10 @@ class AppConfig {
   /// '먹었어요'에서 고른 양에 곱하는 값. 식단표 칼로리 × 이 값 (결정 d1112-2, 초안 값)
   static const mealAmountFactors = {'조금': 0.5, '다 먹음': 1.0, '더 먹음': 1.3};
 
+  /// 이벤트·혜택(광고성) 알림을 보내지 않는 밤 시간: 21시부터 다음 날 8시 전까지 (결정 d1117-1)
+  static const marketingQuietStartHour = 21;
+  static const marketingQuietEndHour = 8;
+
   /// PT 예약 (docs/PT예약_설계.md, 결정 d1117-pt1~5). 선생님이 이 시간 안에 답하지 않으면 자동 거절
   static const ptAutoRejectHours = 5;
 
