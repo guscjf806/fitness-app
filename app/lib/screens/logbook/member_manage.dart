@@ -10,6 +10,7 @@ import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
 import 'log_write.dart';
+import '../pt_booking.dart';
 
 /// 회원 한 줄: 마지막 일지 날짜와 일지 작성 버튼. 회원 관리와 선생님 홈이 같이 쓴다
 class MemberLogRow extends StatelessWidget {
@@ -142,24 +143,28 @@ class _MemberManageTabState extends State<MemberManageTab> {
   @override
   Widget build(BuildContext context) {
     final member = this.member;
+    // 일정과 회원·일지를 한 화면에 섞지 않고 위에서 골라 본다 (PT 탭 나누기, 결정 A)
+    final seg = Seg(
+        options: const ['수업 일정', '회원·일지'],
+        value: demo.trainerView,
+        onChanged: (v) => demo.update(() => demo.trainerView = v));
+    if (demo.trainerView == '수업 일정') {
+      return TabBody(children: [const H1('회원 관리'), seg, const PtScheduleScreen(embedded: true)]);
+    }
+    final now = DateTime.now();
+    final waiting = demo.ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList();
+    final urgent = waiting.where((b) => b.urgent).length;
     return TabBody(children: [
       const H1('회원 관리'),
-      // 답을 기다리는 신청이 있으면 바로 보이게 (연습용, docs/PT예약_설계.md)
-      AppCard(
-        showArrow: true,
-        onTap: () => Navigator.pushNamed(context, Routes.ptSchedule),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('수업 일정', style: AppText.bodyStrong),
-          Builder(builder: (context) {
-            final now = DateTime.now();
-            final waiting = demo.ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList();
-            final urgent = waiting.where((b) => b.urgent).length;
-            if (waiting.isEmpty) return const Muted('답할 신청이 없어요 · 수업 시간 열고 닫기', bottom: 0);
-            return Text('답을 기다리는 신청 ${waiting.length}건${urgent > 0 ? ' · 급한 신청 $urgent건' : ''}',
-                style: urgent > 0 ? AppText.captionCaution : AppText.captionAccent);
-          }),
-        ]),
-      ),
+      seg,
+      // 다른 칸을 보는 동안에도 답할 신청은 놓치지 않게
+      if (waiting.isNotEmpty)
+        LineRow(
+          onTap: () => demo.update(() => demo.trainerView = '수업 일정'),
+          showArrow: true,
+          left: WordText('답을 기다리는 신청 ${waiting.length}건${urgent > 0 ? ' · 급한 신청 $urgent건' : ''}',
+              style: urgent > 0 ? AppText.captionCaution : AppText.captionAccent),
+        ),
       // 수업 끝나고 가장 자주 쓰는 회원 목록을 맨 위로, 가끔 쓰는 초대 코드는 맨 아래로 (리뷰 11/04 #3)
       if (demo.activeMembers.isEmpty) const Muted('연결된 회원이 없어요. 아래에서 초대 코드를 만들어 보세요.'),
       for (final m in demo.activeMembers) MemberLogRow(m),
@@ -211,6 +216,8 @@ class _MemberManageTabState extends State<MemberManageTab> {
         ]),
       ),
       const SizedBox(height: AppSpace.s),
+      // 재등록 때만 쓰니 매일 쓰는 일지·미션 아래, 가끔 쓰는 초대 위에
+      const PtLeftList(),
       // 회원 이름(또는 메모)을 먼저 적고 만든다. 어느 코드가 누구 것인지 헷갈리지 않게 (결정 d1102-3)
       AppCard(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -268,6 +275,46 @@ class _MemberManageTabState extends State<MemberManageTab> {
             ]),
           ]),
         ),
+    ]);
+  }
+}
+
+/// 회원별 남은 PT 횟수와 추가 버튼. 재등록한 회원의 횟수를 선생님이 늘린다 (사용자 요청 2026-11-19)
+class PtLeftList extends StatelessWidget {
+  const PtLeftList({super.key});
+
+  Future<void> _add(BuildContext context, String member) async {
+    final added = await showAppSheet<int>(
+      context,
+      builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        SheetTitle('$member 님 PT 횟수 추가'),
+        Muted('지금 남은 횟수 ${demo.ptLeft[member] ?? 0}회. 재등록한 만큼 골라 주세요.', top: AppSpace.xs),
+        for (final pair in const [(1, 10), (20, 30)])
+          ButtonPair(
+            left: AppButton('+${pair.$1}회', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheet, pair.$1)),
+            right: AppButton('+${pair.$2}회', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheet, pair.$2)),
+          ),
+      ]),
+    );
+    if (added == null || !context.mounted) return;
+    final before = demo.ptLeft[member] ?? 0;
+    demo.update(() => demo.ptLeft[member] = before + added);
+    toast(context, '$member 님 PT $added회를 추가했어요. 남은 횟수 ${before + added}회',
+        actionLabel: '되돌리기', onAction: () => demo.update(() => demo.ptLeft[member] = before));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (demo.activeMembers.isEmpty) return const SizedBox.shrink();
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      const H2('남은 PT 횟수'),
+      for (final m in demo.activeMembers)
+        LineRow(
+          left: WordText('$m · ${demo.ptLeft[m] ?? 0}회 남음',
+              style: (demo.ptLeft[m] ?? 0) <= 0 ? AppText.bodyStrong.copyWith(color: AppColors.caution) : AppText.bodyStrong),
+          right: TextButton(onPressed: () => _add(context, m), child: const Text('횟수 추가')),
+        ),
+      const SizedBox(height: AppSpace.l),
     ]);
   }
 }

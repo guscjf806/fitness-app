@@ -103,9 +103,14 @@ class HomeTab extends StatelessWidget {
   Widget _trainerHome() {
     return TabBody(children: [
       H1(demo.greeting),
+      // 답할 신청을 홈에서 바로 보게 (PT 예약 위치 B, 선생님 쪽)
+      const _PendingRequestsCard(),
       if (demo.activeMembers.isEmpty) ...[
         const Muted('연결된 회원이 없어요. 초대 코드를 만들어 보세요.'),
-        AppButton('초대 코드 만들기', onPressed: () => demo.update(() => demo.tab = 3)),
+        AppButton('초대 코드 만들기', onPressed: () => demo.update(() {
+          demo.tab = 3;
+          demo.trainerView = '회원·일지';
+        })),
       ] else ...[
       const H2('일지 쓸 회원', top: AppSpace.xs),
       for (final m in demo.activeMembers) MemberLogRow(m),
@@ -116,6 +121,7 @@ class HomeTab extends StatelessWidget {
           onTap: () => demo.update(() {
             demo.missionMember = m;
             demo.tab = 3;
+            demo.trainerView = '회원·일지';
           }),
           // 화살표가 같은 줄에 서게 미션 글은 왼쪽 칸 안에서 오른쪽으로 붙인다
           left: Row(children: [
@@ -125,7 +131,10 @@ class HomeTab extends StatelessWidget {
           ]),
           showArrow: true,
         ),
-      AppButton('회원 관리·초대 코드', kind: ButtonKind.soft, onPressed: () => demo.update(() => demo.tab = 3)),
+      AppButton('회원 관리·초대 코드', kind: ButtonKind.soft, onPressed: () => demo.update(() {
+          demo.tab = 3;
+          demo.trainerView = '회원·일지';
+        })),
       ],
     ]);
   }
@@ -250,6 +259,52 @@ class _NextLessonCard extends StatelessWidget {
                   const Text('다음 수업', style: AppText.captionAccent),
                   WordText(ptWhen(next.start), style: AppText.title),
                   Muted('예약 확정 · 남은 PT ${demo.ptLeft[demo.memberName] ?? 0}회', bottom: 0),
+                ]),
+              ),
+              const Icon(Icons.chevron_right, color: AppColors.textSub),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 선생님 홈의 '답을 기다리는 신청' 카드. 급한 신청이 있으면 주황, 없으면 숨는다
+class _PendingRequestsCard extends StatelessWidget {
+  const _PendingRequestsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final waiting = demo.ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList()
+      ..sort((a, b) => a.start.compareTo(b.start));
+    if (waiting.isEmpty) return const SizedBox.shrink();
+    final urgent = waiting.where((b) => b.urgent).length;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpace.sPlus),
+      child: Material(
+        color: AppColors.cautionSoft,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          side: const BorderSide(color: AppColors.caution, width: 2),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => demo.update(() {
+            demo.tab = 3;
+            demo.trainerView = '수업 일정';
+          }),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpace.mPlus),
+            child: Row(children: [
+              const Icon(Icons.event_note_outlined, color: AppColors.caution),
+              const SizedBox(width: AppSpace.m),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  if (urgent > 0) WordText('급한 신청 $urgent건', style: AppText.captionCaution),
+                  WordText('답을 기다리는 신청 ${waiting.length}건', style: AppText.title),
+                  Muted(waiting.take(2).map((b) => '${b.member} ${ptWhen(b.start)}').join(' · '), bottom: 0),
                 ]),
               ),
               const Icon(Icons.chevron_right, color: AppColors.textSub),

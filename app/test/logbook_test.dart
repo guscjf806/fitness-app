@@ -508,6 +508,8 @@ void main() {
     demoNavigatorKey.currentState!.pop();
     demo.update(() => demo.tab = 3);
     await tester.pumpAndSettle();
+    // 위에 남은 PT 횟수 목록이 생겨 미션 카드까지 스크롤
+    await tester.scrollUntilVisible(findText('이번 주 미션'), 200, scrollable: find.byType(Scrollable).first);
     expect(find.ancestor(of: findText('이번 주 미션'), matching: find.byType(FieldLabel)), findsOneWidget);
     expect(findText('만든 초대 코드 1개'), findsNothing);
     // 맨 위 수업 일정 카드가 생겨 초대 칸이 화면 아래로 밀릴 수 있다

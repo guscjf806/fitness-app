@@ -135,5 +135,31 @@ void main() {
       expect(findTextContaining('재등록'), findsOneWidget);
       expect(demo.ptBookings.length, before);
     });
+
+    testWidgets('PT 탭 나누기(A): 선생님 회원 관리에서 수업 일정을 고르고, 재등록 회원 횟수를 늘린다', (tester) async {
+      tester.view.physicalSize = const Size(1200, 2400);
+      addTearDown(tester.view.reset);
+      demo.switchRole('trainer');
+      demo.update(() {
+        demo.tab = 3;
+        demo.trainerView = '회원·일지';
+      });
+      await tester.pumpWidget(const FitnessApp());
+      await tester.pumpAndSettle();
+      final left = demo.ptLeft['김지아']!;
+      await tester.scrollUntilVisible(findText('남은 PT 횟수'), 200, scrollable: find.byType(Scrollable).first);
+      await tester.ensureVisible(findText('횟수 추가').first);
+      await tester.pumpAndSettle();
+      await tester.tap(findText('횟수 추가').first);
+      await tester.pumpAndSettle();
+      await tester.tap(findText('+10회'));
+      await tester.pumpAndSettle();
+      expect(demo.ptLeft['김지아'], left + 10);
+      await tester.scrollUntilVisible(findText('수업 일정'), -300, scrollable: find.byType(Scrollable).first);
+      await tester.pumpAndSettle();
+      await tester.tap(findText('수업 일정'));
+      await tester.pumpAndSettle();
+      expect(findText('답을 기다리는 신청'), findsWidgets);
+    });
   });
 }

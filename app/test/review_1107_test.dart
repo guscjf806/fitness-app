@@ -90,6 +90,8 @@ void main() {
     await tester.tap(findText('이도현').last);
     await tester.pumpAndSettle();
     expect(demo.tab, 3);
+    // 위에 남은 PT 횟수 목록이 생겨 미션 칸까지 스크롤
+    await tester.scrollUntilVisible(findText('이도현 회원님께 보내기'), 200, scrollable: find.byType(Scrollable).first);
     expect(findText('이도현 회원님께 보내기'), findsOneWidget);
     demo.update(() {
       demo.removedMembers.addAll(members);

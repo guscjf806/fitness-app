@@ -147,7 +147,10 @@ class ProfileTab extends StatelessWidget {
           },
         ),
       if (role == 'trainer')
-        LineRow(left: const Text('회원 관리·초대 코드'), showArrow: true, onTap: () => demo.update(() => demo.tab = 3)),
+        LineRow(left: const Text('회원 관리·초대 코드'), showArrow: true, onTap: () => demo.update(() {
+          demo.tab = 3;
+          demo.trainerView = '회원·일지';
+        })),
       if (role != 'trainer')
         LineRow(left: const Text('구독'), showArrow: true, onTap: () => Navigator.pushNamed(context, Routes.subscribe)),
       // 위험한 줄은 실수로 누르지 않게 떼어서 맨 아래에 (디자인 리뷰 10/29 #6)
@@ -280,6 +283,7 @@ class _PtCodeScreenState extends State<PtCodeScreen> {
           demo.role = 'member';
           demo.ptEnded = false;
           demo.tab = 3;
+          demo.ptView = '운동일지';
         });
         Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
         toast(context, 'PT 회원으로 연결됐어요. 운동일지가 열렸어요');
