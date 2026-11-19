@@ -50,6 +50,12 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
     toast(context, '${b.member} 님 차감을 이번만 빼 줬어요', actionLabel: '되돌리기', onAction: undo);
   }
 
+  void _settle(PtBooking b) {
+    final undo = demo.ptUndo(b);
+    demo.update(() => b.settled = true);
+    toast(context, '${b.member} 님 차감을 그대로 두었어요', actionLabel: '되돌리기', onAction: undo);
+  }
+
   void _toggle(DateTime start, DateTime now) {
     if (demo.ptBookingAt(start, now) != null) {
       toast(context, '신청이나 예약이 있는 시간은 닫을 수 없어요');
@@ -71,7 +77,7 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
     ];
     final toWaive = [
       for (final b in demo.ptBookings)
-        if (!b.waived && (b.status == PtStatus.lateCancelled || b.status == PtStatus.noShow)) b
+        if (!b.waived && !b.settled && (b.status == PtStatus.lateCancelled || b.status == PtStatus.noShow)) b
     ];
     // 지나간 시각은 열고 닫을 수 없어 뺀다. 오늘 시간이 다 지나면 안내만 보인다 (디자인 리뷰 11/19 #1)
     final hours = [
@@ -100,7 +106,11 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               WordText('${b.member} · ${ptWhen(b.start)}', style: AppText.bodyStrong),
               WordText(ptStatusLabel(b.status), style: AppText.captionCaution),
-              AppButton('이번만 빼 주기', kind: ButtonKind.soft, onPressed: () => _waive(b)),
+              // 차감을 그대로 두면 목록에서 빼서 계속 쌓이지 않게 (리뷰 11/19 #4)
+              ButtonPair(
+                left: AppButton('이번만 빼 주기', kind: ButtonKind.soft, onPressed: () => _waive(b)),
+                right: AppButton('차감 그대로 두기', kind: ButtonKind.quiet, onPressed: () => _settle(b)),
+              ),
             ]),
           ),
       ],

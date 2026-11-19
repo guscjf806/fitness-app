@@ -163,10 +163,12 @@ class DemoState extends ChangeNotifier {
   VoidCallback ptUndo(PtBooking b) {
     final status = b.status;
     final waived = b.waived;
+    final settled = b.settled;
     final left = ptLeft[b.member];
     return () => update(() {
           b.status = status;
           b.waived = waived;
+          b.settled = settled;
           if (left != null) ptLeft[b.member] = left;
         });
   }

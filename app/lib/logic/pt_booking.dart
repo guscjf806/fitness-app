@@ -38,6 +38,9 @@ class PtBooking {
   /// 선생님이 '이번만 빼 주기'를 눌러 차감을 되돌렸는지
   bool waived = false;
 
+  /// 선생님이 '차감 그대로 두기'를 눌러 처리를 끝냈는지. 지난 수업 처리 목록에서 빠진다 (리뷰 11/19 #4)
+  bool settled = false;
+
   /// 수업까지 5시간이 안 남았을 때 들어온 신청. 선생님께 따로 알린다
   bool get urgent => start.difference(requestedAt) < const Duration(hours: AppConfig.ptAutoRejectHours);
 
