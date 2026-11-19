@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/mock_data.dart';
+import '../logic/pt_booking.dart';
 import '../routes.dart';
 import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
@@ -27,6 +28,8 @@ class HomeTab extends StatelessWidget {
     if (demo.role == 'trainer') return _trainerHome();
     return TabBody(children: [
       H1(demo.greeting),
+      // 확정된 다음 수업을 홈 맨 위에. 없으면 안 보인다 (리뷰 11/19 #5)
+      if (demo.role == 'member' && !demo.ptEnded) const _NextLessonCard(),
       // 연속 기록은 작은 한 줄로, 오늘의 작은 목표를 맨 위로 (결정 dd1029-home-order)
       LineRow(
         onTap: () => Navigator.pushNamed(context, Routes.records),
@@ -203,4 +206,53 @@ class _TodayWorkoutCard extends StatelessWidget {
           ],
         ]),
       );
+}
+
+/// 홈의 '다음 수업' 카드. 회색 일지 카드와 헷갈리지 않게 청록 테두리와 달력 아이콘 (리뷰 11/19 #5)
+class _NextLessonCard extends StatelessWidget {
+  const _NextLessonCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final next = (demo.ptBookings
+            .where((b) => b.member == demo.memberName && ptStatusAt(b, now) == PtStatus.approved && b.start.isAfter(now))
+            .toList()
+          ..sort((a, b) => a.start.compareTo(b.start)))
+        .firstOrNull;
+    if (next == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpace.sPlus),
+      child: Material(
+        color: AppColors.background,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          side: const BorderSide(color: AppColors.primary, width: 2),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => Navigator.pushNamed(context, Routes.ptBooking),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpace.mPlus),
+            child: Row(children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpace.s),
+                decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(AppRadius.box)),
+                child: const Icon(Icons.calendar_month_outlined, color: AppColors.primaryDark),
+              ),
+              const SizedBox(width: AppSpace.m),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const Text('다음 수업', style: AppText.captionAccent),
+                  WordText(ptWhen(next.start), style: AppText.title),
+                  Muted('예약 확정 · 남은 PT ${demo.ptLeft[demo.memberName] ?? 0}회', bottom: 0),
+                ]),
+              ),
+              const Icon(Icons.chevron_right, color: AppColors.textSub),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
 }
