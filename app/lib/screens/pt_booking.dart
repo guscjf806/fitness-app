@@ -15,7 +15,10 @@ export 'pt_schedule.dart';
 
 /// S24 수업 예약 (PT 회원)
 class PtBookingScreen extends StatefulWidget {
-  const PtBookingScreen({super.key});
+  const PtBookingScreen({super.key, this.embedded = false});
+
+  /// 탭 안에 넣을 때는 제목·뒤로가기 없이 내용만 (PT 탭 나누기, 결정 A)
+  final bool embedded;
 
   @override
   State<PtBookingScreen> createState() => _PtBookingScreenState();
@@ -101,7 +104,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
         if (demo.ptOpenSlots.contains(days[day].add(Duration(hours: h)))) days[day].add(Duration(hours: h)),
     ];
     final slots = [for (final s in opened) if (s.isAfter(now)) s];
-    return AppPage(title: '수업 예약', children: [
+    final children = <Widget>[
       LineRow(
         left: const Text('남은 PT', style: AppText.bodyStrong),
         right: Text('${demo.ptLeft[me] ?? 0}회', style: AppText.bodyStrong.copyWith(color: AppColors.primaryDark)),
@@ -134,7 +137,10 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       const SizedBox(height: AppSpace.l),
       Muted('수업 ${AppConfig.ptFreeCancelHours}시간 전까지는 무료로 취소할 수 있어요. 그 뒤에 취소하거나 오지 않으면 PT 1회가 차감돼요. '
           '사정이 있으면 선생님이 차감을 빼 줄 수 있어요.'),
-    ]);
+    ];
+    return widget.embedded
+        ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children)
+        : AppPage(title: '수업 예약', children: children);
   }
 }
 

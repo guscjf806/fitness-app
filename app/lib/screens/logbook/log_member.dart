@@ -6,6 +6,7 @@ import '../../routes.dart';
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../pt_booking.dart';
 
 /// S12 운동일지 안내 (일반 회원)
 class LogIntroTab extends StatelessWidget {
@@ -52,23 +53,19 @@ class LogListTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final logs = demo.logsOf(demo.memberName);
     return TabBody(children: [
-      const H1('운동일지'),
+      H1(demo.ptEnded ? '운동일지' : 'PT'),
       if (demo.ptEnded) ...[
         const Muted('선생님과 연결이 끊겼어요. 받은 일지와 영상은 계속 볼 수 있어요.'),
         AppButton('PT 코드가 있어요', kind: ButtonKind.soft, top: 0, onPressed: () => Navigator.pushNamed(context, Routes.ptCode)),
         const SizedBox(height: AppSpace.m),
       ] else ...[
-        // 수업 예약으로 가는 길 (연습용, docs/PT예약_설계.md)
-        AppCard(
-          showArrow: true,
-          onTap: () => Navigator.pushNamed(context, Routes.ptBooking),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('수업 예약', style: AppText.bodyStrong),
-            Muted('남은 PT ${demo.ptLeft[demo.memberName] ?? 0}회 · 선생님께 수업 시간을 신청해요', bottom: 0),
-          ]),
-        ),
-        const Muted('담당 선생님이 작성한 내 일지예요. 나만 볼 수 있어요.'),
+        // 예약과 일지를 한 화면에 섞지 않고 위에서 골라 본다 (PT 탭 나누기, 결정 A)
+        Seg(options: const ['수업 예약', '운동일지'], value: demo.ptView, onChanged: (v) => demo.update(() => demo.ptView = v)),
+        if (demo.ptView == '수업 예약') const PtBookingScreen(embedded: true),
+        if (demo.ptView == '운동일지') const Muted('담당 선생님이 작성한 내 일지예요. 나만 볼 수 있어요.'),
       ],
+      if (demo.ptEnded || demo.ptView == '운동일지') ...[
+      if (logs.isEmpty) const AppCard(child: WordText('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
       if (logs.isEmpty) const AppCard(child: WordText('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
       for (final log in logs)
         AppCard(
@@ -94,6 +91,7 @@ class LogListTab extends StatelessWidget {
             ),
           ]),
         ),
+      ],
     ]);
   }
 }

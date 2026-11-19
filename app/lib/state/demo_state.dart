@@ -152,6 +152,10 @@ class DemoState extends ChangeNotifier {
         for (final b in ptBookings) b.start,
       };
 
+  /// PT 탭 안에서 고른 화면. 회원: '수업 예약' | '운동일지', 선생님 회원 관리: '수업 일정' | '회원·일지' (PT 탭 나누기, 결정 A)
+  String ptView = '운동일지';
+  String trainerView = '회원·일지';
+
   /// 회원별 남은 PT 횟수 (목업)
   final Map<String, int> ptLeft = {'김지아': 6, '이도현': 10, '박서연': 3};
 

@@ -12,7 +12,10 @@ import '../widgets/pt_slot.dart';
 
 /// S25 수업 일정 (선생님): 답을 기다리는 신청 승인·거절, 지난 수업 처리, 수업 시간 열고 닫기
 class PtScheduleScreen extends StatefulWidget {
-  const PtScheduleScreen({super.key});
+  const PtScheduleScreen({super.key, this.embedded = false});
+
+  /// 탭 안에 넣을 때는 제목·뒤로가기 없이 내용만 (PT 탭 나누기, 결정 A)
+  final bool embedded;
 
   @override
   State<PtScheduleScreen> createState() => _PtScheduleScreenState();
@@ -84,7 +87,7 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
       for (final h in AppConfig.ptLessonHours)
         if (days[day].add(Duration(hours: h)).isAfter(now)) days[day].add(Duration(hours: h)),
     ];
-    return AppPage(title: '수업 일정', children: [
+    final children = <Widget>[
       const H2('답을 기다리는 신청'),
       if (waiting.isEmpty) const Muted('답할 신청이 없어요.'),
       for (final b in waiting) _RequestCard(b, now: now, onAnswer: (ok) => _answer(b, ok)),
@@ -124,7 +127,10 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
           for (final s in hours) _TrainerSlot(start: s, now: now, onTap: () => _toggle(s, now)),
         ]),
       const SlotLegend([(SlotTone.closed, '닫힘'), (SlotTone.open, '열림'), (SlotTone.pending, '답할 신청'), (SlotTone.filled, '확정 예약')]),
-    ]);
+    ];
+    return widget.embedded
+        ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children)
+        : AppPage(title: '수업 일정', children: children);
   }
 }
 

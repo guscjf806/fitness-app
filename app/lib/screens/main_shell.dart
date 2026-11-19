@@ -42,7 +42,10 @@ class MainShell extends StatelessWidget {
         NavigationDestination(icon: Icon(Icons.fitness_center_outlined), selectedIcon: Icon(Icons.fitness_center), label: '운동'),
         trainer
             ? NavigationDestination(icon: Icon(Icons.groups_outlined), selectedIcon: Icon(Icons.groups), label: '회원 관리')
-            : NavigationDestination(icon: Icon(Icons.menu_book_outlined), selectedIcon: Icon(Icons.menu_book), label: '운동일지'),
+            // PT 회원은 예약과 일지를 한 탭에 'PT'로 (PT 탭 나누기, 결정 A)
+            : demo.role == 'member' && !demo.ptEnded
+                ? NavigationDestination(icon: Icon(Icons.calendar_month_outlined), selectedIcon: Icon(Icons.calendar_month), label: 'PT')
+                : NavigationDestination(icon: Icon(Icons.menu_book_outlined), selectedIcon: Icon(Icons.menu_book), label: '운동일지'),
         NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: '내 정보'),
       ];
       final visible = trainer ? const [0, 2, 3, 4] : const [0, 1, 2, 3, 4];

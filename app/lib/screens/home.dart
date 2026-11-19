@@ -231,7 +231,11 @@ class _NextLessonCard extends StatelessWidget {
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () => Navigator.pushNamed(context, Routes.ptBooking),
+          // PT 탭의 '수업 예약'으로 바로 간다 (결정 A)
+          onTap: () => demo.update(() {
+            demo.tab = 3;
+            demo.ptView = '수업 예약';
+          }),
           child: Padding(
             padding: const EdgeInsets.all(AppSpace.mPlus),
             child: Row(children: [
