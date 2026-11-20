@@ -176,7 +176,7 @@ class _TrainerSlot extends StatelessWidget {
     final open = demo.ptOpenSlots.contains(start);
     final b = demo.ptBookingAt(start, now);
     final label = b != null
-        ? '${b.member} ${ptStatusAt(b, now) == PtStatus.approved ? '예약' : '대기'}'
+        ? '${b.member} ${ptStatusAt(b, now) == PtStatus.approved ? '예약' : '신청'}'
         : (open ? '열림' : '닫힘');
     return TimeSlotButton(
       time: ptHourText(start),
