@@ -230,42 +230,16 @@ class _NextLessonCard extends StatelessWidget {
           ..sort((a, b) => a.start.compareTo(b.start)))
         .firstOrNull;
     if (next == null) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpace.sPlus),
-      child: Material(
-        color: AppColors.background,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.card),
-          side: const BorderSide(color: AppColors.primary, width: 2),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          // PT 탭의 '수업 예약'으로 바로 간다 (결정 A)
-          onTap: () => demo.update(() {
-            demo.tab = 3;
-            demo.ptView = '수업 예약';
-          }),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpace.mPlus),
-            child: Row(children: [
-              Container(
-                padding: const EdgeInsets.all(AppSpace.s),
-                decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(AppRadius.box)),
-                child: const Icon(Icons.calendar_month_outlined, color: AppColors.primaryDark),
-              ),
-              const SizedBox(width: AppSpace.m),
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text('다음 수업', style: AppText.captionAccent),
-                  WordText(ptWhen(next.start), style: AppText.title),
-                  Muted('예약 확정 · 남은 PT ${demo.ptLeft[demo.memberName] ?? 0}회', bottom: 0),
-                ]),
-              ),
-              const Icon(Icons.chevron_right, color: AppColors.textSub),
-            ]),
-          ),
-        ),
-      ),
+    return HighlightCard(
+      icon: Icons.calendar_month_outlined,
+      eyebrow: '다음 수업',
+      title: ptWhen(next.start),
+      subtitle: '예약 확정 · 남은 PT ${demo.ptLeft[demo.memberName] ?? 0}회',
+      // PT 탭의 '수업 예약'으로 바로 간다 (결정 A)
+      onTap: () => demo.update(() {
+        demo.tab = 3;
+        demo.ptView = '수업 예약';
+      }),
     );
   }
 }
@@ -281,37 +255,16 @@ class _PendingRequestsCard extends StatelessWidget {
       ..sort((a, b) => a.start.compareTo(b.start));
     if (waiting.isEmpty) return const SizedBox.shrink();
     final urgent = waiting.where((b) => b.urgent).length;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpace.sPlus),
-      child: Material(
-        color: AppColors.cautionSoft,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.card),
-          side: const BorderSide(color: AppColors.caution, width: 2),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => demo.update(() {
-            demo.tab = 3;
-            demo.trainerView = '수업 일정';
-          }),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpace.mPlus),
-            child: Row(children: [
-              const Icon(Icons.event_note_outlined, color: AppColors.caution),
-              const SizedBox(width: AppSpace.m),
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  if (urgent > 0) WordText('급한 신청 $urgent건', style: AppText.captionCaution),
-                  WordText('답을 기다리는 신청 ${waiting.length}건', style: AppText.title),
-                  Muted(waiting.take(2).map((b) => '${b.member} ${ptWhen(b.start)}').join(' · '), bottom: 0),
-                ]),
-              ),
-              const Icon(Icons.chevron_right, color: AppColors.textSub),
-            ]),
-          ),
-        ),
-      ),
+    return HighlightCard(
+      icon: Icons.event_note_outlined,
+      tone: HighlightTone.caution,
+      eyebrow: urgent > 0 ? '급한 신청 $urgent건' : null,
+      title: '답을 기다리는 신청 ${waiting.length}건',
+      subtitle: waiting.take(2).map((b) => '${b.member} ${ptWhen(b.start)}').join(' · '),
+      onTap: () => demo.update(() {
+        demo.tab = 3;
+        demo.trainerView = '수업 일정';
+      }),
     );
   }
 }

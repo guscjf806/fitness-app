@@ -102,6 +102,72 @@ class AppCard extends StatelessWidget {
   }
 }
 
+enum HighlightTone { primary, caution }
+
+/// 홈 맨 위에 띄우는 눈에 띄는 카드 (다음 수업, 답을 기다리는 신청). 일반 카드와 구분되게 테두리 2 (디자인 리뷰 11/20 #2)
+class HighlightCard extends StatelessWidget {
+  const HighlightCard({
+    super.key,
+    required this.icon,
+    this.tone = HighlightTone.primary,
+    this.eyebrow,
+    required this.title,
+    required this.subtitle,
+    this.onTap,
+  });
+  final IconData icon;
+  final HighlightTone tone;
+
+  /// 제목 위 작은 글 ('다음 수업', '급한 신청 N건'). 없으면 숨긴다
+  final String? eyebrow;
+  final String title;
+  final String subtitle;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final caution = tone == HighlightTone.caution;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpace.sPlus),
+      child: Material(
+        color: caution ? AppColors.cautionSoft : AppColors.background,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          side: BorderSide(color: caution ? AppColors.caution : AppColors.primary, width: 2),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpace.mPlus),
+            child: Row(children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpace.s),
+                decoration: BoxDecoration(
+                  // 주황 카드 바탕 위에서도 상자가 보이게 흰 바탕을 쓴다
+                  color: caution ? AppColors.background : AppColors.primarySoft,
+                  borderRadius: BorderRadius.circular(AppRadius.box),
+                ),
+                child: Icon(icon, color: caution ? AppColors.caution : AppColors.primaryDark),
+              ),
+              const SizedBox(width: AppSpace.m),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  if (eyebrow != null) WordText(eyebrow!, style: caution ? AppText.captionCaution : AppText.captionAccent),
+                  WordText(title, style: AppText.title),
+                  Muted(subtitle, bottom: 0),
+                ]),
+              ),
+              const SizedBox(width: AppSpace.xs),
+              const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// 게스트 모드 안내 (탭 화면 위쪽)
 class GuestBanner extends StatelessWidget {
   const GuestBanner(this.text, {super.key});
