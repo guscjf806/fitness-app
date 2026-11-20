@@ -72,7 +72,7 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
     final now = DateTime.now();
     final days = ptBookingDays(now);
     // 급한 신청을 맨 위로, 그다음 자동 거절이 가까운 순서
-    final waiting = [for (final b in demo.ptBookings) if (ptStatusAt(b, now) == PtStatus.requested) b]
+    final waiting = demo.ptWaitingAt(now)
       ..sort((a, b) => a.urgent != b.urgent ? (a.urgent ? -1 : 1) : a.answerBy.compareTo(b.answerBy));
     final toFinish = [
       for (final b in demo.ptBookings)

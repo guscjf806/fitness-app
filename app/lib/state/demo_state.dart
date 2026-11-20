@@ -163,6 +163,22 @@ class DemoState extends ChangeNotifier {
   PtBooking? ptBookingAt(DateTime start, DateTime now) =>
       ptBookings.where((b) => b.start == start && ptHoldsSlot(ptStatusAt(b, now))).firstOrNull;
 
+  /// 선생님이 답해야 할 신청 (수업 시작 순). 홈·회원 관리·수업 일정이 같이 쓴다 (디자인 리뷰 11/20 #5)
+  List<PtBooking> ptWaitingAt(DateTime now) =>
+      ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList()..sort((a, b) => a.start.compareTo(b.start));
+
+  /// 선생님 회원 관리 탭을 열고 위 칸(수업 일정 / 회원·일지)을 고른다
+  void openTrainerTab(String view) => update(() {
+        tab = 3;
+        trainerView = view;
+      });
+
+  /// 회원 PT 탭을 열고 위 칸(수업 예약 / 운동일지)을 고른다
+  void openPtTab(String view) => update(() {
+        tab = 3;
+        ptView = view;
+      });
+
   /// 잘못 눌렀을 때 바로 앞 상태(상태·차감·남은 횟수)로 되돌리는 함수. 알림 띠의 '되돌리기'에 쓴다 (디자인 리뷰 11/18 #2)
   VoidCallback ptUndo(PtBooking b) {
     final status = b.status;

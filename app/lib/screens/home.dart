@@ -107,10 +107,7 @@ class HomeTab extends StatelessWidget {
       const _PendingRequestsCard(),
       if (demo.activeMembers.isEmpty) ...[
         const Muted('연결된 회원이 없어요. 초대 코드를 만들어 보세요.'),
-        AppButton('초대 코드 만들기', onPressed: () => demo.update(() {
-          demo.tab = 3;
-          demo.trainerView = '회원·일지';
-        })),
+        AppButton('초대 코드 만들기', onPressed: () => demo.openTrainerTab('회원·일지')),
       ] else ...[
       const H2('일지 쓸 회원', top: AppSpace.xs),
       for (final m in demo.activeMembers) MemberLogRow(m),
@@ -118,11 +115,10 @@ class HomeTab extends StatelessWidget {
       for (final m in demo.activeMembers)
         LineRow(
           // 누른 회원을 미리 골라 다른 회원의 미션을 바꾸지 않게 (리뷰 11/07 #6)
-          onTap: () => demo.update(() {
+          onTap: () {
             demo.missionMember = m;
-            demo.tab = 3;
-            demo.trainerView = '회원·일지';
-          }),
+            demo.openTrainerTab('회원·일지');
+          },
           // 화살표가 같은 줄에 서게 미션 글은 왼쪽 칸 안에서 오른쪽으로 붙인다
           left: Row(children: [
             Text(m, style: AppText.bodyStrong),
@@ -131,10 +127,7 @@ class HomeTab extends StatelessWidget {
           ]),
           showArrow: true,
         ),
-      AppButton('회원 관리·초대 코드', kind: ButtonKind.soft, onPressed: () => demo.update(() {
-          demo.tab = 3;
-          demo.trainerView = '회원·일지';
-        })),
+      AppButton('회원 관리·초대 코드', kind: ButtonKind.soft, onPressed: () => demo.openTrainerTab('회원·일지')),
       ],
     ]);
   }
@@ -236,10 +229,7 @@ class _NextLessonCard extends StatelessWidget {
       title: ptWhen(next.start),
       subtitle: '예약 확정 · 남은 PT ${demo.ptLeft[demo.memberName] ?? 0}회',
       // PT 탭의 '수업 예약'으로 바로 간다 (결정 A)
-      onTap: () => demo.update(() {
-        demo.tab = 3;
-        demo.ptView = '수업 예약';
-      }),
+      onTap: () => demo.openPtTab('수업 예약'),
     );
   }
 }
@@ -250,9 +240,7 @@ class _PendingRequestsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final waiting = demo.ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList()
-      ..sort((a, b) => a.start.compareTo(b.start));
+    final waiting = demo.ptWaitingAt(DateTime.now());
     if (waiting.isEmpty) return const SizedBox.shrink();
     final urgent = waiting.where((b) => b.urgent).length;
     return HighlightCard(
@@ -261,10 +249,7 @@ class _PendingRequestsCard extends StatelessWidget {
       eyebrow: urgent > 0 ? '급한 신청 $urgent건' : null,
       title: '답을 기다리는 신청 ${waiting.length}건',
       subtitle: waiting.take(2).map((b) => '${b.member} ${ptWhen(b.start)}').join(' · '),
-      onTap: () => demo.update(() {
-        demo.tab = 3;
-        demo.trainerView = '수업 일정';
-      }),
+      onTap: () => demo.openTrainerTab('수업 일정'),
     );
   }
 }

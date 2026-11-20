@@ -151,8 +151,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
     if (demo.trainerView == '수업 일정') {
       return TabBody(children: [const H1('회원 관리'), seg, const PtScheduleScreen(embedded: true)]);
     }
-    final now = DateTime.now();
-    final waiting = demo.ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList();
+    final waiting = demo.ptWaitingAt(DateTime.now());
     final urgent = waiting.where((b) => b.urgent).length;
     return TabBody(children: [
       const H1('회원 관리'),
