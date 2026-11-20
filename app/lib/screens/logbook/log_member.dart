@@ -65,32 +65,31 @@ class LogListTab extends StatelessWidget {
         if (demo.ptView == '운동일지') const Muted('담당 선생님이 작성한 내 일지예요. 나만 볼 수 있어요.'),
       ],
       if (demo.ptEnded || demo.ptView == '운동일지') ...[
-      if (logs.isEmpty) const AppCard(child: WordText('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
-      if (logs.isEmpty) const AppCard(child: WordText('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
-      for (final log in logs)
-        AppCard(
-          showArrow: true,
-          onTap: () {
-            demo.update(() {
-              demo.firstLogSeen = true;
-              demo.unseenLogs.remove(log);
-            });
-            Navigator.pushNamed(context, Routes.logDetail, arguments: log);
-          },
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [
-              Expanded(child: WordText('${log.date} · ${log.title}', style: AppText.bodyStrong)),
-              // 안 본 일지를 구분한다 (리뷰 11/04 #7)
-              LogStatusLabels(edited: log.edited, isNew: demo.unseenLogs.contains(log)),
+        if (logs.isEmpty) const AppCard(child: WordText('아직 받은 일지가 없어요. 수업이 끝나면 선생님이 여기 올려 줘요.')),
+        for (final log in logs)
+          AppCard(
+            showArrow: true,
+            onTap: () {
+              demo.update(() {
+                demo.firstLogSeen = true;
+                demo.unseenLogs.remove(log);
+              });
+              Navigator.pushNamed(context, Routes.logDetail, arguments: log);
+            },
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                Expanded(child: WordText('${log.date} · ${log.title}', style: AppText.bodyStrong)),
+                // 안 본 일지를 구분한다 (리뷰 11/04 #7)
+                LogStatusLabels(edited: log.edited, isNew: demo.unseenLogs.contains(log)),
+              ]),
+              Muted(
+                '${log.items.length}종목'
+                '${log.videos.isEmpty ? '' : ' · 영상 ${log.videos.length}개'}'
+                '${log.comment.isEmpty ? '' : ' · ${log.comment}'}',
+                bottom: 0,
+              ),
             ]),
-            Muted(
-              '${log.items.length}종목'
-              '${log.videos.isEmpty ? '' : ' · 영상 ${log.videos.length}개'}'
-              '${log.comment.isEmpty ? '' : ' · ${log.comment}'}',
-              bottom: 0,
-            ),
-          ]),
-        ),
+          ),
       ],
     ]);
   }

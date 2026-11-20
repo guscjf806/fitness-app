@@ -582,4 +582,20 @@ void main() {
     await tap(tester, find.descendant(of: nav, matching: findText('회원 관리')));
     expect(demo.tab, 3);
   });
+
+  testWidgets('디자인 리뷰 11/20 #1 받은 일지가 없으면 안내 카드가 하나만 나온다', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    addTearDown(tester.view.reset);
+    final before = demo.memberName;
+    addTearDown(() => demo.memberName = before);
+    demo.switchRole('member');
+    demo.memberName = members[1];
+    demo.update(() {
+      demo.tab = 3;
+      demo.ptView = '운동일지';
+    });
+    await tester.pumpWidget(const FitnessApp());
+    await tester.pumpAndSettle();
+    expect(findTextContaining('아직 받은 일지가 없어요'), findsOneWidget);
+  });
 }
