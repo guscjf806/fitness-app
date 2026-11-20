@@ -99,6 +99,9 @@ class AppText {
   static const body = TextStyle(fontFamily: fontFamily, fontSize: 14);
   static const bodyStrong = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700);
 
+  /// 남은 PT 0회처럼 주의가 필요한 굵은 본문 (디자인 리뷰 11/20 #4)
+  static const bodyStrongCaution = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.caution);
+
   /// 달력의 '오늘'처럼 가장 작은 글씨의 청록 굵은 표시 (디자인 리뷰 11/17 #6)
   static const smallAccent = TextStyle(fontFamily: fontFamily, fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primaryDark);
 

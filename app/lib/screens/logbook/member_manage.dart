@@ -311,8 +311,13 @@ class PtLeftList extends StatelessWidget {
       for (final m in demo.activeMembers)
         LineRow(
           left: WordText('$m · ${demo.ptLeft[m] ?? 0}회 남음',
-              style: (demo.ptLeft[m] ?? 0) <= 0 ? AppText.bodyStrong.copyWith(color: AppColors.caution) : AppText.bodyStrong),
-          right: TextButton(onPressed: () => _add(context, m), child: const Text('횟수 추가')),
+              style: (demo.ptLeft[m] ?? 0) <= 0 ? AppText.bodyStrongCaution : AppText.bodyStrong),
+          // 같은 화면 회원 줄의 '일지 작성'과 같은 연한 버튼 (디자인 리뷰 11/20 #4)
+          right: FilledButton.tonal(
+            style: AppButtonStyle.soft(minimumSize: const Size(0, 48)),
+            onPressed: () => _add(context, m),
+            child: const Text('횟수 추가'),
+          ),
         ),
       const SizedBox(height: AppSpace.l),
     ]);
