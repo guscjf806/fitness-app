@@ -67,6 +67,9 @@ class _MealPostScreenState extends State<MealPostScreen> {
       child: AppPage(title: '식단 올리기', children: [
       // 올린 식단은 선생님에게 보이지 않는다 (결정 d1101-1)
       const Muted('나만 볼 수 있어요. 선생님에게는 보이지 않고, 답변을 위해 AI만 확인해요.'),
+      // 사진을 고르기 전에 오늘 한도가 찼다는 걸 먼저 알린다 (리뷰 11/21 #3)
+      if (demo.photoLimitReached)
+        WarningBox('오늘 올릴 수 있는 ${AppConfig.ptDailyPhotoLimit}장을 다 올렸어요. 내일 다시 올려 주세요', top: 0),
       const FieldLabel('어느 끼니인가요?'),
       Seg(options: const ['아침', '점심', '저녁', '간식'], value: slot, onChanged: (v) => setState(() => slot = v)),
       // 다시 눌러도 사진이 말없이 빠지지 않게: 누르면 바꾸기, 빼기는 따로 (리뷰 11/01 #2)
@@ -90,13 +93,15 @@ class _MealPostScreenState extends State<MealPostScreen> {
       if (!photoPicked && note.trim().isNotEmpty) const Muted('사진이 있으면 더 정확해요', top: AppSpace.xs, bottom: 0),
       const SizedBox(height: AppSpace.sPlus),
       // 실제 사용 횟수를 보여 주고, 다 썼으면 누르기 전에 알린다 (리뷰 11/01 #1)
-      if (demo.quotaExhausted)
+      if (demo.photoLimitReached)
+        const SizedBox.shrink()
+      else if (demo.quotaExhausted)
         const WarningBox('이번 달 무료 횟수를 다 썼어요', top: 0)
       else
         Muted(demo.ptFree
             ? '올리면 AI가 확인해서 답변해요 · PT 회원은 무료예요 (오늘 ${demo.photosToday} / ${AppConfig.ptDailyPhotoLimit}장)'
             : '올리면 AI가 확인해서 답변해요 · 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 사용'),
-      AppButton('올리기', onPressed: _post),
+      AppButton('올리기', onPressed: demo.photoLimitReached ? null : _post),
     ]),
     );
   }
