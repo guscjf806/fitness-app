@@ -96,6 +96,10 @@ class AppText {
   /// 데모 바·작은 안내처럼 가장 작은 글씨
   static const small = TextStyle(fontFamily: fontFamily, fontSize: 12);
   static const caption = TextStyle(fontFamily: fontFamily, fontSize: 13);
+
+  /// 보조 설명용 회색 작은 글 (디자인 리뷰 11/21 #3)
+  static const smallSub = TextStyle(fontFamily: fontFamily, fontSize: 12, color: AppColors.textSub);
+  static const captionSub = TextStyle(fontFamily: fontFamily, fontSize: 13, color: AppColors.textSub);
   static const body = TextStyle(fontFamily: fontFamily, fontSize: 14);
   static const bodyStrong = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700);
 

@@ -124,7 +124,7 @@ class NumField extends StatelessWidget {
             ? null
             : Padding(
                 padding: const EdgeInsets.only(right: AppSpace.s),
-                child: Text(suffix!, style: AppText.small.copyWith(color: AppColors.textSub)),
+                child: Text(suffix!, style: AppText.smallSub),
               ),
         suffixIconConstraints: const BoxConstraints(),
       ),

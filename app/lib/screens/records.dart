@@ -57,7 +57,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
                       softWrap: false,
                       style: i == 7
                           ? AppText.smallAccent
-                          : AppText.small.copyWith(color: AppColors.textSub)),
+                          : AppText.smallSub),
                 ]),
               ),
           ]),
@@ -96,7 +96,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
               mainAxisSpacing: 6,
               children: [
                 for (final d in dayLabels)
-                  Center(child: Text(d, style: AppText.small.copyWith(color: AppColors.textSub))),
+                  Center(child: Text(d, style: AppText.smallSub)),
                 for (final d in cells) d == null ? const SizedBox() : _CalendarDay(d),
               ],
             ),

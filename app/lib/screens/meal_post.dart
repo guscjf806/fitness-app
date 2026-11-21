@@ -137,7 +137,7 @@ class MealPhotoBox extends StatelessWidget {
                         : Icons.image_outlined,
                 color: tappable ? AppColors.primaryDark : AppColors.textSub),
             const SizedBox(height: AppSpace.xs),
-            Text(label, style: AppText.caption.copyWith(color: tappable ? AppColors.primaryDark : AppColors.textSub)),
+            Text(label, style: tappable ? AppText.caption.copyWith(color: AppColors.primaryDark) : AppText.captionSub),
           ]),
           ),
         ),

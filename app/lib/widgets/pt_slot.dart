@@ -125,7 +125,7 @@ class SlotLegend extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpace.xs),
-          Text(text, style: AppText.caption.copyWith(color: AppColors.textSub)),
+          Text(text, style: AppText.captionSub),
         ]),
       ]),
     );
