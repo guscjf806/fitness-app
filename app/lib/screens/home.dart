@@ -76,7 +76,7 @@ class HomeTab extends StatelessWidget {
           accent: true,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Muted('선생님이 준 이번 주 미션', bottom: AppSpace.xxs),
-            Text(demo.missions[demo.memberName] ?? '아직 미션이 없어요'),
+            WordText(demo.missions[demo.memberName] ?? '아직 미션이 없어요'),
           ]),
         ),
       AppCard(

@@ -20,7 +20,7 @@ class SwitchRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LineRow(
         left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title),
+          WordText(title),
           Muted(subtitle, bottom: 0),
         ]),
         right: Switch(value: value, onChanged: onChanged),
