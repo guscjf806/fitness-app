@@ -214,7 +214,8 @@ class DemoState extends ChangeNotifier {
   }
 
   /// 오늘 올린 식단 사진(글) 수
-  int get photosToday => mealPosts.where((p) => p.isToday).length;
+  /// 답변을 못 받은(실패한) 글은 빼고 센다. 받는 중인 글은 센다 (리뷰 11/21 #6)
+  int get photosToday => mealPosts.where((p) => p.isToday && (p.replied || replyPending.contains(p))).length;
 
   /// 무료 PT 회원이 오늘 올릴 수 있는 사진을 다 올렸는지
   bool get photoLimitReached => ptFree && photosToday >= AppConfig.ptDailyPhotoLimit;

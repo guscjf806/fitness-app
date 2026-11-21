@@ -55,4 +55,23 @@ void main() {
     demo.ptFinishedAt = DateTime.now().subtract(const Duration(days: 10));
     expect(demo.videoDaysLeft, AppConfig.videoKeepDays - 10);
   });
+
+  test('리뷰 11/21 #6 답변을 못 받은 글은 하루 사진 수에 넣지 않는다', () {
+    demo.mealPosts.insert(0, const MealPost('오늘 점심', '받음', '', isToday: true));
+    final failed = MealPost('오늘 저녁', '실패', '', isToday: true, replied: false);
+    final waiting = MealPost('오늘 간식', '받는 중', '', isToday: true, replied: false);
+    demo.mealPosts.insertAll(0, [failed, waiting]);
+    demo.replyPending.add(waiting);
+    expect(demo.photosToday, 2);
+    demo.replyPending.clear();
+  });
+
+  test('리뷰 11/21 #2 PT 끝난 날은 앱을 다시 켜도 남는다', () async {
+    demo.update(() => demo.ptLeft[demo.memberName] = 0);
+    final finished = demo.ptFinishedAt!;
+    await demo.save();
+    demo.ptFinishedAt = null;
+    await demo.load();
+    expect(demo.ptFinishedAt, finished);
+  });
 }
