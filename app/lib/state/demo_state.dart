@@ -509,6 +509,12 @@ class DemoState extends ChangeNotifier {
     await p.setString('bodyFatUnit', bodyFatUnit);
     await p.setBool('restSound', restSound);
     await p.setBool('ptEnded', ptEnded);
+    // 앱을 다시 켜도 무료 유예와 영상 남은 날이 이어지게 (리뷰 11/21 #2)
+    if (ptFinishedAt == null) {
+      await p.remove('ptFinishedAt');
+    } else {
+      await p.setString('ptFinishedAt', ptFinishedAt!.toIso8601String());
+    }
     if (lastLoginProvider != null) await p.setString('lastLoginProvider', lastLoginProvider!);
     await p.setStringList('favorites', favorites.toList());
     await p.setStringList('lastWeights', [for (final e in lastWeights.entries) '${e.key}|${e.value}']);
@@ -561,6 +567,7 @@ class DemoState extends ChangeNotifier {
     bodyFatUnit = p.getString('bodyFatUnit') ?? bodyFatUnit;
     restSound = p.getBool('restSound') ?? restSound;
     ptEnded = p.getBool('ptEnded') ?? ptEnded;
+    ptFinishedAt = DateTime.tryParse(p.getString('ptFinishedAt') ?? '') ?? ptFinishedAt;
     lastLoginProvider = p.getString('lastLoginProvider') ?? lastLoginProvider;
     favorites.addAll(p.getStringList('favorites') ?? const []);
     for (final s in p.getStringList('lastWeights') ?? const <String>[]) {
