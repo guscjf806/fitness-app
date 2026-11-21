@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
       const Muted('카카오·구글 창이 열려요. 로그인을 마치면 앱으로 돌아와요.'),
       // 어떤 방법으로 가입했는지 잊지 않게 (결정 d1105-3)
       if (demo.lastLoginProvider != null)
-        Text('지난번에 ${demo.lastLoginProvider}로 로그인했어요', style: AppText.bodyStrong.copyWith(color: AppColors.primaryDark)),
+        Text('지난번에 ${demo.lastLoginProvider}로 로그인했어요', style: AppText.bodyStrongAccent),
       social('카카오로 시작하기', AppColors.kakao, AppColors.kakaoText, logo: 'assets/logos/kakao.png', provider: OAuthProvider.kakao),
       social('구글로 시작하기', Colors.white, AppColors.googleText, outlined: true, logo: 'assets/logos/google.png', provider: OAuthProvider.google),
       // Apple 로고는 공식 자료를 받으려면 라이선스 동의가 필요해 아직 비워 둔다 (assets/logos/README.md)

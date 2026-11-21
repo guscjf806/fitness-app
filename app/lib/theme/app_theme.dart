@@ -99,6 +99,9 @@ class AppText {
   static const body = TextStyle(fontFamily: fontFamily, fontSize: 14);
   static const bodyStrong = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700);
 
+  /// 남은 횟수·'고치기'처럼 청록으로 강조하는 굵은 본문 (디자인 리뷰 11/21 #2)
+  static const bodyStrongAccent = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.primaryDark);
+
   /// 남은 PT 0회처럼 주의가 필요한 굵은 본문 (디자인 리뷰 11/20 #4)
   static const bodyStrongCaution = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.caution);
 

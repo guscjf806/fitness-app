@@ -107,7 +107,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     final children = <Widget>[
       LineRow(
         left: const Text('남은 PT', style: AppText.bodyStrong),
-        right: Text('${demo.ptLeft[me] ?? 0}회', style: AppText.bodyStrong.copyWith(color: AppColors.primaryDark)),
+        right: Text('${demo.ptLeft[me] ?? 0}회', style: AppText.bodyStrongAccent),
       ),
       const H2('내 예약'),
       if (upcoming.isEmpty) const Muted('잡힌 수업이 없어요. 아래에서 시간을 골라 신청해 보세요.'),

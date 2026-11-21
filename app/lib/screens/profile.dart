@@ -103,7 +103,7 @@ class ProfileTab extends StatelessWidget {
               },
         left: Text('알림 시간', style: TextStyle(color: demo.pushOn ? AppColors.text : AppColors.textSub)),
         right: Text(demo.pushTime.format(context),
-            style: AppText.bodyStrong.copyWith(color: demo.pushOn ? AppColors.primaryDark : AppColors.textSub)),
+            style: demo.pushOn ? AppText.bodyStrongAccent : AppText.bodyStrong.copyWith(color: AppColors.textSub)),
       ),
       // 처음 동의할 때 고른 선택 동의를 나중에 바꾸는 곳 (결정 d1112-3)
       SwitchRow(
