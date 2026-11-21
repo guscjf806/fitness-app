@@ -8,6 +8,7 @@ import '../../routes.dart';
 import '../../state/demo_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/pt_cards.dart';
 import 'log_write.dart';
 import 'pt_left.dart';
 import '../pt_booking.dart';
@@ -151,19 +152,11 @@ class _MemberManageTabState extends State<MemberManageTab> {
     if (demo.trainerView == '수업 일정') {
       return TabBody(children: [const H1('회원 관리'), seg, const PtScheduleScreen(embedded: true)]);
     }
-    final waiting = demo.ptWaitingAt(DateTime.now());
-    final urgent = waiting.where((b) => b.urgent).length;
     return TabBody(children: [
       const H1('회원 관리'),
       seg,
-      // 다른 칸을 보는 동안에도 답할 신청은 놓치지 않게
-      if (waiting.isNotEmpty)
-        LineRow(
-          onTap: () => demo.update(() => demo.trainerView = '수업 일정'),
-          showArrow: true,
-          left: WordText('답을 기다리는 신청 ${waiting.length}건${urgent > 0 ? ' · 급한 신청 $urgent건' : ''}',
-              style: urgent > 0 ? AppText.captionCaution : AppText.captionAccent),
-        ),
+      // 다른 칸을 보는 동안에도 답할 신청은 놓치지 않게. 홈과 같은 카드 (디자인 리뷰 11/21 #1)
+      PtWaitingCard(onTap: () => demo.update(() => demo.trainerView = '수업 일정')),
       // 수업 끝나고 가장 자주 쓰는 회원 목록을 맨 위로, 가끔 쓰는 초대 코드는 맨 아래로 (리뷰 11/04 #3)
       if (demo.activeMembers.isEmpty) const Muted('연결된 회원이 없어요. 아래에서 초대 코드를 만들어 보세요.'),
       for (final m in demo.activeMembers) MemberLogRow(m),

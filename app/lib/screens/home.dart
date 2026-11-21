@@ -7,6 +7,7 @@ import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 import 'logbook.dart';
 import '../widgets/common.dart';
+import '../widgets/pt_cards.dart';
 import '../widgets/weight_sheet.dart';
 import 'onboarding.dart';
 
@@ -104,7 +105,7 @@ class HomeTab extends StatelessWidget {
     return TabBody(children: [
       H1(demo.greeting),
       // 답할 신청을 홈에서 바로 보게 (PT 예약 위치 B, 선생님 쪽)
-      const _PendingRequestsCard(),
+      PtWaitingCard(onTap: () => demo.openTrainerTab('수업 일정')),
       if (demo.activeMembers.isEmpty) ...[
         const Muted('연결된 회원이 없어요. 초대 코드를 만들어 보세요.'),
         AppButton('초대 코드 만들기', onPressed: () => demo.openTrainerTab('회원·일지')),
@@ -230,26 +231,6 @@ class _NextLessonCard extends StatelessWidget {
       subtitle: '예약 확정 · 남은 PT ${demo.ptLeft[demo.memberName] ?? 0}회',
       // PT 탭의 '수업 예약'으로 바로 간다 (결정 A)
       onTap: () => demo.openPtTab('수업 예약'),
-    );
-  }
-}
-
-/// 선생님 홈의 '답을 기다리는 신청' 카드. 급한 신청이 있으면 주황, 없으면 숨는다
-class _PendingRequestsCard extends StatelessWidget {
-  const _PendingRequestsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final waiting = demo.ptWaitingAt(DateTime.now());
-    if (waiting.isEmpty) return const SizedBox.shrink();
-    final urgent = waiting.where((b) => b.urgent).length;
-    return HighlightCard(
-      icon: Icons.event_note_outlined,
-      tone: HighlightTone.caution,
-      eyebrow: urgent > 0 ? '급한 신청 $urgent건' : null,
-      title: '답을 기다리는 신청 ${waiting.length}건',
-      subtitle: waiting.take(2).map((b) => '${b.member} ${ptWhen(b.start)}').join(' · '),
-      onTap: () => demo.openTrainerTab('수업 일정'),
     );
   }
 }
