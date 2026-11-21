@@ -51,7 +51,7 @@ class ProfileTab extends StatelessWidget {
             Muted(
               demo.ptFreeUntil == null
                   ? 'PT를 받는 동안 AI 기능을 횟수 걱정 없이 쓸 수 있어요. 식단 사진은 하루 ${AppConfig.ptDailyPhotoLimit}장까지예요.'
-                  : 'PT가 끝났어요. ${demo.ptFreeUntil!.month}월 ${demo.ptFreeUntil!.day}일까지는 무료로 쓸 수 있고, 그 뒤에는 구독으로 이어 쓸 수 있어요.',
+                  : 'PT가 끝났어요. ${demo.ptFreeUntil!.month}월 ${demo.ptFreeUntil!.day}일까지는 무료로 쓸 수 있어요. 그 뒤에는 AI 기능을 한 달 ${AppConfig.freeMonthlyAiLimit}회까지 무료로 쓰고, 더 쓰려면 구독해요.',
               bottom: 0,
             ),
             if (demo.ptFreeUntil != null)
