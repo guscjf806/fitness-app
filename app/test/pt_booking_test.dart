@@ -2,6 +2,7 @@ import 'package:fitness_app/logic/pt_booking.dart';
 import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
 import 'package:fitness_app/state/demo_state.dart';
+import 'package:fitness_app/widgets/pt_slot.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -75,7 +76,8 @@ void main() {
       await tester.tap(findText('${DateTime.now().add(const Duration(days: 1)).day}일').first);
       await tester.pumpAndSettle();
       final before = demo.ptBookings.length;
-      final slot = findText('신청 가능');
+      // 아래 범례에도 '신청 가능' 글이 있어서 시간 칸 안에서만 찾는다 (일요일엔 칸이 없다)
+      final slot = find.descendant(of: find.byType(TimeSlotButton), matching: findText('신청 가능'));
       if (slot.evaluate().isEmpty) return; // 내일이 일요일이면 열린 시간이 없다
       await tester.ensureVisible(slot.first);
       await tester.tap(slot.first);
@@ -127,7 +129,8 @@ void main() {
       demo.ptLeft['김지아'] = 1; // 처음 데이터에 확정 예약 1건이 있다
       await open(tester, 'member', Routes.ptBooking);
       final before = demo.ptBookings.length;
-      final slot = findText('신청 가능');
+      // 아래 범례에도 '신청 가능' 글이 있어서 시간 칸 안에서만 찾는다 (일요일엔 칸이 없다)
+      final slot = find.descendant(of: find.byType(TimeSlotButton), matching: findText('신청 가능'));
       if (slot.evaluate().isEmpty) return;
       await tester.ensureVisible(slot.first);
       await tester.tap(slot.first);
