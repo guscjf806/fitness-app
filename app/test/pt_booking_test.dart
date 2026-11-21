@@ -158,6 +158,19 @@ void main() {
       await tester.tap(findText('+10회'));
       await tester.pumpAndSettle();
       expect(demo.ptLeft['김지아'], left + 10);
+      // 리뷰 11/21 #5 잘못 넣었으면 −1회, 패키지는 직접 입력
+      await tester.tap(findText('횟수 추가').first);
+      await tester.pumpAndSettle();
+      await tester.tap(findText('−1회'));
+      await tester.pumpAndSettle();
+      expect(demo.ptLeft['김지아'], left + 9);
+      await tester.tap(findText('횟수 추가').first);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField), '8');
+      await tester.pump();
+      await tester.tap(findText('+8회 넣기'));
+      await tester.pumpAndSettle();
+      expect(demo.ptLeft['김지아'], left + 17);
       await tester.scrollUntilVisible(findText('수업 일정'), -300, scrollable: find.byType(Scrollable).first);
       await tester.pumpAndSettle();
       await tester.tap(findText('수업 일정'));
