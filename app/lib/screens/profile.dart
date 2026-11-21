@@ -152,7 +152,7 @@ class ProfileTab extends StatelessWidget {
           onTap: () async {
             final ok = await confirmDialog(context,
                 title: '선생님과 연결을 끊을까요?',
-                body: '받은 일지와 영상은 계속 볼 수 있어요. 선생님은 더 이상 내 일지를 볼 수 없고, 선생님께 알림이 가요. 다시 이으려면 선생님께 새 PT 코드를 받아야 해요.',
+                body: '받은 일지는 계속 볼 수 있어요. 수업 영상은 ${AppConfig.videoKeepDays}일 뒤 사라지니, 남기려면 미리 내 폰에 저장하세요. 선생님은 더 이상 내 일지를 볼 수 없고, 선생님께 알림이 가요. 다시 이으려면 선생님께 새 PT 코드를 받아야 해요.',
                 keepLabel: '그대로 두기',
                 okLabel: '연결 끊기',
                 danger: true);
@@ -161,7 +161,9 @@ class ProfileTab extends StatelessWidget {
               demo.role = 'user';
               demo.ptEnded = true;
             });
-            toast(context, '선생님과 연결을 끊고 알렸어요');
+            final until = demo.ptFreeUntil;
+            // 끊은 뒤에도 언제까지 무료인지 바로 알린다 (리뷰 11/21 #1)
+            toast(context, until == null ? '선생님과 연결을 끊고 알렸어요' : '선생님과 연결을 끊고 알렸어요. ${until.month}월 ${until.day}일까지 무료로 쓸 수 있어요');
           },
         ),
       if (role == 'trainer')
