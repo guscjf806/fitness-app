@@ -63,15 +63,23 @@ class _PtLeftSheetState extends State<_PtLeftSheet> {
     final booked = demo.ptBookedOf(widget.member, DateTime.now());
     final n = int.tryParse(typed) ?? 0;
     return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      SheetTitle('${widget.member} 님 PT 횟수 추가'),
-      Muted('지금 남은 횟수 $left회. 재등록한 만큼 골라 주세요.', top: AppSpace.xs),
+      SheetTitle('${widget.member} 님 PT 횟수 고치기'),
+      Muted('지금 남은 횟수 $left회. 재등록했으면 더하고, 잘못 넣었으면 −1회를 눌러 주세요.', top: AppSpace.xs),
       for (final pair in const [(1, 10), (20, 30)])
         ButtonPair(
           left: AppButton('+${pair.$1}회', kind: ButtonKind.soft, onPressed: () => Navigator.pop(context, pair.$1)),
           right: AppButton('+${pair.$2}회', kind: ButtonKind.soft, onPressed: () => Navigator.pop(context, pair.$2)),
         ),
       const SizedBox(height: AppSpace.m),
-      NumField(label: '직접 입력', hint: '예: 8', value: typed, decimal: false, suffix: '회', onChanged: (v) => setState(() => typed = v)),
+      NumField(
+          label: '직접 입력',
+          hint: '예: 8',
+          value: typed,
+          decimal: false,
+          suffix: '회',
+          // 넣기 버튼이 말없이 흐려지지 않게 이유를 알린다 (리뷰 11/22 #4)
+          error: n > 200 ? '한 번에 200회까지 넣을 수 있어요' : null,
+          onChanged: (v) => setState(() => typed = v)),
       ButtonPair(
         // 잡힌 수업보다 적게 줄이면 수업은 남았는데 PT가 끝나 버린다 (리뷰 11/22 #1)
         left: AppButton('−1회', kind: ButtonKind.soft, onPressed: left > booked ? () => Navigator.pop(context, -1) : null),
