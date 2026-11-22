@@ -109,6 +109,9 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
         left: const Text('남은 PT', style: AppText.bodyStrong),
         right: Text('${demo.ptLeft[me] ?? 0}회', style: AppText.bodyStrongAccent),
       ),
+      // 갑자기 0회를 만나지 않게 2회 남으면 미리 알린다 (결정 d1121-2)
+      if (demo.ptLowOf(me))
+        WarningBox('남은 PT가 ${demo.ptLeft[me]}회예요. 이어서 받으려면 선생님께 재등록을 이야기해 보세요', top: 0, caution: true),
       const H2('내 예약'),
       if (upcoming.isEmpty) const Muted('잡힌 수업이 없어요. 아래에서 시간을 골라 신청해 보세요.'),
       for (final b in upcoming) _MyBookingCard(b, now: now, onCancel: () => _cancel(b)),

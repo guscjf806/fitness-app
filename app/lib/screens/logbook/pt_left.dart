@@ -31,8 +31,12 @@ class PtLeftList extends StatelessWidget {
       const H2('남은 PT 횟수'),
       for (final m in demo.activeMembers)
         LineRow(
-          left: WordText('$m · ${demo.ptLeft[m] ?? 0}회 남음${_bookedText(m)}',
-              style: (demo.ptLeft[m] ?? 0) <= 0 ? AppText.bodyStrongCaution : AppText.bodyStrong),
+          left: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            WordText('$m · ${demo.ptLeft[m] ?? 0}회 남음${_bookedText(m)}',
+                style: (demo.ptLeft[m] ?? 0) <= 0 ? AppText.bodyStrongCaution : AppText.bodyStrong),
+            // 재등록 이야기를 미리 꺼낼 수 있게 (결정 d1121-2)
+            if (demo.ptLowOf(m)) const WordText('곧 끝나요 · 재등록을 이야기해 보세요', style: AppText.captionCaution),
+          ]),
           // 같은 화면 회원 줄의 '일지 작성'과 같은 연한 버튼 (디자인 리뷰 11/20 #4)
           right: FilledButton.tonal(
             style: AppButtonStyle.soft(minimumSize: const Size(0, 48)),

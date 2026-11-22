@@ -171,6 +171,12 @@ class DemoState extends ChangeNotifier {
           ((b.start.isAfter(now) && ptHoldsSlot(ptStatusAt(b, now))) || (b.status == PtStatus.approved && !b.start.isAfter(now))))
       .length;
 
+  /// 남은 PT가 얼마 안 남았는지 (1~2회). 0회는 따로 '재등록 문의'로 안내한다 (결정 d1121-2)
+  bool ptLowOf(String member) {
+    final left = ptLeft[member] ?? 0;
+    return left > 0 && left <= AppConfig.ptLowLeft;
+  }
+
   /// 선생님이 답해야 할 신청 (수업 시작 순). 홈·회원 관리·수업 일정이 같이 쓴다 (디자인 리뷰 11/20 #5)
   List<PtBooking> ptWaitingAt(DateTime now) =>
       ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList()..sort((a, b) => a.start.compareTo(b.start));

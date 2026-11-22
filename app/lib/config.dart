@@ -47,6 +47,9 @@ class AppConfig {
   /// PT 회원은 앱이 무료. PT가 끝난 뒤 이 날수만큼 더 무료로 쓰고 구독으로 넘어간다 (사용자 결정 2026-11-19)
   static const ptGraceDays = 7;
 
+  /// 남은 PT가 이만큼 이하면 회원·선생님 화면에 미리 알린다 (결정 d1121-2)
+  static const ptLowLeft = 2;
+
   /// 무료로 쓰는 PT 회원이 하루에 올릴 수 있는 식단 사진 수. 너무 많이 써서 비용이 커지지 않게 (사용자 결정 2026-11-19)
   static const ptDailyPhotoLimit = 10;
 
