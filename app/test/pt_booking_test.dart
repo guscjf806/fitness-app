@@ -52,6 +52,28 @@ void main() {
     expect(ptMemberLabel(b, DateTime(2026, 11, 17, 8)), '예약 확정');
   });
 
+  group('리뷰 11/22', () {
+    setUp(() {
+      SharedPreferences.setMockInitialValues({});
+      demo.resetPt();
+    });
+
+    test('#1 잡힌 수업 수를 센다 (앞으로의 신청·확정 + 지났지만 처리 안 한 확정)', () {
+      final now = DateTime.now();
+      // 박서연: 앞으로의 신청 1 + 어제 처리 안 한 확정 1
+      expect(demo.ptBookedOf('박서연', now), 2);
+      expect(demo.ptBookedOf('김지아', now), 1);
+    });
+
+    test('#2 남은 PT 횟수는 앱을 다시 켜도 남는다', () async {
+      demo.ptLeft['김지아'] = 16;
+      await demo.save();
+      demo.ptLeft['김지아'] = 6;
+      await demo.load();
+      expect(demo.ptLeft['김지아'], 16);
+    });
+  });
+
   group('화면', () {
     setUp(() {
       SharedPreferences.setMockInitialValues({});
