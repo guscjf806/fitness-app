@@ -106,6 +106,10 @@ class AppText {
   /// 남은 횟수·'고치기'처럼 청록으로 강조하는 굵은 본문 (디자인 리뷰 11/21 #2)
   static const bodyStrongAccent = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.primaryDark);
 
+  /// 꺼진 상태·대신 먹을 것처럼 한 단계 물러난 회색 본문 (디자인 리뷰 11/22 #5)
+  static const bodySub = TextStyle(fontFamily: fontFamily, fontSize: 14, color: AppColors.textSub);
+  static const bodyStrongSub = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textSub);
+
   /// 남은 PT 0회처럼 주의가 필요한 굵은 본문 (디자인 리뷰 11/20 #4)
   static const bodyStrongCaution = TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.caution);
 
