@@ -31,6 +31,16 @@ class HomeTab extends StatelessWidget {
       H1(demo.greeting),
       // 확정된 다음 수업을 홈 맨 위에. 없으면 안 보인다 (리뷰 11/19 #5)
       if (demo.role == 'member' && !demo.ptEnded) const _NextLessonCard(),
+      // PT가 끝난 날과 무료가 끝나기 하루 전에 알린다. 푸시를 붙이기 전까지 홈 맨 위 카드로 (결정 d1121-1)
+      if (demo.ptEndNoticeNow case final n?)
+        HighlightCard(
+          icon: Icons.notifications_none,
+          tone: HighlightTone.caution,
+          title: n.title,
+          subtitle: n.body,
+          // 무료가 끝나기 전날 알림은 구독 화면으로
+          onTap: n.at == ptEndNotices(demo.ptFinishedAt!).last.at ? () => Navigator.pushNamed(context, Routes.subscribe) : null,
+        ),
       // 연속 기록은 작은 한 줄로, 오늘의 작은 목표를 맨 위로 (결정 dd1029-home-order)
       LineRow(
         onTap: () => Navigator.pushNamed(context, Routes.records),

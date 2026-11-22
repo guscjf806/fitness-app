@@ -219,6 +219,16 @@ class DemoState extends ChangeNotifier {
   /// 유예 기간이 끝나는 때. PT 중이면 null
   DateTime? get ptFreeUntil => ptActive ? null : ptFinishedAt?.add(const Duration(days: AppConfig.ptGraceDays));
 
+  /// 지금 보여 줄 PT 끝 알림. 무료 기간이 끝나면 더 보이지 않는다 (결정 d1121-1)
+  PtNotice? get ptEndNoticeNow {
+    final from = ptFinishedAt;
+    final until = ptFreeUntil;
+    if (from == null || until == null) return null;
+    final now = DateTime.now();
+    if (!now.isBefore(until)) return null;
+    return ptEndNotices(from).lastWhere((n) => !now.isBefore(n.at), orElse: () => ptEndNotices(from).first);
+  }
+
   /// 수업 영상이 지워지기까지 남은 날. PT 중이면 null(계속 보관), PT가 끝나면 끝난 날부터 30일 (사용자 결정 2026-11-19)
   int? get videoDaysLeft {
     if (ptActive) return null;

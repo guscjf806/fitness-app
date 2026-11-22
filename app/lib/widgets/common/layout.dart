@@ -158,8 +158,11 @@ class HighlightCard extends StatelessWidget {
                   Muted(subtitle, bottom: 0),
                 ]),
               ),
-              const SizedBox(width: AppSpace.xs),
-              const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
+              // 누를 곳이 없는 알림 카드에는 화살표를 붙이지 않는다
+              if (onTap != null) ...[
+                const SizedBox(width: AppSpace.xs),
+                const Icon(Icons.chevron_right, size: 20, color: AppColors.textSub),
+              ],
             ]),
           ),
         ),

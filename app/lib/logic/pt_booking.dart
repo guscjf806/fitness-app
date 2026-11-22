@@ -126,3 +126,25 @@ List<String> ptDayChipLabels(List<DateTime> days) => [for (final d in days) '${d
 
 /// '19:00'
 String ptHourText(DateTime d) => '${d.hour.toString().padLeft(2, '0')}:00';
+
+/// PT가 끝났을 때 회원에게 보내는 알림 한 건
+class PtNotice {
+  const PtNotice(this.at, this.title, this.body);
+  final DateTime at;
+  final String title;
+  final String body;
+}
+
+/// PT가 끝난 날 한 번 + 무료 이용이 끝나기 하루 전 한 번 (결정 d1121-1).
+/// 서버를 붙이면 같은 시각에 푸시로 보낸다. 지금은 홈 카드로 보여 준다
+List<PtNotice> ptEndNotices(DateTime finishedAt) {
+  final freeUntil = finishedAt.add(const Duration(days: AppConfig.ptGraceDays));
+  final videoUntil = finishedAt.add(const Duration(days: AppConfig.videoKeepDays));
+  String md(DateTime d) => '${d.month}월 ${d.day}일';
+  return [
+    PtNotice(finishedAt, 'PT가 끝났어요',
+        '${md(freeUntil)}까지 무료로 쓸 수 있어요. 수업 영상은 ${md(videoUntil)}에 사라지니 남기려면 미리 내 폰에 저장하세요.'),
+    PtNotice(freeUntil.subtract(const Duration(days: 1)), '내일 무료 이용이 끝나요',
+        '그 뒤에는 AI 기능을 한 달 ${AppConfig.freeMonthlyAiLimit}회까지 무료로 쓰고, 더 쓰려면 구독해요.'),
+  ];
+}
