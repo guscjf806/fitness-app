@@ -27,19 +27,25 @@ class PtBookingScreen extends StatefulWidget {
 class _PtBookingScreenState extends State<PtBookingScreen> {
   int day = 0;
 
+  /// [시간 바꾸기]를 누른 예약. 이때 고른 칸은 '바꾸기 신청'이 된다 (결정 d1122-2)
+  PtBooking? changing;
+
   String get me => demo.memberName;
 
   Future<void> _request(DateTime start) async {
     final now = DateTime.now();
     // 하루 1회까지 (결정 d1117-pt4)
-    final sameDay = demo.ptBookings.any((b) => b.member == me && ptDay(b.start) == ptDay(start) && ptHoldsSlot(ptStatusAt(b, now)));
+    final from = changing;
+    final sameDay = demo.ptBookings
+        .any((b) => b != from && b.member == me && ptDay(b.start) == ptDay(start) && ptHoldsSlot(ptStatusAt(b, now)));
     if (sameDay) {
       toast(context, '하루에 한 번만 신청할 수 있어요. 이미 신청한 날이에요');
       return;
     }
     // 남은 횟수가 잡아 둔 수업만큼 다 찼으면 신청을 막는다 (결정 d1119-1)
     final booked = demo.ptBookedOf(me, now);
-    if ((demo.ptLeft[me] ?? 0) - booked <= 0) {
+    // 시간 바꾸기는 잡힌 수업을 옮기는 것이라 횟수를 더 쓰지 않는다
+    if (from == null && (demo.ptLeft[me] ?? 0) - booked <= 0) {
       toast(context, '남은 PT가 없어요. 선생님께 재등록을 문의해 주세요');
       return;
     }
@@ -48,17 +54,20 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     final late = start.difference(now) < const Duration(hours: AppConfig.ptFreeCancelHours);
     final ok = await confirmDialog(
       context,
-      title: '${ptWhen(start)} 수업을 신청할까요?',
-      body: (urgent
+      title: from != null ? '${ptWhen(start)}(으)로 바꿔 달라고 신청할까요?' : '${ptWhen(start)} 수업을 신청할까요?',
+      body: from != null
+          ? '선생님이 승인하면 원래 예약(${ptWhen(from.start)})은 자동으로 취소돼요. 거절되거나 답이 없으면 원래 예약이 그대로 남아요.'
+          : (urgent
               ? '곧 시작하는 수업이라 선생님께 바로 알려 드려요. 선생님이 승인하면 예약이 확정돼요.'
               : '선생님이 승인하면 예약이 확정돼요. ${AppConfig.ptAutoRejectHours}시간 안에 답이 없으면 자동으로 취소돼요.') +
-          (late ? '\n\n수업 ${AppConfig.ptFreeCancelHours}시간 전이 지나서, 승인된 뒤 취소하면 PT 1회가 차감돼요.' : ''),
+          (from == null && late ? '\n\n수업 ${AppConfig.ptFreeCancelHours}시간 전이 지나서, 승인된 뒤 취소하면 PT 1회가 차감돼요.' : ''),
       keepLabel: '그만두기',
       okLabel: '신청하기',
     );
     if (!ok || !mounted) return;
-    demo.update(() => demo.ptBookings.add(PtBooking(member: me, start: start, requestedAt: DateTime.now())));
-    toast(context, '신청했어요. 선생님이 답하면 알려 드릴게요');
+    demo.update(() => demo.ptBookings.add(PtBooking(member: me, start: start, requestedAt: DateTime.now(), replaces: from)));
+    setState(() => changing = null);
+    toast(context, from != null ? '시간 바꾸기를 신청했어요. 선생님이 답하면 알려 드릴게요' : '신청했어요. 선생님이 답하면 알려 드릴게요');
   }
 
   Future<void> _cancel(PtBooking b) async {
@@ -86,6 +95,11 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     demo.update(() {
       b.status = free ? PtStatus.cancelled : PtStatus.lateCancelled;
       if (!free) demo.ptLeft[me] = (demo.ptLeft[me] ?? 0) - 1;
+      // 원래 예약을 취소하면 그 예약의 시간 바꾸기 신청도 함께 정리 (결정 d1122-2)
+      for (final c in demo.ptBookings) {
+        if (c.replaces == b && ptStatusAt(c, now) == PtStatus.requested) c.status = PtStatus.cancelled;
+      }
+      if (changing == b) changing = null;
     });
     toast(context, free ? '수업을 취소했어요' : '수업을 취소했어요. PT 1회가 차감됐어요');
   }
@@ -114,8 +128,28 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
         WarningBox('남은 PT가 ${demo.ptLeft[me]}회예요. 이어서 받으려면 선생님께 재등록을 이야기해 보세요', top: 0, caution: true),
       const H2('내 예약'),
       if (upcoming.isEmpty) const Muted('잡힌 수업이 없어요. 아래에서 시간을 골라 신청해 보세요.'),
-      for (final b in upcoming) _MyBookingCard(b, now: now, onCancel: () => _cancel(b)),
+      for (final b in upcoming)
+        _MyBookingCard(
+          b,
+          now: now,
+          onCancel: () => _cancel(b),
+          // 무료 취소 기한 안의 확정 수업만, 그리고 이미 바꾸기 신청 중이면 숨긴다 (결정 d1122-2, 설계: 24시간 전까지 변경 신청)
+          onChange: ptStatusAt(b, now) == PtStatus.approved &&
+                  ptFreeCancel(b, now) &&
+                  !demo.ptBookings.any((c) => c.replaces == b && ptStatusAt(c, now) == PtStatus.requested)
+              ? () => setState(() => changing = b)
+              : null,
+        ),
       const H2('시간 고르기'),
+      if (changing case final c?)
+        AppCard(
+          accent: true,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            WordText('${ptWhen(c.start)} 수업을 옮길 시간을 골라 주세요', style: AppText.bodyStrong),
+            const Muted('선생님이 승인할 때까지 원래 예약은 그대로 있어요.', bottom: 0),
+            AppButton('그만두기', kind: ButtonKind.quiet, onPressed: () => setState(() => changing = null)),
+          ]),
+        ),
       Muted('${AppConfig.ptBookingDays ~/ 7}주 앞까지, 하루 한 번 신청할 수 있어요.'),
       DayChips(labels: ptDayChipLabels(days), selected: day, today: 0, onSelect: (i) => setState(() => day = i)),
       // 열린 시간이 다 지나서 빈 날과, 처음부터 안 연 날을 나눠 알린다 (디자인 리뷰 11/19 #1)
@@ -148,10 +182,13 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
 }
 
 class _MyBookingCard extends StatelessWidget {
-  const _MyBookingCard(this.b, {required this.now, required this.onCancel});
+  const _MyBookingCard(this.b, {required this.now, required this.onCancel, this.onChange});
   final PtBooking b;
   final DateTime now;
   final VoidCallback onCancel;
+
+  /// [시간 바꾸기]. 바꿀 수 없을 때는 null이라 버튼이 숨는다 (결정 d1122-2)
+  final VoidCallback? onChange;
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +198,7 @@ class _MyBookingCard extends StatelessWidget {
       accent: status == PtStatus.approved,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         WordText(ptWhen(b.start), style: AppText.bodyStrong),
-        WordText(ptStatusLabel(status), style: status == PtStatus.approved ? AppText.captionAccent : AppText.caption),
+        WordText(ptMemberLabel(b, now), style: status == PtStatus.approved ? AppText.captionAccent : AppText.caption),
         if (status == PtStatus.requested && !b.urgent)
           Muted('${ptLeftText(left)} 안에 답이 없으면 자동으로 취소돼요', top: AppSpace.xxs, bottom: 0),
         // 급한 신청도 어떻게 되는지 알린다 (리뷰 11/19 #7)
@@ -176,13 +213,13 @@ class _MyBookingCard extends StatelessWidget {
                   padding: EdgeInsets.only(top: AppSpace.xxs),
                   child: WordText('지금 취소하면 PT 1회가 차감돼요', style: AppText.captionCaution),
                 ),
-        Align(
-          alignment: Alignment.centerRight,
+        Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          if (onChange != null) TextButton(onPressed: onChange, child: const Text('시간 바꾸기')),
           // 차감될 수 있는 수업 취소는 다른 화면의 지우기·빼기처럼 경고색 (디자인 리뷰 11/18 #6)
-          child: status == PtStatus.requested
+          status == PtStatus.requested
               ? TextButton(onPressed: onCancel, child: const Text('신청 취소'))
               : DangerTextButton('수업 취소', onPressed: onCancel),
-        ),
+        ]),
       ]),
     );
   }
