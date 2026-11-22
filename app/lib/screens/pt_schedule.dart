@@ -45,7 +45,11 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
 
   void _answer(PtBooking b, bool approve) {
     final undo = demo.ptUndo(b);
-    demo.update(() => b.status = approve ? PtStatus.approved : PtStatus.rejected);
+    demo.update(() {
+      b.status = approve ? PtStatus.approved : PtStatus.rejected;
+      // 시간 바꾸기를 승인하면 원래 예약은 자동으로 취소 (차감 없음). 거절하면 원래 예약이 그대로 (결정 d1122-2)
+      if (approve && b.replaces != null && ptHoldsSlot(b.replaces!.status)) b.replaces!.status = PtStatus.cancelled;
+    });
     toast(context, '${b.member} 님 ${ptWhen(b.start)} 신청을 ${approve ? '승인' : '거절'}했어요. 회원에게 알려 드려요',
         actionLabel: '되돌리기', onAction: undo);
   }
@@ -89,29 +93,56 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
   }
 
   /// 신청·예약이 있는 칸을 누르면 닫는 대신 그 내용을 보여 준다. 신청이면 바로 답할 수 있게 (리뷰 11/22 #3)
+  /// 확정된 수업은 선생님이 취소할 수 있다 (결정 d1122-1)
   Future<void> _showBooking(PtBooking b, DateTime now) async {
     final requested = ptStatusAt(b, now) == PtStatus.requested;
-    final approve = await showAppSheet<bool>(
+    final picked = await showAppSheet<String>(
       context,
       builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         SheetTitle('${b.member} 님 · ${ptWhen(b.start)}'),
         Muted(
           requested
-              ? (b.urgent ? '곧 시작하는 급한 신청이에요. 승인하거나 거절해 주세요.' : '답을 기다리는 신청이에요. 승인하거나 거절해 주세요.')
+              ? (b.replaces != null
+                  ? '시간 바꾸기 신청이에요. 승인하면 원래 예약(${ptWhen(b.replaces!.start)})은 자동으로 취소돼요.'
+                  : b.urgent
+                      ? '곧 시작하는 급한 신청이에요. 승인하거나 거절해 주세요.'
+                      : '답을 기다리는 신청이에요. 승인하거나 거절해 주세요.')
               : '확정된 수업이에요. 수업이 끝나면 지난 수업 처리에서 기록해요. 예약이 있는 시간은 닫을 수 없어요.',
           top: AppSpace.xs,
         ),
         if (requested)
           ButtonPair(
-            left: AppButton('승인', onPressed: () => Navigator.pop(sheet, true)),
-            right: AppButton('거절', kind: ButtonKind.quiet, onPressed: () => Navigator.pop(sheet, false)),
+            left: AppButton('승인', onPressed: () => Navigator.pop(sheet, 'approve')),
+            right: AppButton('거절', kind: ButtonKind.quiet, onPressed: () => Navigator.pop(sheet, 'reject')),
           )
-        else
+        else ...[
           AppButton('닫기', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheet)),
+          // 아프거나 일이 생기면 앱에서 바로 취소하고 회원에게 알린다. 차감 없음 (결정 d1122-1)
+          Align(
+            alignment: Alignment.centerRight,
+            child: DangerTextButton('이 수업 취소하기', onPressed: () => Navigator.pop(sheet, 'cancel')),
+          ),
+        ],
       ]),
     );
-    if (approve == null || !mounted) return;
-    _answer(b, approve);
+    if (picked == null || !mounted) return;
+    if (picked == 'cancel') {
+      await _trainerCancel(b);
+    } else {
+      _answer(b, picked == 'approve');
+    }
+  }
+
+  /// 선생님 쪽 수업 취소: 짧은 이유를 적고, 횟수는 줄지 않고, 회원에게 바로 알린다 (결정 d1122-1)
+  Future<void> _trainerCancel(PtBooking b) async {
+    final reason = await showAppSheet<String>(context, builder: (_) => _TrainerCancelSheet(b));
+    if (reason == null || !mounted) return;
+    final undo = demo.ptUndo(b);
+    demo.update(() {
+      b.status = PtStatus.trainerCancelled;
+      b.cancelReason = reason;
+    });
+    toast(context, '${b.member} 님 ${ptWhen(b.start)} 수업을 취소하고 알렸어요. 횟수는 줄지 않아요', actionLabel: '되돌리기', onAction: undo);
   }
 
   @override
@@ -195,6 +226,8 @@ class _RequestCard extends StatelessWidget {
         // 수업이 곧이라 먼저 봐야 하는 신청 (사용자 결정 2026-11-17)
         if (b.urgent) const WordText('급한 신청 · 곧 시작하는 수업', style: AppText.captionCaution),
         WordText('${b.member} · ${ptWhen(b.start)}', style: AppText.bodyStrong),
+        // 승인하면 원래 예약이 없어진다는 걸 알고 답하게 (결정 d1122-2)
+        if (b.replaces != null) Muted('시간 바꾸기 신청 · 원래 ${ptWhen(b.replaces!.start)}', top: AppSpace.xxs, bottom: 0),
         Muted(
           b.urgent
               ? '수업 시간이 지나도록 답하지 않으면 지난 신청으로 정리돼요'
@@ -234,5 +267,39 @@ class _TrainerSlot extends StatelessWidget {
           : (ptStatusAt(b, now) == PtStatus.approved ? SlotTone.filled : SlotTone.pending),
       onTap: onTap,
     );
+  }
+}
+
+/// 선생님이 수업을 취소할 때 고르는 짧은 이유. 자주 쓰는 이유는 눌러서, 아니면 직접 (결정 d1122-1)
+class _TrainerCancelSheet extends StatefulWidget {
+  const _TrainerCancelSheet(this.b);
+  final PtBooking b;
+
+  @override
+  State<_TrainerCancelSheet> createState() => _TrainerCancelSheetState();
+}
+
+class _TrainerCancelSheetState extends State<_TrainerCancelSheet> {
+  static const _quick = ['몸이 안 좋아요', '급한 일이 생겼어요', '센터 사정이에요'];
+  String reason = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final b = widget.b;
+    return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      SheetTitle('${b.member} 님 ${ptWhen(b.start)} 수업 취소'),
+      const Muted('회원에게 바로 알려 드리고, PT 횟수는 줄지 않아요. 짧은 이유를 골라 주세요.', top: AppSpace.xs),
+      for (final q in _quick)
+        AppButton(q, kind: ButtonKind.soft, top: AppSpace.xs, selected: reason == q, onPressed: () => setState(() => reason = q)),
+      const SizedBox(height: AppSpace.s),
+      TextFormField(
+        key: ValueKey(_quick.contains(reason)),
+        initialValue: _quick.contains(reason) ? '' : reason,
+        maxLength: 30,
+        decoration: const InputDecoration(labelText: '직접 쓰기', hintText: '예: 다음 주에 보강할게요'),
+        onChanged: (v) => setState(() => reason = v.trim()),
+      ),
+      AppButton('취소하고 알리기', onPressed: reason.isEmpty ? null : () => Navigator.pop(context, reason)),
+    ]);
   }
 }

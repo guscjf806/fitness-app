@@ -25,11 +25,14 @@ enum PtStatus {
 
   /// 안 옴 (1회 차감, 선생님이 빼 줄 수 있음)
   noShow,
+
+  /// 선생님이 확정된 수업을 취소 (차감 없음, 회원에게 바로 알림, 짧은 이유) (결정 d1122-1)
+  trainerCancelled,
 }
 
 /// 예약 한 건. 목업이라 폰 메모리에만 있다. 실제 표는 약관 검토 뒤에 만든다
 class PtBooking {
-  PtBooking({required this.member, required this.start, required this.requestedAt, this.status = PtStatus.requested});
+  PtBooking({required this.member, required this.start, required this.requestedAt, this.status = PtStatus.requested, this.replaces});
   final String member;
   final DateTime start;
   final DateTime requestedAt;
@@ -40,6 +43,12 @@ class PtBooking {
 
   /// 선생님이 '차감 그대로 두기'를 눌러 처리를 끝냈는지. 지난 수업 처리 목록에서 빠진다 (리뷰 11/19 #4)
   bool settled = false;
+
+  /// 선생님이 취소할 때 적은 짧은 이유 (결정 d1122-1)
+  String? cancelReason;
+
+  /// 시간 바꾸기 신청이면 원래 예약. 선생님이 승인하면 원래 예약이 자동으로 취소된다 (결정 d1122-2)
+  final PtBooking? replaces;
 
   /// 수업까지 5시간이 안 남았을 때 들어온 신청. 선생님께 따로 알린다
   bool get urgent => start.difference(requestedAt) < const Duration(hours: AppConfig.ptAutoRejectHours);
@@ -79,6 +88,7 @@ String ptStatusLabel(PtStatus s, {bool waived = false}) => switch (s) {
       PtStatus.lateCancelled => waived ? '늦은 취소 · 차감 안 함' : '늦은 취소 · 1회 차감',
       PtStatus.done => '수업 완료',
       PtStatus.noShow => waived ? '안 옴 · 차감 안 함' : '안 옴 · 1회 차감',
+      PtStatus.trainerCancelled => '선생님이 취소함 · 차감 없음',
     };
 
 /// 남은 시간을 쉬운 말로: '2시간 15분', 0이 들어가는 쪽은 뺀다('3시간', '40분'). 1분 안 남았으면 '1분' (디자인 리뷰 11/18 #4)
@@ -93,6 +103,8 @@ String ptLeftText(Duration d) {
 String ptMemberLabel(PtBooking b, DateTime now) {
   final s = ptStatusAt(b, now);
   if (s == PtStatus.approved && !b.start.isAfter(now)) return '선생님 확인 기다리는 중';
+  if (b.replaces != null && s == PtStatus.requested) return '시간 바꾸기 · 승인 기다리는 중';
+  if (s == PtStatus.trainerCancelled && (b.cancelReason ?? '').isNotEmpty) return '${ptStatusLabel(s)} · ${b.cancelReason}';
   return ptStatusLabel(s, waived: b.waived);
 }
 

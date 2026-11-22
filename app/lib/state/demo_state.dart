@@ -168,6 +168,8 @@ class DemoState extends ChangeNotifier {
   int ptBookedOf(String member, DateTime now) => ptBookings
       .where((b) =>
           b.member == member &&
+          // 시간 바꾸기 신청은 원래 예약을 옮기는 것이라 따로 세지 않는다 (결정 d1122-2)
+          b.replaces == null &&
           ((b.start.isAfter(now) && ptHoldsSlot(ptStatusAt(b, now))) || (b.status == PtStatus.approved && !b.start.isAfter(now))))
       .length;
 
@@ -198,11 +200,17 @@ class DemoState extends ChangeNotifier {
     final status = b.status;
     final waived = b.waived;
     final settled = b.settled;
+    final reason = b.cancelReason;
     final left = ptLeft[b.member];
+    // 시간 바꾸기 승인을 되돌리면 자동으로 취소됐던 원래 예약도 돌아온다 (결정 d1122-2)
+    final original = b.replaces;
+    final originalStatus = original?.status;
     return () => update(() {
           b.status = status;
           b.waived = waived;
           b.settled = settled;
+          b.cancelReason = reason;
+          if (original != null) original.status = originalStatus!;
           if (left != null) ptLeft[b.member] = left;
         });
   }
