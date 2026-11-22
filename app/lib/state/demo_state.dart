@@ -518,6 +518,8 @@ class DemoState extends ChangeNotifier {
     await p.setString('bodyFatUnit', bodyFatUnit);
     await p.setBool('restSound', restSound);
     await p.setBool('ptEnded', ptEnded);
+    // 선생님이 넣은 횟수가 앱을 다시 켜도 남게. PT 끝난 날과 함께 저장해야 화면이 어긋나지 않는다 (리뷰 11/22 #2)
+    await p.setStringList('ptLeft', [for (final e in ptLeft.entries) '${e.key}|${e.value}']);
     // 앱을 다시 켜도 무료 유예와 영상 남은 날이 이어지게 (리뷰 11/21 #2)
     if (ptFinishedAt == null) {
       await p.remove('ptFinishedAt');
@@ -577,6 +579,11 @@ class DemoState extends ChangeNotifier {
     restSound = p.getBool('restSound') ?? restSound;
     ptEnded = p.getBool('ptEnded') ?? ptEnded;
     ptFinishedAt = DateTime.tryParse(p.getString('ptFinishedAt') ?? '') ?? ptFinishedAt;
+    for (final e in p.getStringList('ptLeft') ?? const <String>[]) {
+      final at = e.lastIndexOf('|');
+      final n = at > 0 ? int.tryParse(e.substring(at + 1)) : null;
+      if (n != null) ptLeft[e.substring(0, at)] = n;
+    }
     lastLoginProvider = p.getString('lastLoginProvider') ?? lastLoginProvider;
     favorites.addAll(p.getStringList('favorites') ?? const []);
     for (final s in p.getStringList('lastWeights') ?? const <String>[]) {
