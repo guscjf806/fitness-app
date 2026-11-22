@@ -71,7 +71,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
       // 사진을 고르기 전에 오늘 한도가 찼다는 걸 먼저 알린다 (리뷰 11/21 #3)
       // 글만 올린 것도 세니 '장' 대신 '번'으로 (리뷰 11/22 #5)
       if (limit)
-        WarningBox('오늘 올릴 수 있는 ${AppConfig.ptDailyPhotoLimit}번을 다 썼어요. 내일 다시 올려 주세요', top: 0),
+        WarningBox('오늘 올릴 수 있는 ${AppConfig.ptDailyPhotoLimit}번을 다 썼어요. 내일 다시 올려 주세요', top: 0, caution: true),
       const FieldLabel('어느 끼니인가요?'),
       Seg(options: const ['아침', '점심', '저녁', '간식'], value: slot, onChanged: (v) => setState(() => slot = v)),
       // 다시 눌러도 사진이 말없이 빠지지 않게: 누르면 바꾸기, 빼기는 따로 (리뷰 11/01 #2)
@@ -102,7 +102,8 @@ class _MealPostScreenState extends State<MealPostScreen> {
       if (demo.photoLimitReached)
         const SizedBox.shrink()
       else if (demo.quotaExhausted)
-        const WarningBox('이번 달 무료 횟수를 다 썼어요', top: 0)
+        // 빨강은 통증 같은 위험 안내에만. 횟수 한도는 주황 (디자인 리뷰 11/22 #2)
+        const WarningBox('이번 달 무료 횟수를 다 썼어요', top: 0, caution: true)
       else
         Muted(demo.ptFree
             ? '올리면 AI가 확인해서 답변해요 · PT 회원은 무료예요 (오늘 ${demo.photosToday} / ${AppConfig.ptDailyPhotoLimit}번)'
