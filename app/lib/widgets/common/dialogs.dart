@@ -112,7 +112,7 @@ Future<bool> confirmDialog(BuildContext context,
       // 큰 글씨에서 내용이 넘치면 창 안에서 스크롤 (디자인 리뷰 11/13 #1)
       scrollable: true,
       title: Text(title),
-      content: body == null ? null : Text(body),
+      content: body == null ? null : WordText(body),
       actions: [
         TextButton(onPressed: () => Navigator.pop(dialog, false), child: Text(keepLabel)),
         TextButton(
