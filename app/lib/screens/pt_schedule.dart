@@ -1,6 +1,8 @@
 /// PT 수업 일정 연습용 화면: 선생님 승인·거절, 지난 수업 처리, 수업 시간 열기(S25) (docs/PT예약_설계.md)
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../config.dart';
@@ -23,6 +25,23 @@ class PtScheduleScreen extends StatefulWidget {
 
 class _PtScheduleScreenState extends State<PtScheduleScreen> {
   int day = 0;
+
+  /// 열어 둔 동안에도 '○시간 안에 답하지 않으면'과 자동 거절이 줄어들게 1분마다 다시 그린다 (리뷰 11/22 #6)
+  Timer? _tick;
+
+  @override
+  void initState() {
+    super.initState();
+    _tick = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _tick?.cancel();
+    super.dispose();
+  }
 
   void _answer(PtBooking b, bool approve) {
     final undo = demo.ptUndo(b);
