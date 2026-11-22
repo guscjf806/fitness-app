@@ -145,7 +145,7 @@ class _MemberManageTabState extends State<MemberManageTab> {
   Widget build(BuildContext context) {
     final member = this.member;
     // 일정과 회원·일지를 한 화면에 섞지 않고 위에서 골라 본다 (PT 탭 나누기, 결정 A)
-    final seg = Seg(
+    final seg = ViewTabs(
         options: const ['수업 일정', '회원·일지'],
         value: demo.trainerView,
         onChanged: (v) => demo.update(() => demo.trainerView = v));

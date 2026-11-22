@@ -271,3 +271,57 @@ class CheckCircle extends StatelessWidget {
     );
   }
 }
+
+/// 화면을 바꾸는 밑줄 탭 (PT 탭 [수업 예약 | 운동일지], 선생님 [수업 일정 | 회원·일지]).
+/// 값을 고르는 Seg와 구분되게 카카오톡·인스타처럼 고른 칸 아래에만 청록 밑줄 (결정 d1120-1)
+class ViewTabs extends StatelessWidget {
+  const ViewTabs({super.key, required this.options, required this.value, required this.onChanged});
+  final List<String> options;
+  final String value;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpace.xsPlus, bottom: AppSpace.m),
+      child: DecoratedBox(
+        // 전체 바닥 선 위에 고른 칸의 굵은 밑줄이 겹쳐 보인다
+        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.line))),
+        child: IntrinsicHeight(
+          child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            for (final o in options) Expanded(child: _ViewTab(label: o, selected: o == value, onTap: () => onChanged(o))),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
+class _ViewTab extends StatelessWidget {
+  const _ViewTab({required this.label, required this.selected, required this.onTap});
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      selected: selected,
+      button: true,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          // 손가락으로 누르기 쉽게 높이 48px 이상 (디자인 리뷰 10/30 #1과 같은 기준)
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpace.s),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: selected ? AppColors.primary : Colors.transparent, width: 3)),
+          ),
+          child: Center(
+            child: WordText(label, textAlign: TextAlign.center, style: selected ? AppText.bodyStrongAccent : AppText.bodySub),
+          ),
+        ),
+      ),
+    );
+  }
+}

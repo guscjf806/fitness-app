@@ -60,7 +60,7 @@ class LogListTab extends StatelessWidget {
         const SizedBox(height: AppSpace.m),
       ] else ...[
         // 예약과 일지를 한 화면에 섞지 않고 위에서 골라 본다 (PT 탭 나누기, 결정 A)
-        Seg(options: const ['수업 예약', '운동일지'], value: demo.ptView, onChanged: (v) => demo.update(() => demo.ptView = v)),
+        ViewTabs(options: const ['수업 예약', '운동일지'], value: demo.ptView, onChanged: (v) => demo.update(() => demo.ptView = v)),
         if (demo.ptView == '수업 예약') const PtBookingScreen(embedded: true),
         if (demo.ptView == '운동일지') const Muted('담당 선생님이 작성한 내 일지예요. 나만 볼 수 있어요.'),
       ],
