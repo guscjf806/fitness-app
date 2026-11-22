@@ -35,7 +35,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
   void _post() {
     // 무료 PT 회원은 하루 사진 수로 막는다 (사용자 결정 2026-11-19)
     if (demo.photoLimitReached) {
-      toast(context, '오늘 올릴 수 있는 식단 ${AppConfig.ptDailyPhotoLimit}장을 다 올렸어요. 내일 다시 올려 주세요');
+      toast(context, '오늘 올릴 수 있는 ${AppConfig.ptDailyPhotoLimit}번을 다 썼어요. 내일 다시 올려 주세요');
       return;
     }
     if (demo.quotaExhausted) {
@@ -57,6 +57,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final limit = demo.photoLimitReached;
     // 쓰던 내용이 있는데 뒤로 가면 지울지 먼저 묻는다 (리뷰 11/01 #3)
     return DiscardGuard(
       dirty: dirty,
@@ -68,18 +69,22 @@ class _MealPostScreenState extends State<MealPostScreen> {
       // 올린 식단은 선생님에게 보이지 않는다 (결정 d1101-1)
       const Muted('나만 볼 수 있어요. 선생님에게는 보이지 않고, 답변을 위해 AI만 확인해요.'),
       // 사진을 고르기 전에 오늘 한도가 찼다는 걸 먼저 알린다 (리뷰 11/21 #3)
-      if (demo.photoLimitReached)
-        WarningBox('오늘 올릴 수 있는 ${AppConfig.ptDailyPhotoLimit}장을 다 올렸어요. 내일 다시 올려 주세요', top: 0),
+      // 글만 올린 것도 세니 '장' 대신 '번'으로 (리뷰 11/22 #5)
+      if (limit)
+        WarningBox('오늘 올릴 수 있는 ${AppConfig.ptDailyPhotoLimit}번을 다 썼어요. 내일 다시 올려 주세요', top: 0),
       const FieldLabel('어느 끼니인가요?'),
       Seg(options: const ['아침', '점심', '저녁', '간식'], value: slot, onChanged: (v) => setState(() => slot = v)),
       // 다시 눌러도 사진이 말없이 빠지지 않게: 누르면 바꾸기, 빼기는 따로 (리뷰 11/01 #2)
       MealPhotoBox(
-        label: photoPicked ? '사진이 선택됐어요 · 눌러서 바꾸기' : '눌러서 사진 선택',
+        label: limit ? '오늘은 더 올릴 수 없어요' : (photoPicked ? '사진이 선택됐어요 · 눌러서 바꾸기' : '눌러서 사진 선택'),
         picked: photoPicked,
-        onTap: () {
-          if (photoPicked) toast(context, '사진을 바꿨어요');
-          setState(() => photoPicked = true);
-        },
+        // 한도가 차면 사진·설명 칸도 흐리게 해서 쓰고 나서야 못 올리는 일이 없게 (리뷰 11/22 #5)
+        onTap: limit
+            ? null
+            : () {
+                if (photoPicked) toast(context, '사진을 바꿨어요');
+                setState(() => photoPicked = true);
+              },
       ),
       if (photoPicked)
         Align(
@@ -87,6 +92,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
           child: TextButton(onPressed: () => setState(() => photoPicked = false), child: const Text('사진 빼기')),
         ),
       TextFormField(
+        enabled: !limit,
         decoration: const InputDecoration(labelText: '한 줄 설명', hintText: '예: 닭가슴살 150g, 현미밥 1공기'),
         onChanged: (v) => setState(() => note = v),
       ),
@@ -99,7 +105,7 @@ class _MealPostScreenState extends State<MealPostScreen> {
         const WarningBox('이번 달 무료 횟수를 다 썼어요', top: 0)
       else
         Muted(demo.ptFree
-            ? '올리면 AI가 확인해서 답변해요 · PT 회원은 무료예요 (오늘 ${demo.photosToday} / ${AppConfig.ptDailyPhotoLimit}장)'
+            ? '올리면 AI가 확인해서 답변해요 · PT 회원은 무료예요 (오늘 ${demo.photosToday} / ${AppConfig.ptDailyPhotoLimit}번)'
             : '올리면 AI가 확인해서 답변해요 · 이번 달 ${demo.aiUsedShown} / ${AppConfig.freeMonthlyAiLimit}회 사용'),
       AppButton('올리기', onPressed: demo.photoLimitReached ? null : _post),
     ]),
