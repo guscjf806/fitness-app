@@ -80,11 +80,10 @@ class _PtLeftSheetState extends State<_PtLeftSheet> {
           // 넣기 버튼이 말없이 흐려지지 않게 이유를 알린다 (리뷰 11/22 #4)
           error: n > 200 ? '한 번에 200회까지 넣을 수 있어요' : null,
           onChanged: (v) => setState(() => typed = v)),
-      ButtonPair(
-        // 잡힌 수업보다 적게 줄이면 수업은 남았는데 PT가 끝나 버린다 (리뷰 11/22 #1)
-        left: AppButton('−1회', kind: ButtonKind.soft, onPressed: left > booked ? () => Navigator.pop(context, -1) : null),
-        right: AppButton(n > 0 ? '+$n회 넣기' : '넣기', onPressed: n > 0 && n <= 200 ? () => Navigator.pop(context, n) : null),
-      ),
+      AppButton(n > 0 ? '+$n회 넣기' : '넣기', onPressed: n > 0 && n <= 200 ? () => Navigator.pop(context, n) : null),
+      // 빼기는 넣기와 떼어 아래에 조용한 버튼으로 둬서 잘못 누르지 않게 (디자인 리뷰 11/22 #1)
+      // 잡힌 수업보다 적게 줄이면 수업은 남았는데 PT가 끝나 버린다 (리뷰 11/22 #1)
+      AppButton('−1회', kind: ButtonKind.quiet, onPressed: left > booked ? () => Navigator.pop(context, -1) : null),
       if (left > 0 && left <= booked) Muted('잡힌 수업이 $booked개 있어서 더 줄일 수 없어요', top: AppSpace.xs, bottom: 0),
     ]);
   }
