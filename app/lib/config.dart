@@ -18,7 +18,7 @@ class AppConfig {
   /// 무료 회원의 월 기록 지키기권(스트릭 프리즈) 횟수. 초안 값
   static const freeMonthlyFreezes = 1;
 
-  /// 구독 가격(원). 월 2,900원 (사용자 결정 2026-11-19). 연 가격은 약 2달 할인한 임시값
+  /// 구독 가격(원). 월 2,900원 (사용자 결정 2026-11-19), 연 29,000원 = 약 2달 할인 (사용자 결정 2026-11-22)
   static const monthlyPrice = 2900;
   static const yearlyPrice = 29000;
 
