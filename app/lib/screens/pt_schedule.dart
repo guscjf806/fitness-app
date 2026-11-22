@@ -61,11 +61,38 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
   }
 
   void _toggle(DateTime start, DateTime now) {
-    if (demo.ptBookingAt(start, now) != null) {
-      toast(context, '신청이나 예약이 있는 시간은 닫을 수 없어요');
+    final b = demo.ptBookingAt(start, now);
+    if (b != null) {
+      _showBooking(b, now);
       return;
     }
     demo.update(() => demo.ptOpenSlots.contains(start) ? demo.ptOpenSlots.remove(start) : demo.ptOpenSlots.add(start));
+  }
+
+  /// 신청·예약이 있는 칸을 누르면 닫는 대신 그 내용을 보여 준다. 신청이면 바로 답할 수 있게 (리뷰 11/22 #3)
+  Future<void> _showBooking(PtBooking b, DateTime now) async {
+    final requested = ptStatusAt(b, now) == PtStatus.requested;
+    final approve = await showAppSheet<bool>(
+      context,
+      builder: (sheet) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        SheetTitle('${b.member} 님 · ${ptWhen(b.start)}'),
+        Muted(
+          requested
+              ? (b.urgent ? '곧 시작하는 급한 신청이에요. 승인하거나 거절해 주세요.' : '답을 기다리는 신청이에요. 승인하거나 거절해 주세요.')
+              : '확정된 수업이에요. 수업이 끝나면 지난 수업 처리에서 기록해요. 예약이 있는 시간은 닫을 수 없어요.',
+          top: AppSpace.xs,
+        ),
+        if (requested)
+          ButtonPair(
+            left: AppButton('승인', onPressed: () => Navigator.pop(sheet, true)),
+            right: AppButton('거절', kind: ButtonKind.quiet, onPressed: () => Navigator.pop(sheet, false)),
+          )
+        else
+          AppButton('닫기', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheet)),
+      ]),
+    );
+    if (approve == null || !mounted) return;
+    _answer(b, approve);
   }
 
   @override
