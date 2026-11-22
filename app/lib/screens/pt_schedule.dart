@@ -36,7 +36,8 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
     final undo = demo.ptUndo(b);
     demo.update(() {
       b.status = result;
-      demo.ptLeft[b.member] = (demo.ptLeft[b.member] ?? 0) - 1;
+      // 0 아래로는 내려가지 않게 (리뷰 11/22 #1)
+      demo.ptLeft[b.member] = ((demo.ptLeft[b.member] ?? 0) - 1).clamp(0, 999);
     });
     toast(context, result == PtStatus.done ? '${b.member} 님 수업을 기록했어요. PT 1회가 차감됐어요' : '${b.member} 님이 오지 않은 것으로 기록했어요. PT 1회가 차감됐어요',
         actionLabel: '되돌리기', onAction: undo);

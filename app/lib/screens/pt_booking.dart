@@ -38,7 +38,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       return;
     }
     // 남은 횟수가 잡아 둔 수업만큼 다 찼으면 신청을 막는다 (결정 d1119-1)
-    final booked = demo.ptBookings.where((b) => b.member == me && ptHoldsSlot(ptStatusAt(b, now)) && b.start.isAfter(now)).length;
+    final booked = demo.ptBookedOf(me, now);
     if ((demo.ptLeft[me] ?? 0) - booked <= 0) {
       toast(context, '남은 PT가 없어요. 선생님께 재등록을 문의해 주세요');
       return;

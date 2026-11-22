@@ -163,6 +163,14 @@ class DemoState extends ChangeNotifier {
   PtBooking? ptBookingAt(DateTime start, DateTime now) =>
       ptBookings.where((b) => b.start == start && ptHoldsSlot(ptStatusAt(b, now))).firstOrNull;
 
+  /// 그 회원에게 잡힌 수업 수: 앞으로의 신청·확정 + 지났지만 아직 처리하지 않은 확정 수업.
+  /// 남은 횟수가 이보다 적어지지 않게 한다 (리뷰 11/22 #1)
+  int ptBookedOf(String member, DateTime now) => ptBookings
+      .where((b) =>
+          b.member == member &&
+          ((b.start.isAfter(now) && ptHoldsSlot(ptStatusAt(b, now))) || (b.status == PtStatus.approved && !b.start.isAfter(now))))
+      .length;
+
   /// 선생님이 답해야 할 신청 (수업 시작 순). 홈·회원 관리·수업 일정이 같이 쓴다 (디자인 리뷰 11/20 #5)
   List<PtBooking> ptWaitingAt(DateTime now) =>
       ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList()..sort((a, b) => a.start.compareTo(b.start));

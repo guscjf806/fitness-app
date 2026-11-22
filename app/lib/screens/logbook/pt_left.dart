@@ -18,6 +18,12 @@ class PtLeftList extends StatelessWidget {
         actionLabel: '되돌리기', onAction: () => demo.update(() => demo.ptLeft[member] = before));
   }
 
+  /// 잡힌 수업이 있으면 같이 보여 준다 (리뷰 11/22 #1)
+  String _bookedText(String member) {
+    final booked = demo.ptBookedOf(member, DateTime.now());
+    return booked > 0 ? ' · 잡힌 수업 $booked회' : '';
+  }
+
   @override
   Widget build(BuildContext context) {
     if (demo.activeMembers.isEmpty) return const SizedBox.shrink();
@@ -25,7 +31,7 @@ class PtLeftList extends StatelessWidget {
       const H2('남은 PT 횟수'),
       for (final m in demo.activeMembers)
         LineRow(
-          left: WordText('$m · ${demo.ptLeft[m] ?? 0}회 남음',
+          left: WordText('$m · ${demo.ptLeft[m] ?? 0}회 남음${_bookedText(m)}',
               style: (demo.ptLeft[m] ?? 0) <= 0 ? AppText.bodyStrongCaution : AppText.bodyStrong),
           // 같은 화면 회원 줄의 '일지 작성'과 같은 연한 버튼 (디자인 리뷰 11/20 #4)
           right: FilledButton.tonal(
@@ -54,6 +60,7 @@ class _PtLeftSheetState extends State<_PtLeftSheet> {
   @override
   Widget build(BuildContext context) {
     final left = demo.ptLeft[widget.member] ?? 0;
+    final booked = demo.ptBookedOf(widget.member, DateTime.now());
     final n = int.tryParse(typed) ?? 0;
     return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       SheetTitle('${widget.member} 님 PT 횟수 추가'),
@@ -66,9 +73,11 @@ class _PtLeftSheetState extends State<_PtLeftSheet> {
       const SizedBox(height: AppSpace.m),
       NumField(label: '직접 입력', hint: '예: 8', value: typed, decimal: false, suffix: '회', onChanged: (v) => setState(() => typed = v)),
       ButtonPair(
-        left: AppButton('−1회', kind: ButtonKind.soft, onPressed: left > 0 ? () => Navigator.pop(context, -1) : null),
+        // 잡힌 수업보다 적게 줄이면 수업은 남았는데 PT가 끝나 버린다 (리뷰 11/22 #1)
+        left: AppButton('−1회', kind: ButtonKind.soft, onPressed: left > booked ? () => Navigator.pop(context, -1) : null),
         right: AppButton(n > 0 ? '+$n회 넣기' : '넣기', onPressed: n > 0 && n <= 200 ? () => Navigator.pop(context, n) : null),
       ),
+      if (left > 0 && left <= booked) Muted('잡힌 수업이 $booked개 있어서 더 줄일 수 없어요', top: AppSpace.xs, bottom: 0),
     ]);
   }
 }
