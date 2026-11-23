@@ -103,7 +103,14 @@ String ptLeftText(Duration d) {
 String ptMemberLabel(PtBooking b, DateTime now) {
   final s = ptStatusAt(b, now);
   if (s == PtStatus.approved && !b.start.isAfter(now)) return '선생님 확인 기다리는 중';
-  if (b.replaces != null && s == PtStatus.requested) return '시간 바꾸기 · 승인 기다리는 중';
+  if (b.replaces case final from?) {
+    if (s == PtStatus.requested) return '시간 바꾸기 · 승인 기다리는 중';
+    // 바꾸기가 안 됐을 때 원래 수업까지 없어진 줄 알지 않게 결과를 풀어 쓴다 (리뷰 11/23 #3)
+    final kept = from.status == PtStatus.approved ? ' · 원래 예약 그대로' : '';
+    if (s == PtStatus.rejected) return '시간 바꾸기 거절$kept';
+    if (s == PtStatus.autoRejected || s == PtStatus.expired) return '시간 바꾸기 답 없음$kept';
+    if (s == PtStatus.cancelled) return '시간 바꾸기 신청 취소';
+  }
   if (s == PtStatus.trainerCancelled && (b.cancelReason ?? '').isNotEmpty) return '${ptStatusLabel(s)} · ${b.cancelReason}';
   return ptStatusLabel(s, waived: b.waived);
 }
