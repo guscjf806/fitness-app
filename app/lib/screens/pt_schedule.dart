@@ -11,6 +11,7 @@ import '../state/demo_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/pt_slot.dart';
+import 'pt_cancel_sheet.dart';
 
 /// S25 수업 일정 (선생님): 답을 기다리는 신청 승인·거절, 지난 수업 처리, 수업 시간 열고 닫기
 class PtScheduleScreen extends StatefulWidget {
@@ -135,7 +136,7 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
 
   /// 선생님 쪽 수업 취소: 짧은 이유를 적고, 횟수는 줄지 않고, 회원에게 바로 알린다 (결정 d1122-1)
   Future<void> _trainerCancel(PtBooking b) async {
-    final reason = await showAppSheet<String>(context, builder: (_) => _TrainerCancelSheet(b));
+    final reason = await showAppSheet<String>(context, builder: (_) => TrainerCancelSheet(b));
     if (reason == null || !mounted) return;
     final undoBooking = demo.ptUndo(b);
     // 이 수업의 시간 바꾸기 신청은 원래 수업이 없어졌으니 보통 신청으로 남긴다 (리뷰 11/23 #4)
@@ -281,39 +282,5 @@ class _TrainerSlot extends StatelessWidget {
           : (ptStatusAt(b, now) == PtStatus.approved ? SlotTone.filled : SlotTone.pending),
       onTap: onTap,
     );
-  }
-}
-
-/// 선생님이 수업을 취소할 때 고르는 짧은 이유. 자주 쓰는 이유는 눌러서, 아니면 직접 (결정 d1122-1)
-class _TrainerCancelSheet extends StatefulWidget {
-  const _TrainerCancelSheet(this.b);
-  final PtBooking b;
-
-  @override
-  State<_TrainerCancelSheet> createState() => _TrainerCancelSheetState();
-}
-
-class _TrainerCancelSheetState extends State<_TrainerCancelSheet> {
-  static const _quick = ['몸이 안 좋아요', '급한 일이 생겼어요', '센터 사정이에요'];
-  String reason = '';
-
-  @override
-  Widget build(BuildContext context) {
-    final b = widget.b;
-    return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      SheetTitle('${b.member} 님 ${ptWhen(b.start)} 수업 취소'),
-      const Muted('회원에게 바로 알려 드리고, PT 횟수는 줄지 않아요. 짧은 이유를 골라 주세요.', top: AppSpace.xs),
-      for (final q in _quick)
-        AppButton(q, kind: ButtonKind.soft, top: AppSpace.xs, selected: reason == q, onPressed: () => setState(() => reason = q)),
-      const SizedBox(height: AppSpace.s),
-      TextFormField(
-        key: ValueKey(_quick.contains(reason)),
-        initialValue: _quick.contains(reason) ? '' : reason,
-        maxLength: 30,
-        decoration: const InputDecoration(labelText: '직접 쓰기', hintText: '예: 다음 주에 보강할게요'),
-        onChanged: (v) => setState(() => reason = v.trim()),
-      ),
-      AppButton('취소하고 알리기', onPressed: reason.isEmpty ? null : () => Navigator.pop(context, reason)),
-    ]);
   }
 }
