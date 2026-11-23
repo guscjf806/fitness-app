@@ -112,7 +112,9 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     // 시간이 지난 수업은 취소할 수 없게 '내 예약'에서 빼고 아래 기록으로 (리뷰 11/19 #1)
     bool isUpcoming(PtBooking b) => ptHoldsSlot(ptStatusAt(b, now)) && b.start.isAfter(now);
     final upcoming = [for (final b in mine) if (isUpcoming(b)) b];
-    final past = [for (final b in mine.reversed) if (!isUpcoming(b)) b].take(3).toList();
+    // 선생님이 취소한 앞으로의 수업은 '지난 기록'이 아니라 위에서 알린다 (리뷰 11/23 #1)
+    final cancelledAhead = demo.ptTrainerCancelledAhead(me, now);
+    final past = [for (final b in mine.reversed) if (!isUpcoming(b) && !cancelledAhead.contains(b)) b].take(3).toList();
     final opened = [
       for (final h in AppConfig.ptLessonHours)
         if (demo.ptOpenSlots.contains(days[day].add(Duration(hours: h)))) days[day].add(Duration(hours: h)),
@@ -127,6 +129,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       if (demo.ptLowOf(me))
         WarningBox('남은 PT가 ${demo.ptLeft[me]}회예요. 이어서 받으려면 선생님께 재등록을 이야기해 보세요', top: 0, caution: true),
       const H2('내 예약'),
+      for (final b in cancelledAhead) WarningBox('선생님이 수업을 취소했어요 · ${ptTrainerCancelText(b)}', top: 0, caution: true),
       if (upcoming.isEmpty) const Muted('잡힌 수업이 없어요. 아래에서 시간을 골라 신청해 보세요.'),
       for (final b in upcoming)
         _MyBookingCard(

@@ -108,6 +108,10 @@ String ptMemberLabel(PtBooking b, DateTime now) {
   return ptStatusLabel(s, waived: b.waived);
 }
 
+/// 선생님 취소를 회원에게 알리는 한 줄: '11월 24일(화) 19:00 · 몸이 안 좋아요 · 횟수는 그대로예요' (리뷰 11/23 #1)
+String ptTrainerCancelText(PtBooking b) =>
+    [ptWhen(b.start), if ((b.cancelReason ?? '').isNotEmpty) b.cancelReason!, '횟수는 그대로예요'].join(' · ');
+
 /// '11월 18일(화) 19:00'
 String ptWhen(DateTime d) =>
     '${d.month}월 ${d.day}일(${dayLabels[d.weekday - 1]}) ${d.hour.toString().padLeft(2, '0')}:00';

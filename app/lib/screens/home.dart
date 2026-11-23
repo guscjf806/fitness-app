@@ -31,6 +31,17 @@ class HomeTab extends StatelessWidget {
       H1(demo.greeting),
       // 확정된 다음 수업을 홈 맨 위에. 없으면 안 보인다 (리뷰 11/19 #5)
       if (demo.role == 'member' && !demo.ptEnded) const _NextLessonCard(),
+      // 선생님이 취소한 수업을 모르고 센터에 오지 않게 홈 맨 위에 (리뷰 11/23 #1)
+      if (demo.role == 'member')
+        for (final b in demo.ptTrainerCancelledAhead(demo.memberName, DateTime.now()))
+          HighlightCard(
+            icon: Icons.event_busy_outlined,
+            tone: HighlightTone.caution,
+            eyebrow: '수업 취소',
+            title: '선생님이 수업을 취소했어요',
+            subtitle: ptTrainerCancelText(b),
+            onTap: () => demo.openPtTab('수업 예약'),
+          ),
       // PT가 끝난 날과 무료가 끝나기 하루 전에 알린다. 푸시를 붙이기 전까지 홈 맨 위 카드로 (결정 d1121-1)
       if (demo.ptEndNoticeNow case final n?)
         HighlightCard(

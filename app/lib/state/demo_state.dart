@@ -179,6 +179,12 @@ class DemoState extends ChangeNotifier {
     return left > 0 && left <= AppConfig.ptLowLeft;
   }
 
+  /// 선생님이 취소한 앞으로의 수업. 수업 시간이 지날 때까지 회원 화면 맨 위에 알린다 (리뷰 11/23 #1)
+  List<PtBooking> ptTrainerCancelledAhead(String member, DateTime now) => ptBookings
+      .where((b) => b.member == member && b.status == PtStatus.trainerCancelled && b.start.isAfter(now))
+      .toList()
+    ..sort((a, b) => a.start.compareTo(b.start));
+
   /// 선생님이 답해야 할 신청 (수업 시작 순). 홈·회원 관리·수업 일정이 같이 쓴다 (디자인 리뷰 11/20 #5)
   List<PtBooking> ptWaitingAt(DateTime now) =>
       ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList()..sort((a, b) => a.start.compareTo(b.start));
