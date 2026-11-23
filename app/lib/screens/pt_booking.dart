@@ -55,12 +55,13 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     final ok = await confirmDialog(
       context,
       title: from != null ? '${ptWhen(start)}(으)로 바꿔 달라고 신청할까요?' : '${ptWhen(start)} 수업을 신청할까요?',
-      body: from != null
-          ? '선생님이 승인하면 원래 예약(${ptWhen(from.start)})은 자동으로 취소돼요. 거절되거나 답이 없으면 원래 예약이 그대로 남아요.'
-          : (urgent
-              ? '곧 시작하는 수업이라 선생님께 바로 알려 드려요. 선생님이 승인하면 예약이 확정돼요.'
-              : '선생님이 승인하면 예약이 확정돼요. ${AppConfig.ptAutoRejectHours}시간 안에 답이 없으면 자동으로 취소돼요.') +
-          (from == null && late ? '\n\n수업 ${AppConfig.ptFreeCancelHours}시간 전이 지나서, 승인된 뒤 취소하면 PT 1회가 차감돼요.' : ''),
+      body: (from != null
+              ? '선생님이 승인하면 원래 예약(${ptWhen(from.start)})은 자동으로 취소돼요. 거절되거나 답이 없으면 원래 예약이 그대로 남아요.'
+              : urgent
+                  ? '곧 시작하는 수업이라 선생님께 바로 알려 드려요. 선생님이 승인하면 예약이 확정돼요.'
+                  : '선생님이 승인하면 예약이 확정돼요. ${AppConfig.ptAutoRejectHours}시간 안에 답이 없으면 자동으로 취소돼요.') +
+          // 바꾸기 신청도 24시간 안 칸이면 승인 뒤 취소가 차감된다 (리뷰 11/23 #5)
+          (late ? '\n\n수업 ${AppConfig.ptFreeCancelHours}시간 전이 지나서, 승인된 뒤 취소하면 PT 1회가 차감돼요.' : ''),
       keepLabel: '그만두기',
       okLabel: '신청하기',
     );
