@@ -2,7 +2,9 @@ import 'package:fitness_app/config.dart';
 import 'package:fitness_app/logic/pt_booking.dart';
 import 'package:fitness_app/main.dart';
 import 'package:fitness_app/routes.dart';
+import 'package:fitness_app/screens/pt_cancel_sheet.dart';
 import 'package:fitness_app/state/demo_state.dart';
+import 'package:fitness_app/widgets/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -118,6 +120,39 @@ void main() {
       demo.ptLeft['김지아'] = 2;
       await open(tester, 'member', Routes.ptBooking);
       expect(findTextContaining('재등록을 이야기해 보세요'), findsOneWidget);
+    });
+
+    testWidgets('디자인 리뷰 11/23 #2 360px·2.0배에서 예약 카드 버튼이 넘치지 않는다', (tester) async {
+      tester.view.physicalSize = const Size(360, 2400);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+      addTearDown(tester.view.reset);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      demo.switchRole('member');
+      await tester.pumpWidget(const FitnessApp());
+      await tester.pumpAndSettle();
+      demoNavigatorKey.currentState!.pushNamed(Routes.ptBooking);
+      await tester.pumpAndSettle();
+      expect(findText('시간 바꾸기'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('디자인 리뷰 11/23 #1 빠른 이유를 고른 뒤 직접 써도 칸이 그대로다', (tester) async {
+      await open(tester, 'trainer', Routes.ptSchedule);
+      final b = demo.ptBookings.firstWhere((b) => b.member == '김지아');
+      final scaffold = tester.element(find.byType(Scaffold).last);
+      showAppSheet<String>(scaffold, builder: (_) => TrainerCancelSheet(b));
+      await tester.pumpAndSettle();
+      await tester.tap(findText('몸이 안 좋아요'));
+      await tester.pump();
+      final field = find.byType(TextField);
+      final before = tester.state(field);
+      await tester.enterText(field, '보');
+      await tester.pump();
+      expect(tester.state(field), same(before));
+      await tester.enterText(field, '보강할게요');
+      await tester.pump();
+      expect(find.text('보강할게요'), findsOneWidget);
     });
   });
 }
