@@ -240,8 +240,13 @@ class DemoState extends ChangeNotifier {
     if (from == null || until == null) return null;
     final now = DateTime.now();
     if (!now.isBefore(until)) return null;
-    return ptEndNotices(from).lastWhere((n) => !now.isBefore(n.at), orElse: () => ptEndNotices(from).first);
+    final n = ptEndNotices(from).lastWhere((n) => !now.isBefore(n.at), orElse: () => ptEndNotices(from).first);
+    // [확인]을 누른 알림은 접고, 다음 알림 날에 새 알림이 뜬다 (리뷰 11/23 #6)
+    return ptNoticesSeen.contains(n.at.toIso8601String()) ? null : n;
   }
+
+  /// [확인]을 누른 PT 끝 알림 (알림 시각으로 구분)
+  final Set<String> ptNoticesSeen = {};
 
   /// 수업 영상이 지워지기까지 남은 날. PT 중이면 null(계속 보관), PT가 끝나면 끝난 날부터 30일 (사용자 결정 2026-11-19)
   int? get videoDaysLeft {
@@ -266,6 +271,7 @@ class DemoState extends ChangeNotifier {
     _ptBookings = null;
     _ptOpenSlots = null;
     ptFinishedAt = null;
+    ptNoticesSeen.clear();
     ptLeft
       ..clear()
       ..addAll({'김지아': 6, '이도현': 10, '박서연': 3});
@@ -549,6 +555,7 @@ class DemoState extends ChangeNotifier {
     await p.setBool('restSound', restSound);
     await p.setBool('ptEnded', ptEnded);
     // 선생님이 넣은 횟수가 앱을 다시 켜도 남게. PT 끝난 날과 함께 저장해야 화면이 어긋나지 않는다 (리뷰 11/22 #2)
+    await p.setStringList('ptNoticesSeen', ptNoticesSeen.toList());
     await p.setStringList('ptLeft', [for (final e in ptLeft.entries) '${e.key}|${e.value}']);
     // 앱을 다시 켜도 무료 유예와 영상 남은 날이 이어지게 (리뷰 11/21 #2)
     if (ptFinishedAt == null) {
@@ -609,6 +616,7 @@ class DemoState extends ChangeNotifier {
     restSound = p.getBool('restSound') ?? restSound;
     ptEnded = p.getBool('ptEnded') ?? ptEnded;
     ptFinishedAt = DateTime.tryParse(p.getString('ptFinishedAt') ?? '') ?? ptFinishedAt;
+    ptNoticesSeen.addAll(p.getStringList('ptNoticesSeen') ?? const []);
     for (final e in p.getStringList('ptLeft') ?? const <String>[]) {
       final at = e.lastIndexOf('|');
       final n = at > 0 ? int.tryParse(e.substring(at + 1)) : null;

@@ -49,8 +49,11 @@ class HomeTab extends StatelessWidget {
           tone: HighlightTone.caution,
           title: n.title,
           subtitle: n.body,
-          // 무료가 끝나기 전날 알림은 구독 화면으로
-          onTap: n.at == ptEndNotices(demo.ptFinishedAt!).last.at ? () => Navigator.pushNamed(context, Routes.subscribe) : null,
+          // 무료가 끝나기 전날 알림은 구독 화면으로, 끝난 날 알림은 영상을 저장할 수 있는 운동일지로 (리뷰 11/23 #6)
+          onTap: n.at == ptEndNotices(demo.ptFinishedAt!).last.at
+              ? () => Navigator.pushNamed(context, Routes.subscribe)
+              : () => demo.openPtTab('운동일지'),
+          onDismiss: () => demo.update(() => demo.ptNoticesSeen.add(n.at.toIso8601String())),
         ),
       // 연속 기록은 작은 한 줄로, 오늘의 작은 목표를 맨 위로 (결정 dd1029-home-order)
       LineRow(

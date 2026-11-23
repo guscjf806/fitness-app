@@ -114,6 +114,7 @@ class HighlightCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.onTap,
+    this.onDismiss,
   });
   final IconData icon;
   final HighlightTone tone;
@@ -123,6 +124,9 @@ class HighlightCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback? onTap;
+
+  /// 다 읽은 알림을 접는 [확인] 버튼. null이면 숨긴다 (리뷰 11/23 #6)
+  final VoidCallback? onDismiss;
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +160,8 @@ class HighlightCard extends StatelessWidget {
                   if (eyebrow != null) WordText(eyebrow!, style: caution ? AppText.captionCaution : AppText.captionAccent),
                   WordText(title, style: AppText.title),
                   Muted(subtitle, bottom: 0),
+                  if (onDismiss != null)
+                    Align(alignment: Alignment.centerRight, child: TextButton(onPressed: onDismiss, child: const Text('확인'))),
                 ]),
               ),
               // 누를 곳이 없는 알림 카드에는 화살표를 붙이지 않는다
