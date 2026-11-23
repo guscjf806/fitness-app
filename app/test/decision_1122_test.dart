@@ -85,12 +85,10 @@ void main() {
       expect(ptMemberLabel(change, now), '시간 바꾸기 거절 · 원래 예약 그대로');
     });
 
-    test('#6 확인을 누른 PT 끝 알림은 접힌다', () {
+    test('디자인 결정 d1123-1 PT 끝 알림은 무료 기간 내내 그대로 보인다', () {
       demo.switchRole('member');
       demo.update(() => demo.ptLeft[demo.memberName] = 0);
-      final n = demo.ptEndNoticeNow!;
-      demo.ptNoticesSeen.add(n.at.toIso8601String());
-      expect(demo.ptEndNoticeNow, isNull);
+      expect(demo.ptEndNoticeNow, isNotNull);
     });
   });
 

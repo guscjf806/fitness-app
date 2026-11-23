@@ -53,7 +53,6 @@ class HomeTab extends StatelessWidget {
           onTap: n.toSubscribe
               ? () => Navigator.pushNamed(context, Routes.subscribe)
               : () => demo.openPtTab('운동일지'),
-          onDismiss: () => demo.update(() => demo.ptNoticesSeen.add(n.at.toIso8601String())),
         ),
       // 연속 기록은 작은 한 줄로, 오늘의 작은 목표를 맨 위로 (결정 dd1029-home-order)
       LineRow(
