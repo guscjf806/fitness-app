@@ -108,7 +108,8 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
                   : b.urgent
                       ? '곧 시작하는 급한 신청이에요. 승인하거나 거절해 주세요.'
                       : '답을 기다리는 신청이에요. 승인하거나 거절해 주세요.')
-              : '확정된 수업이에요. 수업이 끝나면 지난 수업 처리에서 기록해요. 예약이 있는 시간은 닫을 수 없어요.',
+              // '닫기' 버튼과 헷갈리지 않게 시간 칸 이야기는 '취소'로 (디자인 리뷰 11/23 #4)
+              : '확정된 수업이에요. 수업이 끝나면 지난 수업 처리에서 기록해요. 이 시간을 닫으려면 먼저 수업을 취소해 주세요.',
           top: AppSpace.xs,
         ),
         if (requested)
@@ -117,7 +118,7 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
             right: AppButton('거절', kind: ButtonKind.quiet, onPressed: () => Navigator.pop(sheet, 'reject')),
           )
         else ...[
-          AppButton('닫기', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheet)),
+          AppButton('확인', kind: ButtonKind.soft, onPressed: () => Navigator.pop(sheet)),
           // 아프거나 일이 생기면 앱에서 바로 취소하고 회원에게 알린다. 차감 없음 (결정 d1122-1)
           Align(
             alignment: Alignment.centerRight,
