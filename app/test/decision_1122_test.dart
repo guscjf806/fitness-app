@@ -65,6 +65,33 @@ void main() {
     expect(change.status, PtStatus.requested);
   });
 
+  group('리뷰 11/23', () {
+    test('#1 선생님이 취소한 앞으로의 수업은 알릴 목록에 남는다', () {
+      final now = DateTime.now();
+      final b = demo.ptBookings.firstWhere((b) => b.member == '김지아');
+      b.status = PtStatus.trainerCancelled;
+      b.cancelReason = '몸이 안 좋아요';
+      expect(demo.ptTrainerCancelledAhead('김지아', now), [b]);
+      expect(ptTrainerCancelText(b), endsWith('몸이 안 좋아요 · 횟수는 그대로예요'));
+    });
+
+    test('#3 바꾸기 신청이 거절되면 원래 예약 그대로라고 쓴다', () {
+      final now = DateTime.now();
+      final original = demo.ptBookings.firstWhere((b) => b.member == '김지아');
+      final change = PtBooking(member: '김지아', start: original.start.add(const Duration(days: 1)), requestedAt: now, replaces: original)
+        ..status = PtStatus.rejected;
+      expect(ptMemberLabel(change, now), '시간 바꾸기 거절 · 원래 예약 그대로');
+    });
+
+    test('#6 확인을 누른 PT 끝 알림은 접힌다', () {
+      demo.switchRole('member');
+      demo.update(() => demo.ptLeft[demo.memberName] = 0);
+      final n = demo.ptEndNoticeNow!;
+      demo.ptNoticesSeen.add(n.at.toIso8601String());
+      expect(demo.ptEndNoticeNow, isNull);
+    });
+  });
+
   group('화면', () {
     Future<void> open(WidgetTester tester, String role, String route) async {
       tester.view.physicalSize = const Size(1200, 2400);
