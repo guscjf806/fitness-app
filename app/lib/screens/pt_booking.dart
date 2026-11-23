@@ -30,6 +30,17 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
   /// [시간 바꾸기]를 누른 예약. 이때 고른 칸은 '바꾸기 신청'이 된다 (결정 d1122-2)
   PtBooking? changing;
 
+  /// [시간 바꾸기]를 누르면 화면 밖의 안내 카드로 내려 준다 (디자인 리뷰 11/23 #3)
+  final _changeGuide = GlobalKey();
+
+  void _startChange(PtBooking b) {
+    setState(() => changing = b);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = _changeGuide.currentContext;
+      if (ctx != null) Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 300));
+    });
+  }
+
   String get me => demo.memberName;
 
   Future<void> _request(DateTime start) async {
@@ -141,12 +152,14 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
           changeRequested: changeRequested(b),
           // 무료 취소 기한 안의 확정 수업만, 그리고 이미 바꾸기 신청 중이면 숨긴다 (결정 d1122-2, 설계: 24시간 전까지 변경 신청)
           onChange: ptStatusAt(b, now) == PtStatus.approved && ptFreeCancel(b, now) && !changeRequested(b)
-              ? () => setState(() => changing = b)
+              ? () => _startChange(b)
               : null,
+          choosing: changing == b,
         ),
       const H2('시간 고르기'),
       if (changing case final c?)
         AppCard(
+          key: _changeGuide,
           accent: true,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             WordText('${ptWhen(c.start)} 수업을 옮길 시간을 골라 주세요', style: AppText.bodyStrong),
@@ -186,7 +199,8 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
 }
 
 class _MyBookingCard extends StatelessWidget {
-  const _MyBookingCard(this.b, {required this.now, required this.onCancel, this.onChange, this.changeRequested = false});
+  const _MyBookingCard(this.b,
+      {required this.now, required this.onCancel, this.onChange, this.changeRequested = false, this.choosing = false});
   final PtBooking b;
   final DateTime now;
   final VoidCallback onCancel;
@@ -196,6 +210,9 @@ class _MyBookingCard extends StatelessWidget {
 
   /// 이 예약을 다른 시간으로 바꾸기 신청 중인지 (리뷰 11/23 #2)
   final bool changeRequested;
+
+  /// 지금 이 예약을 옮길 시간을 고르는 중인지
+  final bool choosing;
 
   @override
   Widget build(BuildContext context) {
@@ -218,6 +235,7 @@ class _MyBookingCard extends StatelessWidget {
         else if (status == PtStatus.requested && b.urgent)
           const Muted('수업 시간 전까지 답이 없으면 신청이 정리돼요', top: AppSpace.xxs, bottom: 0),
         if (changeRequested) const WordText('다른 시간으로 바꾸기 신청 중', style: AppText.captionCaution),
+        if (choosing) const WordText('아래에서 바꿀 시간 고르는 중', style: AppText.captionAccent),
         // 날짜 계산을 하지 않아도 되게 무료 취소 기한을 바로 적는다 (리뷰 11/19 #3)
         if (status == PtStatus.approved)
           ptFreeCancel(b, now)
