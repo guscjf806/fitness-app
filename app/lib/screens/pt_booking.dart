@@ -227,7 +227,8 @@ class _MyBookingCard extends StatelessWidget {
                   padding: EdgeInsets.only(top: AppSpace.xxs),
                   child: WordText('지금 취소하면 PT 1회가 차감돼요', style: AppText.captionCaution),
                 ),
-        Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+        // 좁은 화면·큰 글씨에서 넘치지 않게 자리가 모자라면 두 줄로 (디자인 리뷰 11/23 #2)
+        Wrap(alignment: WrapAlignment.end, spacing: AppSpace.xs, children: [
           if (onChange != null) TextButton(onPressed: onChange, child: const Text('시간 바꾸기')),
           // 차감될 수 있는 수업 취소는 다른 화면의 지우기·빼기처럼 경고색 (디자인 리뷰 11/18 #6)
           status == PtStatus.requested
