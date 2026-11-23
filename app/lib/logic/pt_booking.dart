@@ -153,10 +153,13 @@ String ptHourText(DateTime d) => '${d.hour.toString().padLeft(2, '0')}:00';
 
 /// PT가 끝났을 때 회원에게 보내는 알림 한 건
 class PtNotice {
-  const PtNotice(this.at, this.title, this.body);
+  const PtNotice(this.at, this.title, this.body, {this.toSubscribe = false});
   final DateTime at;
   final String title;
   final String body;
+
+  /// 누르면 구독 화면으로 가는 알림인지. 아니면 운동일지(영상)로 간다 (디자인 리뷰 11/23 #6)
+  final bool toSubscribe;
 }
 
 /// PT가 끝난 날 한 번 + 무료 이용이 끝나기 하루 전 한 번 (결정 d1121-1).
@@ -169,6 +172,7 @@ List<PtNotice> ptEndNotices(DateTime finishedAt) {
     PtNotice(finishedAt, 'PT가 끝났어요',
         '${md(freeUntil)}까지 무료로 쓸 수 있어요. 수업 영상은 ${md(videoUntil)}에 사라지니 남기려면 미리 내 폰에 저장하세요.'),
     PtNotice(freeUntil.subtract(const Duration(days: 1)), '내일 무료 이용이 끝나요',
-        '그 뒤에는 AI 기능을 한 달 ${AppConfig.freeMonthlyAiLimit}회까지 무료로 쓰고, 더 쓰려면 구독해요.'),
+        '그 뒤에는 AI 기능을 한 달 ${AppConfig.freeMonthlyAiLimit}회까지 무료로 쓰고, 더 쓰려면 구독해요.',
+        toSubscribe: true),
   ];
 }

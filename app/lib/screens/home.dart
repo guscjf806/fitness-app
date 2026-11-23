@@ -50,7 +50,7 @@ class HomeTab extends StatelessWidget {
           title: n.title,
           subtitle: n.body,
           // 무료가 끝나기 전날 알림은 구독 화면으로, 끝난 날 알림은 영상을 저장할 수 있는 운동일지로 (리뷰 11/23 #6)
-          onTap: n.at == ptEndNotices(demo.ptFinishedAt!).last.at
+          onTap: n.toSubscribe
               ? () => Navigator.pushNamed(context, Routes.subscribe)
               : () => demo.openPtTab('운동일지'),
           onDismiss: () => demo.update(() => demo.ptNoticesSeen.add(n.at.toIso8601String())),
