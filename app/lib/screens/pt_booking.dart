@@ -111,6 +111,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     final mine = demo.ptBookings.where((b) => b.member == me).toList()..sort((a, b) => a.start.compareTo(b.start));
     // 시간이 지난 수업은 취소할 수 없게 '내 예약'에서 빼고 아래 기록으로 (리뷰 11/19 #1)
     bool isUpcoming(PtBooking b) => ptHoldsSlot(ptStatusAt(b, now)) && b.start.isAfter(now);
+    bool changeRequested(PtBooking b) => demo.ptBookings.any((c) => c.replaces == b && ptStatusAt(c, now) == PtStatus.requested);
     final upcoming = [for (final b in mine) if (isUpcoming(b)) b];
     // 선생님이 취소한 앞으로의 수업은 '지난 기록'이 아니라 위에서 알린다 (리뷰 11/23 #1)
     final cancelledAhead = demo.ptTrainerCancelledAhead(me, now);
@@ -136,10 +137,9 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
           b,
           now: now,
           onCancel: () => _cancel(b),
+          changeRequested: changeRequested(b),
           // 무료 취소 기한 안의 확정 수업만, 그리고 이미 바꾸기 신청 중이면 숨긴다 (결정 d1122-2, 설계: 24시간 전까지 변경 신청)
-          onChange: ptStatusAt(b, now) == PtStatus.approved &&
-                  ptFreeCancel(b, now) &&
-                  !demo.ptBookings.any((c) => c.replaces == b && ptStatusAt(c, now) == PtStatus.requested)
+          onChange: ptStatusAt(b, now) == PtStatus.approved && ptFreeCancel(b, now) && !changeRequested(b)
               ? () => setState(() => changing = b)
               : null,
         ),
@@ -185,13 +185,16 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
 }
 
 class _MyBookingCard extends StatelessWidget {
-  const _MyBookingCard(this.b, {required this.now, required this.onCancel, this.onChange});
+  const _MyBookingCard(this.b, {required this.now, required this.onCancel, this.onChange, this.changeRequested = false});
   final PtBooking b;
   final DateTime now;
   final VoidCallback onCancel;
 
   /// [시간 바꾸기]. 바꿀 수 없을 때는 null이라 버튼이 숨는다 (결정 d1122-2)
   final VoidCallback? onChange;
+
+  /// 이 예약을 다른 시간으로 바꾸기 신청 중인지 (리뷰 11/23 #2)
+  final bool changeRequested;
 
   @override
   Widget build(BuildContext context) {
@@ -202,11 +205,18 @@ class _MyBookingCard extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         WordText(ptWhen(b.start), style: AppText.bodyStrong),
         WordText(ptMemberLabel(b, now), style: status == PtStatus.approved ? AppText.captionAccent : AppText.caption),
-        if (status == PtStatus.requested && !b.urgent)
-          Muted('${ptLeftText(left)} 안에 답이 없으면 자동으로 취소돼요', top: AppSpace.xxs, bottom: 0),
+        // 바꾸기 신청이 안 되면 원래 수업이 남는다는 걸 분명히 (리뷰 11/23 #2)
+        if (status == PtStatus.requested && b.replaces != null)
+          Muted(
+              '${b.urgent ? '수업 시간 전까지' : '${ptLeftText(left)} 안에'} 답이 없으면 원래 예약(${ptWhen(b.replaces!.start)})이 그대로 남아요',
+              top: AppSpace.xxs,
+              bottom: 0)
+        else if (status == PtStatus.requested && !b.urgent)
+          Muted('${ptLeftText(left)} 안에 답이 없으면 자동으로 취소돼요', top: AppSpace.xxs, bottom: 0)
         // 급한 신청도 어떻게 되는지 알린다 (리뷰 11/19 #7)
-        if (status == PtStatus.requested && b.urgent)
+        else if (status == PtStatus.requested && b.urgent)
           const Muted('수업 시간 전까지 답이 없으면 신청이 정리돼요', top: AppSpace.xxs, bottom: 0),
+        if (changeRequested) const WordText('다른 시간으로 바꾸기 신청 중', style: AppText.captionCaution),
         // 날짜 계산을 하지 않아도 되게 무료 취소 기한을 바로 적는다 (리뷰 11/19 #3)
         if (status == PtStatus.approved)
           ptFreeCancel(b, now)
