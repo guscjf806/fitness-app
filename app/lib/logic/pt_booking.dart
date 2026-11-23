@@ -48,7 +48,8 @@ class PtBooking {
   String? cancelReason;
 
   /// 시간 바꾸기 신청이면 원래 예약. 선생님이 승인하면 원래 예약이 자동으로 취소된다 (결정 d1122-2)
-  final PtBooking? replaces;
+  /// 선생님이 원래 예약을 취소하면 끊겨서 보통 신청이 된다 (리뷰 11/23 #4)
+  PtBooking? replaces;
 
   /// 수업까지 5시간이 안 남았을 때 들어온 신청. 선생님께 따로 알린다
   bool get urgent => start.difference(requestedAt) < const Duration(hours: AppConfig.ptAutoRejectHours);

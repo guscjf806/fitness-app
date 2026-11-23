@@ -137,10 +137,24 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
   Future<void> _trainerCancel(PtBooking b) async {
     final reason = await showAppSheet<String>(context, builder: (_) => _TrainerCancelSheet(b));
     if (reason == null || !mounted) return;
-    final undo = demo.ptUndo(b);
+    final undoBooking = demo.ptUndo(b);
+    // 이 수업의 시간 바꾸기 신청은 원래 수업이 없어졌으니 보통 신청으로 남긴다 (리뷰 11/23 #4)
+    final changes = [for (final c in demo.ptBookings) if (c.replaces == b && ptStatusAt(c, DateTime.now()) == PtStatus.requested) c];
+    void undo() {
+      undoBooking();
+      demo.update(() {
+        for (final c in changes) {
+          c.replaces = b;
+        }
+      });
+    }
+
     demo.update(() {
       b.status = PtStatus.trainerCancelled;
       b.cancelReason = reason;
+      for (final c in changes) {
+        c.replaces = null;
+      }
     });
     toast(context, '${b.member} 님 ${ptWhen(b.start)} 수업을 취소하고 알렸어요. 횟수는 줄지 않아요', actionLabel: '되돌리기', onAction: undo);
   }
