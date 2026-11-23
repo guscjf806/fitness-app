@@ -68,6 +68,17 @@ void main() {
   });
 
   group('리뷰 11/23', () {
+    test('결정 d1123-1 보강 신청은 보강으로 보이고, 신청하면 버튼이 사라진다', () {
+      final now = DateTime.now();
+      final b = demo.ptBookings.firstWhere((b) => b.member == '김지아');
+      b.status = PtStatus.trainerCancelled;
+      expect(demo.ptMakeupBooked(b, now), isFalse);
+      final m = PtBooking(member: '김지아', start: b.start.add(const Duration(days: 1)), requestedAt: now, makeupFor: b);
+      demo.ptBookings.add(m);
+      expect(demo.ptMakeupBooked(b, now), isTrue);
+      expect(ptMemberLabel(m, now), '보강 · 승인 기다리는 중');
+    });
+
     test('#1 선생님이 취소한 앞으로의 수업은 알릴 목록에 남는다', () {
       final now = DateTime.now();
       final b = demo.ptBookings.firstWhere((b) => b.member == '김지아');

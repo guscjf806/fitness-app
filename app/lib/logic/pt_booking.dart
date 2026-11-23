@@ -32,7 +32,7 @@ enum PtStatus {
 
 /// 예약 한 건. 목업이라 폰 메모리에만 있다. 실제 표는 약관 검토 뒤에 만든다
 class PtBooking {
-  PtBooking({required this.member, required this.start, required this.requestedAt, this.status = PtStatus.requested, this.replaces});
+  PtBooking({required this.member, required this.start, required this.requestedAt, this.status = PtStatus.requested, this.replaces, this.makeupFor});
   final String member;
   final DateTime start;
   final DateTime requestedAt;
@@ -50,6 +50,9 @@ class PtBooking {
   /// 시간 바꾸기 신청이면 원래 예약. 선생님이 승인하면 원래 예약이 자동으로 취소된다 (결정 d1122-2)
   /// 선생님이 원래 예약을 취소하면 끊겨서 보통 신청이 된다 (리뷰 11/23 #4)
   PtBooking? replaces;
+
+  /// 선생님이 취소한 수업의 보강 신청이면 그 수업. 선생님 화면에 '보강'으로 따로 보인다 (결정 d1123-1)
+  final PtBooking? makeupFor;
 
   /// 수업까지 5시간이 안 남았을 때 들어온 신청. 선생님께 따로 알린다
   bool get urgent => start.difference(requestedAt) < const Duration(hours: AppConfig.ptAutoRejectHours);
@@ -104,6 +107,7 @@ String ptLeftText(Duration d) {
 String ptMemberLabel(PtBooking b, DateTime now) {
   final s = ptStatusAt(b, now);
   if (s == PtStatus.approved && !b.start.isAfter(now)) return '선생님 확인 기다리는 중';
+  if (b.makeupFor != null && s == PtStatus.requested) return '보강 · 승인 기다리는 중';
   if (b.replaces case final from?) {
     if (s == PtStatus.requested) return '시간 바꾸기 · 승인 기다리는 중';
     // 바꾸기가 안 됐을 때 원래 수업까지 없어진 줄 알지 않게 결과를 풀어 쓴다 (리뷰 11/23 #3)

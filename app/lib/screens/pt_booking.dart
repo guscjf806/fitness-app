@@ -33,8 +33,26 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
   /// [시간 바꾸기]를 누르면 화면 밖의 안내 카드로 내려 준다 (디자인 리뷰 11/23 #3)
   final _changeGuide = GlobalKey();
 
+  /// [보강 신청하기]를 누른 선생님 취소 수업. 이때 고른 칸은 '보강 신청'이 된다 (결정 d1123-1)
+  PtBooking? makeup;
+
+  void _startMakeup(PtBooking b) {
+    setState(() {
+      makeup = b;
+      changing = null;
+    });
+    _scrollToGuide();
+  }
+
   void _startChange(PtBooking b) {
-    setState(() => changing = b);
+    setState(() {
+      changing = b;
+      makeup = null;
+    });
+    _scrollToGuide();
+  }
+
+  void _scrollToGuide() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final ctx = _changeGuide.currentContext;
       if (ctx != null) Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 300));
@@ -65,7 +83,11 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     final late = start.difference(now) < const Duration(hours: AppConfig.ptFreeCancelHours);
     final ok = await confirmDialog(
       context,
-      title: from != null ? '${ptWhen(start)}(으)로 바꿔 달라고 신청할까요?' : '${ptWhen(start)} 수업을 신청할까요?',
+      title: from != null
+          ? '${ptWhen(start)}(으)로 바꿔 달라고 신청할까요?'
+          : makeup != null
+              ? '${ptWhen(start)}에 보강을 신청할까요?'
+              : '${ptWhen(start)} 수업을 신청할까요?',
       body: (from != null
               ? '선생님이 승인하면 원래 예약(${ptWhen(from.start)})은 자동으로 취소돼요. 거절되거나 답이 없으면 원래 예약이 그대로 남아요.'
               : urgent
@@ -77,9 +99,20 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       okLabel: '신청하기',
     );
     if (!ok || !mounted) return;
-    demo.update(() => demo.ptBookings.add(PtBooking(member: me, start: start, requestedAt: DateTime.now(), replaces: from)));
-    setState(() => changing = null);
-    toast(context, from != null ? '시간 바꾸기를 신청했어요. 선생님이 답하면 알려 드릴게요' : '신청했어요. 선생님이 답하면 알려 드릴게요');
+    final forMakeup = makeup;
+    demo.update(() => demo.ptBookings
+        .add(PtBooking(member: me, start: start, requestedAt: DateTime.now(), replaces: from, makeupFor: forMakeup)));
+    setState(() {
+      changing = null;
+      makeup = null;
+    });
+    toast(
+        context,
+        from != null
+            ? '시간 바꾸기를 신청했어요. 선생님이 답하면 알려 드릴게요'
+            : forMakeup != null
+                ? '보강을 신청했어요. 선생님이 답하면 알려 드릴게요'
+                : '신청했어요. 선생님이 답하면 알려 드릴게요');
   }
 
   Future<void> _cancel(PtBooking b) async {
@@ -142,7 +175,18 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       if (demo.ptLowOf(me))
         WarningBox('남은 PT가 ${demo.ptLeft[me]}회예요. 이어서 받으려면 선생님께 재등록을 이야기해 보세요', top: 0, caution: true),
       const H2('내 예약'),
-      for (final b in cancelledAhead) WarningBox('선생님이 수업을 취소했어요 · ${ptTrainerCancelText(b)}', top: 0, caution: true),
+      for (final b in cancelledAhead) ...[
+        WarningBox('선생님이 수업을 취소했어요 · ${ptTrainerCancelText(b)}', top: 0, caution: true),
+        // 빠진 수업을 버튼 하나로 다시 잡게 (결정 d1123-1)
+        if (demo.ptMakeupBooked(b, now))
+          const Padding(
+            padding: EdgeInsets.only(top: AppSpace.xs, bottom: AppSpace.s),
+            child: WordText('보강을 신청했어요 · 아래 내 예약에서 볼 수 있어요', style: AppText.captionAccent),
+          )
+        else
+          AppButton('보강 신청하기', kind: ButtonKind.soft, top: AppSpace.xs, onPressed: () => _startMakeup(b)),
+        const SizedBox(height: AppSpace.s),
+      ],
       if (upcoming.isEmpty) const Muted('잡힌 수업이 없어요. 아래에서 시간을 골라 신청해 보세요.'),
       for (final b in upcoming)
         _MyBookingCard(
@@ -157,6 +201,16 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
           choosing: changing == b,
         ),
       const H2('시간 고르기'),
+      if (makeup case final c?)
+        AppCard(
+          key: _changeGuide,
+          accent: true,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            WordText('선생님이 취소한 ${ptWhen(c.start)} 수업의 보강 시간을 골라 주세요', style: AppText.bodyStrong),
+            const Muted('선생님 화면에 보강 신청으로 따로 보여요.', bottom: 0),
+            AppButton('그만두기', kind: ButtonKind.quiet, onPressed: () => setState(() => makeup = null)),
+          ]),
+        ),
       if (changing case final c?)
         AppCard(
           key: _changeGuide,

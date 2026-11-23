@@ -105,9 +105,11 @@ class _PtScheduleScreenState extends State<PtScheduleScreen> {
           requested
               ? (b.replaces != null
                   ? '시간 바꾸기 신청이에요. 승인하면 원래 예약(${ptWhen(b.replaces!.start)})은 자동으로 취소돼요.'
-                  : b.urgent
-                      ? '곧 시작하는 급한 신청이에요. 승인하거나 거절해 주세요.'
-                      : '답을 기다리는 신청이에요. 승인하거나 거절해 주세요.')
+                  : b.makeupFor != null
+                      ? '취소했던 ${ptWhen(b.makeupFor!.start)} 수업의 보강 신청이에요. 승인하거나 거절해 주세요.'
+                      : b.urgent
+                          ? '곧 시작하는 급한 신청이에요. 승인하거나 거절해 주세요.'
+                          : '답을 기다리는 신청이에요. 승인하거나 거절해 주세요.')
               // '닫기' 버튼과 헷갈리지 않게 시간 칸 이야기는 '취소'로 (디자인 리뷰 11/23 #4)
               : '확정된 수업이에요. 수업이 끝나면 지난 수업 처리에서 기록해요. 이 시간을 닫으려면 먼저 수업을 취소해 주세요.',
           top: AppSpace.xs,
@@ -242,6 +244,9 @@ class _RequestCard extends StatelessWidget {
         // 수업이 곧이라 먼저 봐야 하는 신청 (사용자 결정 2026-11-17)
         if (b.urgent) const WordText('급한 신청 · 곧 시작하는 수업', style: AppText.captionCaution),
         WordText('${b.member} · ${ptWhen(b.start)}', style: AppText.bodyStrong),
+        // 선생님이 취소해서 빠진 수업의 보강이면 먼저 챙길 수 있게 (결정 d1123-1)
+        if (b.makeupFor != null)
+          WordText('보강 신청 · 취소했던 ${ptWhen(b.makeupFor!.start)} 수업', style: AppText.captionAccent),
         // 승인하면 원래 예약이 없어진다는 걸 알고 답하게 (결정 d1122-2)
         if (b.replaces != null) Muted('시간 바꾸기 신청 · 원래 ${ptWhen(b.replaces!.start)}', top: AppSpace.xxs, bottom: 0),
         Muted(
@@ -272,7 +277,7 @@ class _TrainerSlot extends StatelessWidget {
     final open = demo.ptOpenSlots.contains(start);
     final b = demo.ptBookingAt(start, now);
     final label = b != null
-        ? '${b.member} ${ptStatusAt(b, now) == PtStatus.approved ? '예약' : '신청'}'
+        ? '${b.member} ${ptStatusAt(b, now) == PtStatus.approved ? '예약' : b.makeupFor != null ? '보강' : '신청'}'
         : (open ? '열림' : '닫힘');
     return TimeSlotButton(
       time: ptHourText(start),
