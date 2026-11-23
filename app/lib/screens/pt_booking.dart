@@ -184,8 +184,12 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
         const H2('지난 기록'),
         for (final b in past)
           LineRow(
+            // 긴 상태 글이 날짜를 밀지 않게, 선생님 취소는 놓치지 않게 주황 (디자인 리뷰 11/23 #5)
+            rightBelowOnLargeText: true,
             left: WordText(ptWhen(b.start)),
-            right: Muted(ptMemberLabel(b, now), bottom: 0),
+            right: b.status == PtStatus.trainerCancelled
+                ? WordText(ptMemberLabel(b, now), style: AppText.captionCaution)
+                : Muted(ptMemberLabel(b, now), bottom: 0),
           ),
       ],
       const SizedBox(height: AppSpace.l),
