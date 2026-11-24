@@ -38,6 +38,9 @@ class AppConfig {
   /// 'PT 문의하기'를 누르면 여는 카카오톡 채널 대화방 주소 (결정 d1104-5). 채널 movenote, 2026-11-19 사용자가 만듦
   static const kakaoChannelUrl = 'https://pf.kakao.com/_axdVvX/chat';
 
+  /// 앱 전용 문의 이메일 (2026-11-24 사용자가 만듦). 처리방침·스토어 등록·약관 화면에 쓴다
+  static const supportEmail = 'movenote_@naver.com';
+
   /// 한 번에 고를 수 있는 운동 수
   static const maxExercisePick = 10;
 
