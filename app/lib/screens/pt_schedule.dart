@@ -239,16 +239,25 @@ class _RequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final left = b.answerBy.difference(now);
+    // 신청 종류는 모두 이름 위 같은 자리에, 색만 다르게. 둘 이상이면 ' · '로 이어 쓴다 (디자인 리뷰 11/24 #4)
+    final kinds = [
+      // 수업이 곧이라 먼저 봐야 하는 신청 (사용자 결정 2026-11-17)
+      if (b.urgent) ('급한 신청 · 곧 시작하는 수업', AppText.captionCaution),
+      // 선생님이 취소해서 빠진 수업의 보강이면 먼저 챙길 수 있게 (결정 d1123-1)
+      if (b.makeupFor != null) ('보강 신청 · 취소했던 ${ptWhen(b.makeupFor!.start)} 수업', AppText.captionAccent),
+      // 승인하면 원래 예약이 없어진다는 걸 알고 답하게 (결정 d1122-2)
+      if (b.replaces != null) ('시간 바꾸기 신청 · 원래 ${ptWhen(b.replaces!.start)}', AppText.captionSub),
+    ];
     return AppCard(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // 수업이 곧이라 먼저 봐야 하는 신청 (사용자 결정 2026-11-17)
-        if (b.urgent) const WordText('급한 신청 · 곧 시작하는 수업', style: AppText.captionCaution),
+        if (kinds.isNotEmpty)
+          Wrap(children: [
+            for (var i = 0; i < kinds.length; i++) ...[
+              if (i > 0) const Text(' · ', style: AppText.captionSub),
+              WordText(kinds[i].$1, style: kinds[i].$2),
+            ],
+          ]),
         WordText('${b.member} · ${ptWhen(b.start)}', style: AppText.bodyStrong),
-        // 선생님이 취소해서 빠진 수업의 보강이면 먼저 챙길 수 있게 (결정 d1123-1)
-        if (b.makeupFor != null)
-          WordText('보강 신청 · 취소했던 ${ptWhen(b.makeupFor!.start)} 수업', style: AppText.captionAccent),
-        // 승인하면 원래 예약이 없어진다는 걸 알고 답하게 (결정 d1122-2)
-        if (b.replaces != null) Muted('시간 바꾸기 신청 · 원래 ${ptWhen(b.replaces!.start)}', top: AppSpace.xxs, bottom: 0),
         Muted(
           b.urgent
               ? '수업 시간이 지나도록 답하지 않으면 지난 신청으로 정리돼요'
