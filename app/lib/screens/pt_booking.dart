@@ -151,6 +151,13 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 홈 카드에서 왔으면 그려진 다음 바로 보강 고르기를 시작한다 (디자인 리뷰 11/24 #1)
+    if (demo.ptMakeupStart case final b?) {
+      demo.ptMakeupStart = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _startMakeup(b);
+      });
+    }
     final now = DateTime.now();
     final days = ptBookingDays(now);
     final mine = demo.ptBookings.where((b) => b.member == me).toList()..sort((a, b) => a.start.compareTo(b.start));

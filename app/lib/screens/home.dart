@@ -40,7 +40,11 @@ class HomeTab extends StatelessWidget {
             eyebrow: '수업 취소',
             title: '선생님이 수업을 취소했어요',
             subtitle: demo.ptMakeupBooked(b, DateTime.now()) ? ptTrainerCancelText(b) : '${ptTrainerCancelText(b)} · 눌러서 보강 신청',
-            onTap: () => demo.openPtTab('수업 예약'),
+            onTap: () {
+              // 예약 화면에서 [보강 신청하기]를 다시 찾지 않게 바로 보강 고르기로 (디자인 리뷰 11/24 #1)
+              if (!demo.ptMakeupBooked(b, DateTime.now())) demo.ptMakeupStart = b;
+              demo.openPtTab('수업 예약');
+            },
           ),
       // PT가 끝난 날과 무료가 끝나기 하루 전에 알린다. 푸시를 붙이기 전까지 홈 맨 위 카드로 (결정 d1121-1)
       if (demo.ptEndNoticeNow case final n?)

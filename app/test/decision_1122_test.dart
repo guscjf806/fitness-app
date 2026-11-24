@@ -163,5 +163,19 @@ void main() {
       await tester.pump();
       expect(find.text('보강할게요'), findsOneWidget);
     });
+
+    testWidgets('디자인 리뷰 11/24 #1 홈의 취소 카드를 누르면 바로 보강 시간 고르기가 열린다', (tester) async {
+      tester.view.physicalSize = const Size(1200, 2400);
+      addTearDown(tester.view.reset);
+      demo.switchRole('member');
+      final b = demo.ptBookings.firstWhere((b) => b.member == demo.memberName);
+      b.status = PtStatus.trainerCancelled;
+      demo.update(() => demo.tab = 0);
+      await tester.pumpWidget(const FitnessApp());
+      await tester.pumpAndSettle();
+      await tester.tap(findText('선생님이 수업을 취소했어요').first);
+      await tester.pumpAndSettle();
+      expect(findTextContaining('보강 시간을 골라 주세요'), findsOneWidget);
+    });
   });
 }

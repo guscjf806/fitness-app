@@ -199,6 +199,9 @@ class DemoState extends ChangeNotifier {
         trainerView = view;
       });
 
+  /// 홈 카드에서 눌러 PT 탭을 열 때 바로 보강 고르기를 시작할 수업. 예약 화면이 열리면 쓰고 비운다 (디자인 리뷰 11/24 #1)
+  PtBooking? ptMakeupStart;
+
   /// 회원 PT 탭을 열고 위 칸(수업 예약 / 운동일지)을 고른다
   void openPtTab(String view) => update(() {
         tab = 3;
