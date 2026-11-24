@@ -209,24 +209,18 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
         ),
       const H2('시간 고르기'),
       if (makeup case final c?)
-        AppCard(
+        _ChooseGuide(
           key: _changeGuide,
-          accent: true,
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            WordText('선생님이 취소한 ${ptWhen(c.start)} 수업의 보강 시간을 골라 주세요', style: AppText.bodyStrong),
-            const Muted('선생님 화면에 보강 신청으로 따로 보여요.', bottom: 0),
-            AppButton('그만두기', kind: ButtonKind.quiet, onPressed: () => setState(() => makeup = null)),
-          ]),
+          title: '선생님이 취소한 ${ptWhen(c.start)} 수업의 보강 시간을 골라 주세요',
+          note: '선생님 화면에 보강 신청으로 따로 보여요.',
+          onStop: () => setState(() => makeup = null),
         ),
       if (changing case final c?)
-        AppCard(
+        _ChooseGuide(
           key: _changeGuide,
-          accent: true,
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            WordText('${ptWhen(c.start)} 수업을 옮길 시간을 골라 주세요', style: AppText.bodyStrong),
-            const Muted('선생님이 승인할 때까지 원래 예약은 그대로 있어요.', bottom: 0),
-            AppButton('그만두기', kind: ButtonKind.quiet, onPressed: () => setState(() => changing = null)),
-          ]),
+          title: '${ptWhen(c.start)} 수업을 옮길 시간을 골라 주세요',
+          note: '선생님이 승인할 때까지 원래 예약은 그대로 있어요.',
+          onStop: () => setState(() => changing = null),
         ),
       Muted('${AppConfig.ptBookingDays ~/ 7}주 앞까지, 하루 한 번 신청할 수 있어요.'),
       DayChips(labels: ptDayChipLabels(days), selected: day, today: 0, onSelect: (i) => setState(() => day = i)),
@@ -347,4 +341,22 @@ class _MemberSlot extends StatelessWidget {
       onTap: taken == null ? onRequest : null,
     );
   }
+}
+
+/// '시간 고르기' 위에 뜨는 안내 카드. 보강과 시간 바꾸기가 같은 모양을 쓴다 (디자인 리뷰 11/24 #2)
+class _ChooseGuide extends StatelessWidget {
+  const _ChooseGuide({super.key, required this.title, required this.note, required this.onStop});
+  final String title;
+  final String note;
+  final VoidCallback onStop;
+
+  @override
+  Widget build(BuildContext context) => AppCard(
+        accent: true,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          WordText(title, style: AppText.bodyStrong),
+          Muted(note, bottom: 0),
+          AppButton('그만두기', kind: ButtonKind.quiet, onPressed: onStop),
+        ]),
+      );
 }
