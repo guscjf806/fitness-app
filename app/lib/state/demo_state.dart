@@ -186,8 +186,12 @@ class DemoState extends ChangeNotifier {
     ..sort((a, b) => a.start.compareTo(b.start));
 
   /// 선생님이 취소한 수업에 보강을 이미 신청했거나 잡았는지 (결정 d1123-1)
-  bool ptMakeupBooked(PtBooking cancelled, DateTime now) => ptBookings.any((m) =>
-      m.makeupFor == cancelled && (ptHoldsSlot(ptStatusAt(m, now)) || m.status == PtStatus.done));
+  bool ptMakeupBooked(PtBooking cancelled, DateTime now) => ptMakeupOf(cancelled, now) != null;
+
+  /// 그 수업의 살아 있는 보강 (신청 중·확정·완료). 없으면 null
+  PtBooking? ptMakeupOf(PtBooking cancelled, DateTime now) => ptBookings
+      .where((m) => m.makeupFor == cancelled && (ptHoldsSlot(ptStatusAt(m, now)) || m.status == PtStatus.done))
+      .firstOrNull;
 
   /// 선생님이 답해야 할 신청 (수업 시작 순). 홈·회원 관리·수업 일정이 같이 쓴다 (디자인 리뷰 11/20 #5)
   List<PtBooking> ptWaitingAt(DateTime now) =>

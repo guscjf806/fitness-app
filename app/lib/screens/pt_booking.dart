@@ -193,10 +193,15 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       for (final b in cancelledAhead) ...[
         WarningBox('선생님이 수업을 취소했어요 · ${ptTrainerCancelText(b)}', top: 0, caution: true),
         // 빠진 수업을 버튼 하나로 다시 잡게 (결정 d1123-1)
-        if (demo.ptMakeupBooked(b, now))
-          const Padding(
-            padding: EdgeInsets.only(top: AppSpace.xs, bottom: AppSpace.s),
-            child: WordText('보강을 신청했어요 · 아래 내 예약에서 볼 수 있어요', style: AppText.captionAccent),
+        if (demo.ptMakeupOf(b, now) case final m?)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpace.xs),
+            // 신청 중인지 잡혔는지 나눠 알린다 (디자인 리뷰 11/24 #5)
+            child: WordText(
+                ptStatusAt(m, now) == PtStatus.requested
+                    ? '보강을 신청했어요 · 아래 내 예약에서 볼 수 있어요'
+                    : '보강이 잡혔어요 · ${ptWhen(m.start)}',
+                style: AppText.captionAccent),
           )
         else
           AppButton('보강 신청하기', kind: ButtonKind.soft, top: AppSpace.xs, onPressed: () => _startMakeup(b)),

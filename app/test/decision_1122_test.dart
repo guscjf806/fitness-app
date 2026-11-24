@@ -77,6 +77,10 @@ void main() {
       demo.ptBookings.add(m);
       expect(demo.ptMakeupBooked(b, now), isTrue);
       expect(ptMemberLabel(m, now), '보강 · 승인 기다리는 중');
+      // 디자인 리뷰 11/24 #5 확정 뒤에도 보강으로 보인다
+      m.status = PtStatus.approved;
+      expect(ptMemberLabel(m, now), '보강 · 예약 확정');
+      expect(demo.ptMakeupOf(b, now), m);
     });
 
     test('#1 선생님이 취소한 앞으로의 수업은 알릴 목록에 남는다', () {

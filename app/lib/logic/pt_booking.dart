@@ -108,6 +108,8 @@ String ptMemberLabel(PtBooking b, DateTime now) {
   final s = ptStatusAt(b, now);
   if (s == PtStatus.approved && !b.start.isAfter(now)) return '선생님 확인 기다리는 중';
   if (b.makeupFor != null && s == PtStatus.requested) return '보강 · 승인 기다리는 중';
+  // 확정된 뒤에도 보강이라는 걸 알 수 있게 (디자인 리뷰 11/24 #5)
+  if (b.makeupFor != null && s == PtStatus.approved && b.start.isAfter(now)) return '보강 · 예약 확정';
   if (b.replaces case final from?) {
     if (s == PtStatus.requested) return '시간 바꾸기 · 승인 기다리는 중';
     // 바꾸기가 안 됐을 때 원래 수업까지 없어진 줄 알지 않게 결과를 풀어 쓴다 (리뷰 11/23 #3)
