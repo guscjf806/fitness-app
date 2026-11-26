@@ -59,13 +59,17 @@ class MyBookingCard extends StatelessWidget {
                   child: WordText('지금 취소하면 PT 1회가 차감돼요', style: AppText.captionCaution),
                 ),
         // 좁은 화면·큰 글씨에서 넘치지 않게 자리가 모자라면 두 줄로 (디자인 리뷰 11/23 #2)
-        Wrap(alignment: WrapAlignment.end, spacing: AppSpace.xs, children: [
-          if (onChange != null) TextButton(onPressed: onChange, child: const Text('시간 바꾸기')),
-          // 차감될 수 있는 수업 취소는 다른 화면의 지우기·빼기처럼 경고색 (디자인 리뷰 11/18 #6)
-          status == PtStatus.requested
-              ? TextButton(onPressed: onCancel, child: const Text('신청 취소'))
-              : DangerTextButton('수업 취소', onPressed: onCancel),
-        ]),
+        // 카드 글이 왼쪽 정렬이라 폭을 꽉 채워야 오른쪽에 붙는다 (디자인 리뷰 11/26 #1)
+        SizedBox(
+          width: double.infinity,
+          child: Wrap(alignment: WrapAlignment.end, spacing: AppSpace.xs, children: [
+            if (onChange != null) TextButton(onPressed: onChange, child: const Text('시간 바꾸기')),
+            // 차감될 수 있는 수업 취소는 다른 화면의 지우기·빼기처럼 경고색 (디자인 리뷰 11/18 #6)
+            status == PtStatus.requested
+                ? TextButton(onPressed: onCancel, child: const Text('신청 취소'))
+                : DangerTextButton('수업 취소', onPressed: onCancel),
+          ]),
+        ),
       ]),
     );
   }
