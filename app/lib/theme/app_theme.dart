@@ -126,6 +126,8 @@ class AppText {
 
   /// 큰 경고 상자 글씨
   static const warning = TextStyle(fontFamily: fontFamily, fontSize: 16, fontWeight: FontWeight.w700, height: 1.4);
+  /// 경고 상자 제목 아래 설명 (디자인 리뷰 11/26 #2)
+  static const warningDetail = TextStyle(fontFamily: fontFamily, fontSize: 14, height: 1.4);
 
   /// 화면 제목(H1), 운동 진행의 운동 이름
   static const h1 = TextStyle(fontFamily: fontFamily, fontSize: 24, fontWeight: FontWeight.w700, height: 1.3);

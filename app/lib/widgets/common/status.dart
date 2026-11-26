@@ -85,10 +85,13 @@ class LoadingView extends StatelessWidget {
 
 /// 빨간 큰 경고 상자 (디자인 리뷰 10/28 #3). [caution]이면 덜 급한 주황 '주의' 상자
 class WarningBox extends StatelessWidget {
-  const WarningBox(this.text, {super.key, this.top = 12, this.caution = false});
+  const WarningBox(this.text, {super.key, this.top = 12, this.caution = false, this.detail});
   final String text;
   final double top;
   final bool caution;
+
+  /// 제목 아래 보통 굵기 설명. 없으면 제목 한 줄만 (디자인 리뷰 11/26 #2)
+  final String? detail;
 
   @override
   Widget build(BuildContext context) {
@@ -105,9 +108,15 @@ class WarningBox extends StatelessWidget {
             color: caution ? AppColors.caution : AppColors.warning, size: 26),
         const SizedBox(width: AppSpace.sPlus),
         Expanded(
-          // 큰 글씨에서 낱말 중간에서 끊기지 않게 (디자인 리뷰 11/13 #2)
-          child: WordText(text,
-              style: AppText.warning.copyWith(color: caution ? AppColors.caution : AppColors.warningText)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            // 큰 글씨에서 낱말 중간에서 끊기지 않게 (디자인 리뷰 11/13 #2)
+            WordText(text, style: AppText.warning.copyWith(color: caution ? AppColors.caution : AppColors.warningText)),
+            if (detail != null)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpace.xxs),
+                child: WordText(detail!, style: AppText.warningDetail.copyWith(color: caution ? AppColors.caution : AppColors.warningText)),
+              ),
+          ]),
         ),
       ]),
     );

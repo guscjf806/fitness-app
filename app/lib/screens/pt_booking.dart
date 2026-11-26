@@ -191,7 +191,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
         WarningBox('남은 PT가 ${demo.ptLeft[me]}회예요. 이어서 받으려면 선생님께 재등록을 이야기해 보세요', top: 0, caution: true),
       const H2('내 예약'),
       for (final b in cancelledAhead) ...[
-        WarningBox('선생님이 수업을 취소했어요 · ${ptTrainerCancelText(b)}', top: 0, caution: true),
+        WarningBox('선생님이 수업을 취소했어요', detail: ptTrainerCancelText(b), top: 0, caution: true),
         // 빠진 수업을 버튼 하나로 다시 잡게 (결정 d1123-1)
         if (demo.ptMakeupOf(b, now) case final m?)
           Padding(
