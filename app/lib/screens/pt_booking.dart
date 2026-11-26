@@ -197,11 +197,7 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
           Padding(
             padding: const EdgeInsets.only(top: AppSpace.xs),
             // 신청 중인지 잡혔는지 나눠 알린다 (디자인 리뷰 11/24 #5)
-            child: WordText(
-                ptStatusAt(m, now) == PtStatus.requested
-                    ? '보강을 신청했어요 · 아래 내 예약에서 볼 수 있어요'
-                    : '보강이 잡혔어요 · ${ptWhen(m.start)}',
-                style: AppText.captionAccent),
+            child: WordText(ptMakeupNote(m, now), style: AppText.captionAccent),
           )
         else ...[
           if (demo.ptMakeupMissText(b, now) case final miss?)

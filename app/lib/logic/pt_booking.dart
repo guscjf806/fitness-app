@@ -126,6 +126,10 @@ String ptMemberLabel(PtBooking b, DateTime now) {
 String ptTrainerCancelText(PtBooking b) =>
     [ptWhen(b.start), if ((b.cancelReason ?? '').isNotEmpty) b.cancelReason!, '횟수는 그대로예요'].join(' · ');
 
+/// 살아 있는 보강의 한 줄 안내. 예약 화면과 홈 카드가 같은 말을 쓴다 (리뷰 11/26 #2)
+String ptMakeupNote(PtBooking m, DateTime now) =>
+    ptStatusAt(m, now) == PtStatus.requested ? '보강을 신청했어요 · 승인 기다리는 중' : '보강이 잡혔어요 · ${ptWhen(m.start)}';
+
 /// '11월 18일(화) 19:00'
 String ptWhen(DateTime d) =>
     '${d.month}월 ${d.day}일(${dayLabels[d.weekday - 1]}) ${d.hour.toString().padLeft(2, '0')}:00';
