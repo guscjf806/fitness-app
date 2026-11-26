@@ -196,6 +196,12 @@ class DemoState extends ChangeNotifier {
   /// 그 수업에 가장 최근에 낸 보강 신청 (상태 상관없이). 없으면 null (리뷰 11/26 #1)
   PtBooking? ptMakeupLatest(PtBooking cancelled) => ptBookings.where((m) => m.makeupFor == cancelled).lastOrNull;
 
+  /// 선생님이 보강 수업까지 취소했으면 그 보강. 빠진 수업은 하나라 버튼은 새 취소 알림에만 둔다 (리뷰 11/26 #3)
+  PtBooking? ptMakeupRedone(PtBooking cancelled, DateTime now) {
+    final last = ptMakeupLatest(cancelled);
+    return last != null && last.status == PtStatus.trainerCancelled && last.start.isAfter(now) ? last : null;
+  }
+
   /// 가장 최근 보강이 거절되거나 답이 없어 정리됐으면 그 이유. 버튼이 왜 다시 생겼는지 알린다 (리뷰 11/26 #1)
   String? ptMakeupMissText(PtBooking cancelled, DateTime now) {
     final last = ptMakeupLatest(cancelled);

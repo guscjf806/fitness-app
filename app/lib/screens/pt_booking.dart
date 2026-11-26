@@ -199,6 +199,11 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
             // 신청 중인지 잡혔는지 나눠 알린다 (디자인 리뷰 11/24 #5)
             child: WordText(ptMakeupNote(m, now), style: AppText.captionAccent),
           )
+        else if (demo.ptMakeupRedone(b, now) case final r?)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpace.xs),
+            child: WordText('보강 수업(${ptWhen(r.start)})도 선생님이 취소했어요 · 그 알림에서 다시 신청해 주세요', style: AppText.captionCaution),
+          )
         else ...[
           if (demo.ptMakeupMissText(b, now) case final miss?)
             Padding(

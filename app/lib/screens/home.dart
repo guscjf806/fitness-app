@@ -33,29 +33,31 @@ class HomeTab extends StatelessWidget {
       if (demo.role == 'member' && !demo.ptEnded) const _NextLessonCard(),
       // 선생님이 취소한 수업을 모르고 센터에 오지 않게 홈 맨 위에 (리뷰 11/23 #1)
       if (demo.role == 'member')
+        // 보강 수업까지 취소됐으면 그 보강의 취소 카드 하나만 (리뷰 11/26 #3)
         for (final b in demo.ptTrainerCancelledAhead(demo.memberName, DateTime.now()))
-          // 보강을 신청했거나 잡았으면 할 일이 끝난 것처럼 주황 대신 기본 색과 보강 소식으로 (리뷰 11/26 #2)
-          if (demo.ptMakeupOf(b, DateTime.now()) case final m?)
-            HighlightCard(
-              icon: Icons.event_available_outlined,
-              eyebrow: '보강',
-              title: '선생님이 취소한 ${ptWhen(b.start)} 수업',
-              subtitle: ptMakeupNote(m, DateTime.now()),
-              onTap: () => demo.openPtTab('수업 예약'),
-            )
-          else
-            HighlightCard(
-              icon: Icons.event_busy_outlined,
-              tone: HighlightTone.caution,
-              eyebrow: '수업 취소',
-              title: '선생님이 수업을 취소했어요',
-              subtitle: '${ptTrainerCancelText(b)} · 눌러서 보강 신청',
-              onTap: () {
-                // 예약 화면에서 [보강 신청하기]를 다시 찾지 않게 바로 보강 고르기로 (디자인 리뷰 11/24 #1)
-                demo.ptMakeupStart = b;
-                demo.openPtTab('수업 예약');
-              },
-            ),
+          if (demo.ptMakeupRedone(b, DateTime.now()) == null)
+            // 보강을 신청했거나 잡았으면 할 일이 끝난 것처럼 주황 대신 기본 색과 보강 소식으로 (리뷰 11/26 #2)
+            if (demo.ptMakeupOf(b, DateTime.now()) case final m?)
+              HighlightCard(
+                icon: Icons.event_available_outlined,
+                eyebrow: '보강',
+                title: '선생님이 취소한 ${ptWhen(b.start)} 수업',
+                subtitle: ptMakeupNote(m, DateTime.now()),
+                onTap: () => demo.openPtTab('수업 예약'),
+              )
+            else
+              HighlightCard(
+                icon: Icons.event_busy_outlined,
+                tone: HighlightTone.caution,
+                eyebrow: '수업 취소',
+                title: '선생님이 수업을 취소했어요',
+                subtitle: '${ptTrainerCancelText(b)} · 눌러서 보강 신청',
+                onTap: () {
+                  // 예약 화면에서 [보강 신청하기]를 다시 찾지 않게 바로 보강 고르기로 (디자인 리뷰 11/24 #1)
+                  demo.ptMakeupStart = b;
+                  demo.openPtTab('수업 예약');
+                },
+              ),
       // PT가 끝난 날과 무료가 끝나기 하루 전에 알린다. 푸시를 붙이기 전까지 홈 맨 위 카드로 (결정 d1121-1)
       if (demo.ptEndNoticeNow case final n?)
         HighlightCard(
