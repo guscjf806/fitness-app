@@ -75,7 +75,7 @@ class MyBookingCard extends StatelessWidget {
   }
 }
 
-/// 회원이 보는 시간 칸: 신청 가능(연한 초록) · 마감(회색) · 내 신청(진한 초록 + 체크)
+/// 회원이 보는 시간 칸: 신청 가능(연한 초록) · 마감(회색) · 내 신청(주황 + 체크) · 내 예약(진한 초록 + 체크) (결정 d1118-1)
 class MemberSlot extends StatelessWidget {
   const MemberSlot({super.key, required this.start, required this.now, required this.me, required this.onRequest});
   final DateTime start;
