@@ -204,6 +204,12 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
             padding: const EdgeInsets.only(top: AppSpace.xs),
             child: WordText('보강 수업(${ptWhen(r.start)})도 선생님이 취소했어요 · 그 알림에서 다시 신청해 주세요', style: AppText.captionCaution),
           )
+        // 시간 바꾸기처럼 고르는 중인지 위에서도 보이게 (리뷰 11/26 #4)
+        else if (makeup == b)
+          const Padding(
+            padding: EdgeInsets.only(top: AppSpace.xs),
+            child: WordText('아래에서 보강 시간 고르는 중', style: AppText.captionAccent),
+          )
         else ...[
           if (demo.ptMakeupMissText(b, now) case final miss?)
             Padding(

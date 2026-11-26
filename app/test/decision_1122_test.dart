@@ -107,6 +107,45 @@ void main() {
     });
   });
 
+  group('리뷰 11/26', () {
+    PtBooking cancelled() => demo.ptBookings.firstWhere((b) => b.member == '김지아')..status = PtStatus.trainerCancelled;
+
+    test('#1 보강이 거절되거나 답이 없어 정리되면 이유를 알린다', () {
+      final now = DateTime.now();
+      final b = cancelled();
+      expect(demo.ptMakeupMissText(b, now), isNull);
+      final m = PtBooking(member: '김지아', start: b.start.add(const Duration(days: 1)), requestedAt: now, makeupFor: b)
+        ..status = PtStatus.rejected;
+      demo.ptBookings.add(m);
+      expect(demo.ptMakeupMissText(b, now), startsWith('보강 신청이 거절됐어요'));
+      m.status = PtStatus.expired;
+      expect(demo.ptMakeupMissText(b, now), contains('답이 없어 정리됐어요'));
+      m.status = PtStatus.cancelled;
+      expect(demo.ptMakeupMissText(b, now), isNull, reason: '회원이 직접 취소한 건 따로 알리지 않는다');
+    });
+
+    test('#2 보강 안내는 신청 중과 확정을 나눈다', () {
+      final now = DateTime.now();
+      final b = cancelled();
+      final m = PtBooking(member: '김지아', start: b.start.add(const Duration(days: 1)), requestedAt: now, makeupFor: b);
+      expect(ptMakeupNote(m, now), '보강을 신청했어요 · 승인 기다리는 중');
+      m.status = PtStatus.approved;
+      expect(ptMakeupNote(m, now), '보강이 잡혔어요 · ${ptWhen(m.start)}');
+    });
+
+    test('#3 보강 수업까지 선생님이 취소하면 원래 수업 버튼은 숨긴다', () {
+      final now = DateTime.now();
+      final b = cancelled();
+      final m = PtBooking(member: '김지아', start: b.start.add(const Duration(days: 1)), requestedAt: now, makeupFor: b)
+        ..status = PtStatus.trainerCancelled;
+      demo.ptBookings.add(m);
+      expect(demo.ptMakeupRedone(b, now), m);
+      expect(demo.ptMakeupRedone(m, now), isNull);
+      m.status = PtStatus.cancelled;
+      expect(demo.ptMakeupRedone(b, now), isNull, reason: '회원이 직접 취소하면 원래 수업 버튼이 다시 나온다');
+    });
+  });
+
   group('화면', () {
     Future<void> open(WidgetTester tester, String role, String route) async {
       tester.view.physicalSize = const Size(1200, 2400);
@@ -180,6 +219,9 @@ void main() {
       await tester.tap(findText('선생님이 수업을 취소했어요').first);
       await tester.pumpAndSettle();
       expect(findTextContaining('보강 시간을 골라 주세요'), findsOneWidget);
+      // 리뷰 11/26 #4 위 취소 알림 자리에도 고르는 중이라고 보인다
+      expect(findText('아래에서 보강 시간 고르는 중'), findsOneWidget);
+      expect(findText('보강 신청하기'), findsNothing);
     });
   });
 }
