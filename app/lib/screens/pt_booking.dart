@@ -203,8 +203,14 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
                     : '보강이 잡혔어요 · ${ptWhen(m.start)}',
                 style: AppText.captionAccent),
           )
-        else
+        else ...[
+          if (demo.ptMakeupMissText(b, now) case final miss?)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpace.xs),
+              child: WordText(miss, style: AppText.captionCaution),
+            ),
           AppButton('보강 신청하기', kind: ButtonKind.soft, top: AppSpace.xs, onPressed: () => _startMakeup(b)),
+        ],
         const SizedBox(height: AppSpace.s),
       ],
       if (upcoming.isEmpty) const Muted('잡힌 수업이 없어요. 아래에서 시간을 골라 신청해 보세요.'),

@@ -193,6 +193,20 @@ class DemoState extends ChangeNotifier {
       .where((m) => m.makeupFor == cancelled && (ptHoldsSlot(ptStatusAt(m, now)) || m.status == PtStatus.done))
       .firstOrNull;
 
+  /// 그 수업에 가장 최근에 낸 보강 신청 (상태 상관없이). 없으면 null (리뷰 11/26 #1)
+  PtBooking? ptMakeupLatest(PtBooking cancelled) => ptBookings.where((m) => m.makeupFor == cancelled).lastOrNull;
+
+  /// 가장 최근 보강이 거절되거나 답이 없어 정리됐으면 그 이유. 버튼이 왜 다시 생겼는지 알린다 (리뷰 11/26 #1)
+  String? ptMakeupMissText(PtBooking cancelled, DateTime now) {
+    final last = ptMakeupLatest(cancelled);
+    if (last == null) return null;
+    return switch (ptStatusAt(last, now)) {
+      PtStatus.rejected || PtStatus.autoRejected => '보강 신청이 거절됐어요 · 다른 시간으로 다시 신청해 보세요',
+      PtStatus.expired => '보강 신청에 답이 없어 정리됐어요 · 다른 시간으로 다시 신청해 보세요',
+      _ => null,
+    };
+  }
+
   /// 선생님이 답해야 할 신청 (수업 시작 순). 홈·회원 관리·수업 일정이 같이 쓴다 (디자인 리뷰 11/20 #5)
   List<PtBooking> ptWaitingAt(DateTime now) =>
       ptBookings.where((b) => ptStatusAt(b, now) == PtStatus.requested).toList()..sort((a, b) => a.start.compareTo(b.start));
