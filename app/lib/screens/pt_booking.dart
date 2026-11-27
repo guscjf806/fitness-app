@@ -197,6 +197,8 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
               detail: [
                 ptTrainerCancelText(b),
                 if (b.makeupFor case final o?) '원래 ${ptWhen(o.start)} 수업의 보강이었어요',
+                // 거절·정리 이유도 상자 안에 넣어 상자 하나 + 버튼 하나로 (디자인 리뷰 11/27 #2)
+                if (demo.ptMakeupOf(b, now) == null && makeup != b) ?demo.ptMakeupMissText(b, now),
               ].join('\n'),
               top: 0,
               caution: true),
@@ -213,14 +215,8 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
               padding: EdgeInsets.only(top: AppSpace.xs),
               child: WordText('아래에서 보강 시간 고르는 중', style: AppText.captionAccent),
             )
-          else ...[
-            if (demo.ptMakeupMissText(b, now) case final miss?)
-              Padding(
-                padding: const EdgeInsets.only(top: AppSpace.xs),
-                child: WordText(miss, style: AppText.captionCaution),
-              ),
+          else
             AppButton('보강 신청하기', kind: ButtonKind.soft, top: AppSpace.xs, onPressed: () => _startMakeup(b)),
-          ],
           const SizedBox(height: AppSpace.s),
         ],
       if (upcoming.isEmpty) const Muted('잡힌 수업이 없어요. 아래에서 시간을 골라 신청해 보세요.'),
