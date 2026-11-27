@@ -190,36 +190,39 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
       if (demo.ptLowOf(me))
         WarningBox('남은 PT가 ${demo.ptLeft[me]}회예요. 이어서 받으려면 선생님께 재등록을 이야기해 보세요', top: 0, caution: true),
       const H2('내 예약'),
-      for (final b in cancelledAhead) ...[
-        WarningBox('선생님이 수업을 취소했어요', detail: ptTrainerCancelText(b), top: 0, caution: true),
-        // 빠진 수업을 버튼 하나로 다시 잡게 (결정 d1123-1)
-        if (demo.ptMakeupOf(b, now) case final m?)
-          Padding(
-            padding: const EdgeInsets.only(top: AppSpace.xs),
-            // 신청 중인지 잡혔는지 나눠 알린다 (디자인 리뷰 11/24 #5)
-            child: WordText(ptMakeupNote(m, now), style: AppText.captionAccent),
-          )
-        else if (demo.ptMakeupRedone(b, now) case final r?)
-          Padding(
-            padding: const EdgeInsets.only(top: AppSpace.xs),
-            child: WordText('보강 수업(${ptWhen(r.start)})도 선생님이 취소했어요 · 그 알림에서 다시 신청해 주세요', style: AppText.captionCaution),
-          )
-        // 시간 바꾸기처럼 고르는 중인지 위에서도 보이게 (리뷰 11/26 #4)
-        else if (makeup == b)
-          const Padding(
-            padding: EdgeInsets.only(top: AppSpace.xs),
-            child: WordText('아래에서 보강 시간 고르는 중', style: AppText.captionAccent),
-          )
-        else ...[
-          if (demo.ptMakeupMissText(b, now) case final miss?)
+      // 보강 수업까지 취소됐으면 원래 수업 상자는 빼고 보강 쪽 상자 하나만. 홈과 같게 (디자인 리뷰 11/27 #1)
+      for (final b in cancelledAhead)
+        if (demo.ptMakeupRedone(b, now) == null) ...[
+          WarningBox('선생님이 수업을 취소했어요',
+              detail: [
+                ptTrainerCancelText(b),
+                if (b.makeupFor case final o?) '원래 ${ptWhen(o.start)} 수업의 보강이었어요',
+              ].join('\n'),
+              top: 0,
+              caution: true),
+          // 빠진 수업을 버튼 하나로 다시 잡게 (결정 d1123-1)
+          if (demo.ptMakeupOf(b, now) case final m?)
             Padding(
               padding: const EdgeInsets.only(top: AppSpace.xs),
-              child: WordText(miss, style: AppText.captionCaution),
-            ),
-          AppButton('보강 신청하기', kind: ButtonKind.soft, top: AppSpace.xs, onPressed: () => _startMakeup(b)),
+              // 신청 중인지 잡혔는지 나눠 알린다 (디자인 리뷰 11/24 #5)
+              child: WordText(ptMakeupNote(m, now), style: AppText.captionAccent),
+            )
+          // 시간 바꾸기처럼 고르는 중인지 위에서도 보이게 (리뷰 11/26 #4)
+          else if (makeup == b)
+            const Padding(
+              padding: EdgeInsets.only(top: AppSpace.xs),
+              child: WordText('아래에서 보강 시간 고르는 중', style: AppText.captionAccent),
+            )
+          else ...[
+            if (demo.ptMakeupMissText(b, now) case final miss?)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpace.xs),
+                child: WordText(miss, style: AppText.captionCaution),
+              ),
+            AppButton('보강 신청하기', kind: ButtonKind.soft, top: AppSpace.xs, onPressed: () => _startMakeup(b)),
+          ],
+          const SizedBox(height: AppSpace.s),
         ],
-        const SizedBox(height: AppSpace.s),
-      ],
       if (upcoming.isEmpty) const Muted('잡힌 수업이 없어요. 아래에서 시간을 골라 신청해 보세요.'),
       for (final b in upcoming)
         MyBookingCard(

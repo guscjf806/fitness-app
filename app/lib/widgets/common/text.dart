@@ -7,7 +7,9 @@ import '../../theme/app_theme.dart';
 
 /// 한글이 단어 중간(예: '받/아요')에서 줄바꿈되지 않게, 단어 안 글자 사이에
 /// 보이지 않는 '줄바꿈 금지' 표시(U+2060)를 넣는다. 띄어쓰기에서만 줄이 바뀐다 (디자인 리뷰 11/03 #1)
-String keepWords(String text) => text.split(' ').map((w) => w.characters.join('\u2060')).join(' ');
+/// 줄바꿈(\n)은 그대로 둔다 (디자인 리뷰 11/27 #1)
+String keepWords(String text) =>
+    text.split('\n').map((line) => line.split(' ').map((w) => w.characters.join('\u2060')).join(' ')).join('\n');
 
 /// 단어 중간에서 줄이 바뀌지 않는 글 (디자인 리뷰 11/06 #3). 화면 낭독은 원문으로 읽는다
 class WordText extends StatelessWidget {

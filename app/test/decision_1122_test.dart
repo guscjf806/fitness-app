@@ -223,5 +223,21 @@ void main() {
       expect(findText('아래에서 보강 시간 고르는 중'), findsOneWidget);
       expect(findText('보강 신청하기'), findsNothing);
     });
+
+    testWidgets('디자인 리뷰 11/27 #1 보강 수업까지 취소되면 수업 예약 화면에도 취소 상자가 하나만', (tester) async {
+      tester.view.physicalSize = const Size(1200, 2400);
+      addTearDown(tester.view.reset);
+      demo.switchRole('member');
+      final now = DateTime.now();
+      final b = demo.ptBookings.firstWhere((b) => b.member == demo.memberName)..status = PtStatus.trainerCancelled;
+      demo.ptBookings.add(PtBooking(member: demo.memberName, start: b.start.add(const Duration(days: 1)), requestedAt: now, makeupFor: b)
+        ..status = PtStatus.trainerCancelled);
+      demo.openPtTab('수업 예약');
+      await tester.pumpWidget(const FitnessApp());
+      await tester.pumpAndSettle();
+      expect(findText('선생님이 수업을 취소했어요'), findsOneWidget);
+      expect(findTextContaining('수업의 보강이었어요'), findsOneWidget);
+      expect(findText('보강 신청하기'), findsOneWidget);
+    });
   });
 }
