@@ -157,6 +157,12 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
     toast(context, free ? '수업을 취소했어요' : '수업을 취소했어요. PT 1회가 차감됐어요');
   }
 
+  /// 취소 상자 아래 한 줄 안내 (디자인 리뷰 11/27 #4)
+  Widget _note(String text) => Padding(
+        padding: const EdgeInsets.only(top: AppSpace.xs),
+        child: WordText(text, style: AppText.captionAccent),
+      );
+
   @override
   Widget build(BuildContext context) {
     // 홈 카드에서 왔으면 그려진 다음 바로 보강 고르기를 시작한다 (디자인 리뷰 11/24 #1)
@@ -204,17 +210,11 @@ class _PtBookingScreenState extends State<PtBookingScreen> {
               caution: true),
           // 빠진 수업을 버튼 하나로 다시 잡게 (결정 d1123-1)
           if (demo.ptMakeupOf(b, now) case final m?)
-            Padding(
-              padding: const EdgeInsets.only(top: AppSpace.xs),
-              // 신청 중인지 잡혔는지 나눠 알린다 (디자인 리뷰 11/24 #5)
-              child: WordText(ptMakeupNote(m, now), style: AppText.captionAccent),
-            )
+            // 신청 중인지 잡혔는지 나눠 알린다 (디자인 리뷰 11/24 #5)
+            _note(ptMakeupNote(m, now))
           // 시간 바꾸기처럼 고르는 중인지 위에서도 보이게 (리뷰 11/26 #4)
           else if (makeup == b)
-            const Padding(
-              padding: EdgeInsets.only(top: AppSpace.xs),
-              child: WordText('아래에서 보강 시간 고르는 중', style: AppText.captionAccent),
-            )
+            _note('아래에서 보강 시간 고르는 중')
           else
             AppButton('보강 신청하기', kind: ButtonKind.soft, top: AppSpace.xs, onPressed: () => _startMakeup(b)),
           const SizedBox(height: AppSpace.s),
