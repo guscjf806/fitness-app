@@ -104,8 +104,10 @@ class WarningBox extends StatelessWidget {
         border: Border.all(color: caution ? AppColors.caution : AppColors.warning),
       ),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // 글씨 크기를 따라 커지되 40px까지 (디자인 리뷰 11/27 #3)
         Icon(caution ? Icons.info_outline_rounded : Icons.warning_amber_rounded,
-            color: caution ? AppColors.caution : AppColors.warning, size: 26),
+            color: caution ? AppColors.caution : AppColors.warning,
+            size: MediaQuery.textScalerOf(context).scale(26).clamp(26, 40).toDouble()),
         const SizedBox(width: AppSpace.sPlus),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
